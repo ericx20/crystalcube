@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.js": "/err0r-cube-site/static/js/main.1b1d2b3e.js",
+    "static/js/377.733df0d2.chunk.js": "/err0r-cube-site/static/js/377.733df0d2.chunk.js",
+    "static/media/logo.svg": "/err0r-cube-site/static/media/logo.034ef726eb08f413c8e9ff1b0abe7414.svg",
+    "index.html": "/err0r-cube-site/index.html",
+    "main.1b1d2b3e.js.map": "/err0r-cube-site/static/js/main.1b1d2b3e.js.map",
+    "377.733df0d2.chunk.js.map": "/err0r-cube-site/static/js/377.733df0d2.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.1b1d2b3e.js"
+  ]
+}
