@@ -1,5 +1,7 @@
 import { Alg, Move } from "cubing/alg";
+import { Handedness } from "../shared/handedness";
 // TODO: rewrite this to all be nicer and use the Alg and Move stuff from cubing.js
+// take inspiration from 5cuber
 
 // this maps any outer block move => corresponding replacement
 const moveMap = new Map();
@@ -20,24 +22,12 @@ const rotateMap = new Map([["x", rotateMapX], ["y", rotateMapY], ["z", rotateMap
 
 
 // hardcoded for now, replace later by checking UI
-const movesToReplace = [false, false, false, true, true, true, false, false, false, true, true, true, false, false, false, true, true, true]
+const leftyMovesToReplace = [false, false, false, true, true, true, false, false, false, true, true, true, false, false, false, true, true, true]
+const rightyMovesToReplace = [true, true, true, false, false, false, false, false, false, true, true, true, false, false, false, true, true, true]
 
-// initialize the maps
-for (let i=0; i<18; i++) {
-    // moveMap
-    let key1 = outerMoves[i];
-    let value1 = movesToReplace[i] ? wideMoves[i] : outerMoves[i];
-    moveMap.set(key1, value1);
-
-    // rotationMap
-    let key2 = wideMoves[i];
-    let value2 = wideMoveRotations[i];
-    rotationMap.set(key2, value2);
-}
-
-const isWide = (move: string) => {
-    return (move.includes("w"));
-};
+// const isWide = (move: string) => {
+//     return (move.includes("w"));
+// };
 
 // sequence is array of strings, rotation is a string like x and y2
 const rotate = (sequence: string[], rotation: string) => {
@@ -59,13 +49,20 @@ const rotate = (sequence: string[], rotation: string) => {
 };
 
 // assume sequenceString only contains outer block moves
-const massCubeTrans = (sequenceString: string) => {
-    let sequence = sequenceString.split(" ");
-    
-    // if the string contains a "1. " or something from cstimer, remove it
-    if (sequence[0].includes(".")) {
-        sequence.shift();
+const massCubeTrans = (sequenceString: string, movesToReplace: boolean[], lowercaseWide: boolean) => {
+    // initialize the maps
+    for (let i=0; i<18; i++) {
+        // moveMap
+        let key1 = outerMoves[i];
+        let value1 = movesToReplace[i] ? wideMoves[i] : outerMoves[i];
+        moveMap.set(key1, value1);
+
+        // rotationMap
+        let key2 = wideMoves[i];
+        let value2 = wideMoveRotations[i];
+        rotationMap.set(key2, value2);
     }
+    let sequence = sequenceString.split(" ");
 
     // iterate thru every move in the sequence
     for (let i=0; i<sequence.length; i++) {
@@ -104,9 +101,19 @@ const massCubeTrans = (sequenceString: string) => {
         // console.log("so far:", sequence.join(" "));
         // console.log(" ");
     }
-    return sequence.join(' ');
+    if (lowercaseWide) {
+        sequence = sequence.map((move) => {
+            if (move.includes("w")) {
+                return move[0].toLowerCase() + move.replace("w", "").substring(1)
+            }
+            return move
+        })
+    }
+    return sequence.join(" ");
 };
 
-export const translateToOH = (alg: Alg) => {
-    return new Alg(massCubeTrans(alg.toString()))
+export const translateToOH = (alg: Alg, isLefty: boolean, lowercaseWide: boolean) => {
+    if (!alg.toString()) return new Alg("")
+    const movesToReplace = isLefty ? leftyMovesToReplace : rightyMovesToReplace
+    return new Alg(massCubeTrans(alg.toString(), movesToReplace, lowercaseWide))
 }
