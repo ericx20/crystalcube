@@ -1,5 +1,6 @@
 import {
   Box,
+  Center,
   Flex,
   Text,
   IconButton,
@@ -53,17 +54,18 @@ export default function NavBar() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <Text
-            as={RouterLink}
-            to=""
-            textAlign={useBreakpointValue({ base: "center", md: "left" })}
-            fontFamily={"heading"}
-            color={useColorModeValue("gray.800", "white")}
-            fontWeight="semibold"
-          >
-            crystalcube
-          </Text>
-
+          <Center>
+            <Text
+              as={RouterLink}
+              to=""
+              textAlign={useBreakpointValue({ base: "center", md: "left" })}
+              fontFamily={"heading"}
+              color={useColorModeValue("gray.800", "white")}
+              fontWeight="semibold"
+            >
+              crystalcube
+            </Text>
+          </Center>
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
             <DesktopNav />
           </Flex>

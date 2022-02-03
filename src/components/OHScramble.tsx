@@ -101,26 +101,21 @@ export const OHScramble = () => {
           >settings</Button>
         </Flex>
         <Collapse in={showSettings} animateOpacity>
-          <Container w="100vh">
-            <Flex w="100%" bg={useColorModeValue("#EDF2F7", "#2C313D")} rounded="md">
-              {/* TODO: add lefty/righty icons, then separate scramble generate and translate so that changing handedness translates the same scramble differently without new scramble */}
-              <Spacer />
+          <Flex w="100%" bg={useColorModeValue("#EDF2F7", "#2C313D")} rounded="md" p={3}>
+            <HStack spacing={10}>
               <HStack>
                 <Icon as={IoHandLeft}/>
                 <Switch isChecked={!isLefty} onChange={() => setIsLefty(!isLefty)} />
                 <Icon as={IoHandRight}/>
               </HStack>
-              <Spacer />
               <HStack>
                 <Text>Rw</Text>
                 <Switch isChecked={isLowercaseWide} onChange={() => setLowercaseWide(!isLowercaseWide)} />
                 <Text>r</Text>
               </HStack>
-              <Spacer />
-            </Flex>
-          </Container>
+            </HStack>
+          </Flex>
         </Collapse>
-
       </VStack>
   )
 }
