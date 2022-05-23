@@ -1,5 +1,4 @@
-import { Alg, Move } from "cubing/alg";
-import { Handedness } from "../shared/handedness";
+import { Alg } from "cubing/alg";
 // TODO: rewrite this to all be nicer and use the Alg and Move stuff from cubing.js
 // take inspiration from 5cuber
 

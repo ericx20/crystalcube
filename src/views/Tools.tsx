@@ -1,4 +1,3 @@
-import * as React from "react"
 import {
     Routes,
     Route
@@ -11,7 +10,7 @@ export const Tools = () => (
     <>
         {/* <Heading textAlign={"center"}>tools</Heading> */}
         {/* TODO: have a list of tools here */}
-        <Routes>
+        <Routes><Route path="/" element={<Heading textAlign={"center"}>tools</Heading>} />
             <Route path="ohscramble" element={<OHScramble />} />
         </Routes>
     </>

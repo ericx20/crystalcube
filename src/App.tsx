@@ -1,6 +1,4 @@
-import * as React from "react"
 import {
-  Outlet,
   Routes,
   Route,
 } from "react-router-dom"
@@ -17,7 +15,6 @@ import { Home } from "./views/Home"
 import { Algs } from "./views/Algs"
 import { Tools } from "./views/Tools"
 import { Resources } from "./views/Resources"
-// import { OHScramble } from "./components/OHScramble"
 
 const GlobalStyles = css`
 /*
@@ -33,15 +30,13 @@ export const App = () => (
     <Global styles={GlobalStyles} />
     <Flex direction="column" height="100vh" fontSize="xl">
       <NavBar />
-      <Container className="content" h="100%" marginTop="16px">
+      <Container className="content" h="100%" marginTop="32px" maxW="70ch">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="algs/*" element={<Algs />} />
           <Route path="tools/*" element={<Tools />} />
           <Route path="resources/*" element={<Resources />} />
         </Routes>
-        <Outlet />
-        {/* <OHScramble /> */}
       </Container>
     </Flex>
   </ChakraProvider>

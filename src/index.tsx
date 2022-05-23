@@ -13,9 +13,9 @@ import {
 ReactDOM.render(
   <React.StrictMode>
     <ColorModeScript />
-    <BrowserRouter>
+    <BrowserRouter basename="/crystalcube">
       <Routes>
-        <Route path="crystalcube/*" element={<App />} />
+        <Route path="/*" element={<App />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,

@@ -1,17 +1,15 @@
-import * as React from "react"
-import { Button, Heading, Text } from "@chakra-ui/react"
+import { Button, Heading, SlideFade, Text, VStack } from "@chakra-ui/react"
 import { Link as RouterLink } from "react-router-dom"
 export const Home = () => (
-    <>
-        <Heading textAlign={"center"}>home</Heading>
-        <Text>
-            crystalcube is a collection of next-generation online cubing tools
-        </Text>
-        <Text>
-            err0r is actively developing it
-        </Text>
-        <RouterLink to="tools/ohscramble/">
-            <Button>Go to OH scrambler</Button>
-        </RouterLink>
-    </>
+  <SlideFade in>
+    <VStack>
+      <Heading textAlign={"center"}>crystalcube</Heading>
+      <Text>
+        err0r's online cubing tools
+      </Text>
+      <RouterLink to="tools/ohscramble/">
+        <Button>one handed scrambles</Button>
+      </RouterLink>
+    </VStack>
+  </SlideFade>
 )
