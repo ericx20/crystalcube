@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcrystalcube=self.webpackChunkcrystalcube||[]).push([[665],{665:function(n,t,a){a.r(t),a.d(t,{sgsDataPyraminx:function(){return r.u},sgsDataPyraminxFixedOrientation:function(){return r.o}});var r=a(303);a(798),a(2135),a(6900),a(724)}}]);

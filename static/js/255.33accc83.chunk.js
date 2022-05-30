@@ -1,2 +1,0 @@
-"use strict";(self.webpackChunkcrystalcube=self.webpackChunkcrystalcube||[]).push([[255],{3255:function(e,t,n){n.r(t),t.default=function(e){var t=new WeakMap;return{postMessage:e.postMessage.bind(e),addEventListener:function(n,a){var s=function(e){"handleEvent"in a?a.handleEvent({data:e}):a({data:e})};e.on("message",s),t.set(a,s)},removeEventListener:function(n,a){var s=t.get(a);s&&(e.off("message",s),t.delete(a))},start:e.start&&e.start.bind(e)}}}}]);
-//# sourceMappingURL=255.33accc83.chunk.js.map

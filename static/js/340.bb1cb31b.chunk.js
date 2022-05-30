@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkcrystalcube=self.webpackChunkcrystalcube||[]).push([[340],{6340:function(e,n,c){c.r(n),c.d(n,{cachedMegaminxKPuzzleWithoutMO:function(){return t.wO},cachedSGSDataMegaminx:function(){return t.de},sgsDataMegaminx:function(){return t.DI}});var t=c(14);c(798),c(6360),c(6900),c(724)}}]);
