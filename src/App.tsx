@@ -30,13 +30,17 @@ export const App = () => (
     <Global styles={GlobalStyles} />
     <Flex direction="column" height="100vh" fontSize="xl">
       <NavBar />
-      <Container className="content" h="100%" marginTop="32px" maxW="70ch">
+      <Container className="content" h="100%" marginTop="32px" maxW="100vw">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="algs/*" element={<Algs />} />
           <Route path="tools/*" element={<Tools />} />
           <Route path="resources/*" element={<Resources />} />
         </Routes>
+      </Container>
+
+      {/* REMOVE CONTENT CONTAINER */}
+      <Container className="content" h="100%" marginTop="32px" maxW="70ch">
       </Container>
     </Flex>
   </ChakraProvider>

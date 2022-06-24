@@ -5,6 +5,7 @@ import {
   Text,
   IconButton,
   Button,
+  HStack,
   Stack,
   Collapse,
   Icon,
@@ -15,6 +16,7 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  Image,
 } from "@chakra-ui/react"
 import {
   HamburgerIcon,
@@ -24,6 +26,7 @@ import {
 } from "@chakra-ui/icons"
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Link as RouterLink } from "react-router-dom"
+import logo from "./crystalcube.png"
 
 export default function NavBar() {
   const { isOpen, onToggle } = useDisclosure()
@@ -54,10 +57,9 @@ export default function NavBar() {
           />
         </Flex>
         <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <Center>
+          <HStack as={RouterLink} to="">
+            <Image src={logo} boxSize="30px" objectFit="contain"/>
             <Text
-              as={RouterLink}
-              to=""
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily={"heading"}
               color={useColorModeValue("gray.800", "white")}
@@ -65,7 +67,7 @@ export default function NavBar() {
             >
               crystalcube
             </Text>
-          </Center>
+          </HStack>
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
             <DesktopNav />
           </Flex>
@@ -264,11 +266,12 @@ interface NavItem {
   href?: string
 }
 
+// TODO: make this a prop?
 const NAV_ITEMS: Array<NavItem> = [
-  // {
-  //   label: "algs",
-  //   href: "algs/",
-  // },
+  {
+    label: "algs",
+    href: "algs/",
+  },
   {
     label: "tools",
     children: [

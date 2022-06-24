@@ -1,6 +1,7 @@
 import * as React from "react"
 import {
   Button,
+  Box,
   Container,
   Collapse,
   Flex,
@@ -74,7 +75,9 @@ export const OHScramble = () => {
     <SlideFade in>
       <VStack spacing={3}>
         <Heading textAlign="center">one handed scrambles</Heading>
-        <CubeViewer alg={scramble.toString()} mode="2D" />
+        <Box maxW="384px">
+          <CubeViewer alg={scramble.toString()} mode="2D" />
+        </Box>
         <Skeleton isLoaded={!isLoading}>
           <Text
             textAlign="center"
