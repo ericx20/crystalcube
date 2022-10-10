@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom"
 export const Home = () => (
   <SlideFade in>
     <VStack>
-      <Heading textAlign={"center"}>crystalcube</Heading>
+      <Heading>crystalcube</Heading>
       <Text>
         err0r's online cubing tools
       </Text>
