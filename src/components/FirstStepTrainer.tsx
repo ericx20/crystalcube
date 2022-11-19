@@ -18,6 +18,7 @@ import {
   InputRightElement,
   Radio,
   RadioGroup,
+  Skeleton,
   SlideFade,
   Spacer,
   Stack,
@@ -43,24 +44,23 @@ const solverMap: Record<Mode, (scram: string) => Promise<string>> = {
   EOLine: solve_eoline,
 }
 
-// const scrambleIsValid = (scram: string) => {
-//   const tokens = scram.trim().split(" ")
-//   return scram === "" || tokens.every((token) => token.match(/[RULDFB]['2]?$/g));
-// }
-
-export const EOCross = () => {
+export const FirstStepTrainer = () => {
   const [scramble, setScramble] = React.useState("")
   const [solution, setSolution] = React.useState("")
+  const [isLoading, setLoading] = React.useState(false)
   const [mode, setMode] = React.useState(Mode.EOCross)
-
-  const generateSolution = async (scram: string) => {
-    const solver = solverMap[mode]
-    setSolution(await solver(scram))
-  }
 
   const isValid = isValidHTM(scramble)
 
   React.useEffect(() => {
+    const generateSolution = async (scram: string) => {
+      setLoading(true)
+      const solver = solverMap[mode]
+      // TODO: ASYNC IS NOT WORKING!
+      const solution = await solver(scram)
+      setSolution(solution)
+      setLoading(false)
+    }
     if (isValid) {
       generateSolution(scramble)
     }
@@ -70,16 +70,16 @@ export const EOCross = () => {
     <SlideFade in>
       <Center>
         <VStack spacing={3} maxW="lg">
-          <Heading>EOCross solver</Heading>
+          <Heading>first step solver</Heading>
           <Alert status="info">
             <AlertIcon />
-            <AlertTitle>Work in progress!</AlertTitle>
-            <AlertDescription>Will be turned into a trainer</AlertDescription>
+            <AlertTitle>work in progress!</AlertTitle>
+            <AlertDescription>will be turned into a trainer</AlertDescription>
           </Alert>
           <FormControl isInvalid={!isValid}>
             <Input
               value={scramble}
-              placeholder="Insert scramble"
+              placeholder="insert scramble"
               _placeholder={{ opacity: 1, color: "gray.500" }}
               onChange={(e) => setScramble(e.target.value)}
               type="search"
@@ -96,7 +96,9 @@ export const EOCross = () => {
               <Radio value={Mode.EOLine}>EOLine</Radio>
             </Stack>
           </RadioGroup>
-          <Text>Solution: { solution }</Text>
+          <Skeleton isLoaded={!isLoading}>
+            <Text>solution: { solution }</Text>
+          </Skeleton>
         </VStack>
       </Center>
     </SlideFade>

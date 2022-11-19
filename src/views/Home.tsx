@@ -1,15 +1,24 @@
-import { Button, Heading, SlideFade, Text, VStack } from "@chakra-ui/react"
+import { Box, Button, Center, Container, Heading, SlideFade, Text, VStack } from "@chakra-ui/react"
 import { Link as RouterLink } from "react-router-dom"
+import { Cube } from "src/components/Cube"
 export const Home = () => (
   <SlideFade in>
-    <VStack>
-      <Heading>crystalcube</Heading>
-      <Text>
-        err0r's online cubing tools
-      </Text>
-      <RouterLink to="tools/ohscramble/">
-        <Button>one handed scrambles</Button>
-      </RouterLink>
-    </VStack>
+    <Center>
+      <Container maxW='container.md'>
+        <VStack>
+          <Heading>crystalcube</Heading>
+          <Cube />
+          {/* <Text>
+            err0r's online cubing tools
+          </Text> */}
+          {/* <RouterLink to="tools/firststep/">
+            <Button>first step trainer</Button>
+          </RouterLink>
+          <RouterLink to="tools/ohscramble/">
+            <Button>one handed scrambles</Button>
+          </RouterLink> */}
+          </VStack>
+      </Container>
+    </Center>
   </SlideFade>
 )

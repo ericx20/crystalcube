@@ -21,7 +21,7 @@ export const App = () => (
       <Container className="content" h="100%" marginTop="32px" maxW="100vw">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="algs/*" element={<Algs />} />
+          {/* <Route path="algs/*" element={<Algs />} /> */}
           <Route path="tools/*" element={<Tools />} />
           <Route path="resources/*" element={<Resources />} />
         </Routes>

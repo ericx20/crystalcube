@@ -2,6 +2,7 @@
 
 // TODO: improve solver, clean up, convert to TypeScript
 // TODO: somehow cache pruning table or generate when needed, otherwise page load is slowed down significantly
+// TODO: move all export statements to the very bottom, export { eocross_solver, ... }
 
 const solved_fcube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"
 const solved_ifcube = Array(54).fill("").map((_, i) => i)
@@ -142,10 +143,6 @@ function get_masked_cube(ifcube, mask) {
         .map(idx => mask.includes(idx) ? ifcube_idx_to_fcube_face(idx) : "X")
         .join("")
 }
-
-// vis(get_masked_cube(create_ifcube("L' U' L D"), fb_facelets))
-
-
 // ----- PRUNING -----
 
 // generate pruning table
@@ -212,7 +209,7 @@ function solve_dfs_with_pruning(solver, cube, solution, depth_remaining) {
 }
 
 // this now takes in a masked_cube
-function solve_iddfs2(solver, masked_cube, depth_limit) {
+function solve_iddfs(solver, masked_cube, depth_limit) {
     for (let depth = 0; depth <= depth_limit; depth++) {
         let solution = solve_dfs_with_pruning(solver, masked_cube, [], depth)
         if (solution !== null) return solution
@@ -226,29 +223,6 @@ const eo_facelets =
         S("D",2),S("D",4),S("D",6),S("D",8),
         S("F",4),S("F",6),S("B",4),S("B",6),
     ]
-
-// special for EO!
-function get_eo_masked_cube(ifcube) {
-    return [...ifcube] // deep clone because .join mutates
-        .map(idx => eo_facelets.includes(idx) ? "o" : "X")
-        .join("")
-}
-
-const eo_pruning_table = gen_pruning_table([get_eo_masked_cube(solved_ifcube)], 7, htm_moves)
-
-const eo_solver = {
-    is_solved: (fcube) => eo_pruning_table[fcube] === 0,
-    moves: htm_moves,
-    pruning_table: eo_pruning_table,
-    pruning_depth: 7,
-}
-
-function solve_eo(scram) {
-    const if_cube = create_ifcube(scram)
-    const eo_masked_cube = get_eo_masked_cube(if_cube)
-    const solution = solve_iddfs2(eo_solver, eo_masked_cube, 10)
-    return solution
-}
 
 // special for EO!
 function get_eocross_masked_cube(ifcube) {
@@ -270,10 +244,10 @@ const eocross_solver = {
     pruning_depth: 4,
 }
 
-export async function solve_eocross(scram) {
+export function solve_eocross(scram) {
     const if_cube = create_ifcube(scram)
     const eocross_masked_cube = get_eocross_masked_cube(if_cube)
-    return await solve_iddfs2(eocross_solver, eocross_masked_cube, 10)
+    return solve_iddfs(eocross_solver, eocross_masked_cube, 10)
 }
 
 // ----- eoline solver -----
@@ -302,12 +276,13 @@ const eoline_solver = {
     pruning_depth: 4,
 }
 
-export async function solve_eoline(scram) {
+export function solve_eoline(scram) {
     const if_cube = create_ifcube(scram)
     const eoline_masked_cube = get_eoline_masked_cube(if_cube)
-    return await solve_iddfs2(eoline_solver, eoline_masked_cube, 10)
+    return solve_iddfs(eoline_solver, eoline_masked_cube, 10)
 }
 
 export function isValidHTM(scram) {
+    // either the scramble is empty, OR when you split the sequence by spaces, each token is a valid move
     return scram === "" || scram.trim().split(" ").every((token) => htm_moves.includes(token))
 }

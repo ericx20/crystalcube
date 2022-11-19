@@ -268,16 +268,17 @@ interface NavItem {
 
 // TODO: make this a prop?
 const NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "algs",
-    href: "algs/",
-  },
+  // TODO: alg page
+  // {
+  //   label: "algs",
+  //   href: "algs/",
+  // },
   {
     label: "tools",
     children: [
       {
-        label: "eocross",
-        href: "tools/eocross/",
+        label: "first step trainer",
+        href: "tools/firststep/",
       },
       {
         label: "one handed scrambles",
