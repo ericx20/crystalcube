@@ -10,6 +10,7 @@
     "@emotion/core": "^11.0.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@react-three/drei": "^9.41.0",
     "@react-three/fiber": "^8.8.10",
     "@testing-library/jest-dom": "^5.9.0",
     "@testing-library/react": "^10.2.1",
