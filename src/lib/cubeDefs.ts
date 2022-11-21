@@ -3,7 +3,8 @@
 export const FACES = ["R", "L", "U", "D", "F", "B"] as const
 export type Face = typeof FACES[number]
 export type Facelet = Face | "O" | "X"
-export type IndexedFacelet = number // int from 0 to 53
+export type IndexedFacelet = number // int from 0 to 53, represents a facelet
+export type FaceletIndex = number // int from 0 to 53, represents a facelet's location
 export type Move = `${Face}${"'" | "2" | ""}`
 export type Alg = Array<Move>
 export type Perm<T = number> = [T, T]
@@ -28,8 +29,17 @@ export type IndexedFaceletCube = Array<IndexedFacelet>
 
 export type Cube = FaceletCube | IndexedFaceletCube
 
+// The order of edges is the same as reading a standard cube net from left to right
+// UB, UL, UR, UF, BL, FL, FR, BR, DF, DL, DR, DB
+export type EO = Array<boolean>
+
+export interface Mask {
+  solvedFaceletIndices: Readonly<Array<IndexedFacelet>>
+  eoFaceletIndices: Readonly<Array<IndexedFacelet>>
+}
+
 // ----- SOLVER -----
 export interface SolverConfig {
-  moveset: Array<Move>
+  moveset: Readonly<Array<Move>>
   // TODO
 }

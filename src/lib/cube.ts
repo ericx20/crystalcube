@@ -1,5 +1,5 @@
-import { FaceletCube, IndexedFaceletCube } from "./cubeDefs"
-import type { Cube, Move, Perm } from "./cubeDefs"
+import { FACES, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube } from "./cubeDefs"
+import type { Cube, EO, Mask, Move, Perm } from "./cubeDefs"
 
 export const SOLVED_FACELET_CUBE: Readonly<FaceletCube> = [
                  "U", "U", "U",
@@ -47,8 +47,9 @@ export function applyMoves<C extends Cube>(cube: C, moves: Array<Move>): C {
   return moves.reduce(applyMove, cube)
 }
 
-export function colorOfIndexedFacelet(index: number): string {
-  return "UUULFRBLFRBLFRBDDD"[Math.floor(index / 3)]
+export function colorOfIndexedFacelet(index: number): Facelet {
+  const table: Array<Facelet> = ["U", "U", "U", "L", "F", "R", "B", "L", "F", "R", "B", "L", "F", "R", "B", "D", "D", "D"]
+  return table[Math.floor(index / 3)]
 }
 
 function faceletCubeToString(cube: FaceletCube) {
@@ -57,11 +58,6 @@ function faceletCubeToString(cube: FaceletCube) {
 
 type PruningTable = { [k: string]: number }
 
-// TODO: calculate how long it takes to gen a pruning table before/after the refactor
-// If arrays are faster, yay
-// If slower, then we'll immediately serialize the solvedStates array into strings
-// and work exclusively with strings, and generalize applyMove and applyMoves to work on
-// the string representation (it should already work, just add the type)
 export function genPruningTable(solvedStates: Array<FaceletCube>, depth: number, moveset: Array<Move>): PruningTable {
   let pruningTable: PruningTable = {}
   let previousFrontier: Array<FaceletCube> = [...solvedStates]
@@ -70,7 +66,7 @@ export function genPruningTable(solvedStates: Array<FaceletCube>, depth: number,
   for (let i = 1; i <= depth; i++) {
     const frontier: Array<FaceletCube> = []
     for (const state of previousFrontier) {
-      // for every previous state... try every move on it
+      // for every previous state: try all possible moves on it
       for (const move of moveset) {
         const newState = applyMove(state, move)
         const newStateString = faceletCubeToString(newState)
@@ -86,14 +82,52 @@ export function genPruningTable(solvedStates: Array<FaceletCube>, depth: number,
   return pruningTable
 }
 
-// ----- TESTING -----
+// EO recognition:
+// good edge: U/D/O facelet in purple group, and/or L/R facelet in black group
 
-// TODO: keep refactoring more of solver.js
-// TODO: test pruning table
+// Every edge has two facelets: one that is currently inside a "purple" group, and one currently in a "black" group
+// For each edge, these arrays categorize its two facelets into the two groups
+// The edges are indexed in the order [UB, UL, UR, UF, BL, FL, FR, BR, DF, DL, DR, DB]
+const EDGE_PURPLE_FACELET_INDICES: Readonly<Array<FaceletIndex>> = [1, 3, 5, 7, 32, 24, 26, 30, 46, 48, 50, 52]
+const EDGE_BLACK_FACELET_INDICES: Readonly<Array<FaceletIndex>> = [19, 10, 16, 13, 21, 23, 27, 29, 37, 34, 40, 43]
 
-// const sune: Array<Move> = ["R", "U", "R'", "U", "R", "U2", "R'"]
+const GOOD_PURPLE_GROUP_FACELETS: Readonly<Array<Facelet>> = ["U", "D", "O"]
+const GOOD_BLACK_GROUP_FACELETS: Readonly<Array<Facelet>> = ["L", "R"]
 
-// let cube: FaceletCube = [...SOLVED_FACELET_CUBE]
-// cube = applyMoves(cube, sune)
+export function getFaceletCubeEO(cube: FaceletCube): EO {
+  return [...Array(12).keys()].map(index => {
+    const purpleGroupFacelet = cube[EDGE_PURPLE_FACELET_INDICES[index]]
+    const blackGroupFacelet = cube[EDGE_BLACK_FACELET_INDICES[index]]
+    return (GOOD_PURPLE_GROUP_FACELETS.includes(purpleGroupFacelet) || GOOD_BLACK_GROUP_FACELETS.includes(blackGroupFacelet))
+  })
+}
 
-// console.log(cube)
+export const CROSS_FACELETS: Readonly<Array<FaceletIndex>> = [4, 22, 25, 28, 31, 34, 37, 40, 43, 46, 48, 49, 50, 52]
+export const EO_FACELETS: Readonly<Array<FaceletIndex>> = [1, 3, 5, 7, 24, 26, 30, 32, 46, 48, 50, 52]
+
+
+export function getMaskedFaceletCube(mask: Mask): FaceletCube {
+  return SOLVED_INDEXED_FACELET_CUBE.map(faceletIdx => {
+    if (mask.solvedFaceletIndices.includes(faceletIdx)) {
+      return colorOfIndexedFacelet(faceletIdx)
+    }
+    if (mask.eoFaceletIndices.includes(faceletIdx)) {
+      return "O"
+    }
+    return "X"
+  })
+}
+
+export const EOCROSS_MASK: Mask = {
+  solvedFaceletIndices: CROSS_FACELETS,
+  eoFaceletIndices: EO_FACELETS,
+}
+
+const eocrossMaskedCube = getMaskedFaceletCube(EOCROSS_MASK)
+
+// TODO: replace with a safer alternative
+const htmMoves = FACES.flatMap(m => [m, m + "'", m + "2"]) as Array<Move>
+
+// const newTable = genPruningTable([eocrossMaskedCube], 4, htmMoves)
+
+// TODO: keep refactoring more of solver.js, move the solver parts to a web worker

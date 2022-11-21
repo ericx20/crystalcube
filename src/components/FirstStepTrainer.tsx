@@ -4,35 +4,23 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Button,
-  Box,
   Center,
-  Container,
-  Collapse,
-  Flex,
   FormControl,
   FormErrorMessage,
   Heading,
   Input,
-  InputGroup,
-  InputRightElement,
   Radio,
   RadioGroup,
   Skeleton,
   SlideFade,
-  Spacer,
   Stack,
-  Switch,
   Text,
   VStack,
-  useClipboard,
-  useColorModeValue,
-  useDisclosure,
 } from "@chakra-ui/react"
-import { Alg } from "cubing/alg";
-import { randomScrambleForEvent } from "cubing/scramble"
+// import { Alg } from "cubing/alg";
+// import { randomScrambleForEvent } from "cubing/scramble"
 import { solve_eocross, solve_eoline, isValidHTM } from "src/utils/solver"
-import { CubeViewer } from "./CubeViewer";
+// import { CubeViewer } from "./CubeViewer";
 
 enum Mode {
   EOCross = "EOCross",
@@ -64,7 +52,7 @@ export const FirstStepTrainer = () => {
     if (isValid) {
       generateSolution(scramble)
     }
-  }, [scramble, mode])
+  }, [scramble, mode, isValid])
 
   return (
     <SlideFade in>

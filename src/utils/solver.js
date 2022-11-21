@@ -121,7 +121,7 @@ const cross_facelets =
         S("L",8), S("F",8), S("R",8), S("B",8),
     ]
 
-    const htm_moves = [..."RUFDLB"].map(m => [m, m + "'", m + "2"]).flat()
+const htm_moves = [..."RUFDLB"].map(m => [m, m + "'", m + "2"]).flat()
 
 // finds the face colour of a sticker index
 const ifcube_idx_to_fcube_face = (idx) => "URFDLB"[ Math.floor(idx / 9) ]
@@ -150,7 +150,7 @@ function get_masked_cube(ifcube, mask) {
 // the key is a (masked) fcube
 // the value is the min. number of moves needed to solve
 // solved_states is an array of states to be considered "solved" in case there's multiple??
-function gen_pruning_table(solved_states, depth, moveset) {
+export function gen_pruning_table(solved_states, depth, moveset) {
     let pruning_table = {}
     let previous_frontier = solved_states
     solved_states.forEach(s => pruning_table[s] = 0)
@@ -225,7 +225,7 @@ const eo_facelets =
     ]
 
 // special for EO!
-function get_eocross_masked_cube(ifcube) {
+export function get_eocross_masked_cube(ifcube) {
     return [...ifcube] // deep clone because .join mutates
         .map(idx => {
             if (cross_facelets.includes(idx)) return ifcube_idx_to_fcube_face(idx)
