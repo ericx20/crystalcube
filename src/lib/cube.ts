@@ -91,6 +91,8 @@ export function genPruningTable(solvedStates: Array<FaceletCube>, depth: number,
 const EDGE_PURPLE_FACELET_INDICES: Readonly<Array<FaceletIndex>> = [1, 3, 5, 7, 32, 24, 26, 30, 46, 48, 50, 52]
 const EDGE_BLACK_FACELET_INDICES: Readonly<Array<FaceletIndex>> = [19, 10, 16, 13, 21, 23, 27, 29, 37, 34, 40, 43]
 
+// TODO: generalize so that instead of comparing facelets to absolute colours U/D, L/R,
+// we sample the colours of the centres (check the locations of the U/D, L/R centres)
 const GOOD_PURPLE_GROUP_FACELETS: Readonly<Array<Facelet>> = ["U", "D", "O"]
 const GOOD_BLACK_GROUP_FACELETS: Readonly<Array<Facelet>> = ["L", "R"]
 

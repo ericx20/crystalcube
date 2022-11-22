@@ -1,6 +1,6 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from "@react-three/drei";
-import type { FaceletCube, Mask, Move, Piece } from "src/lib/cubeDefs"
+import type { Mask, Move, Piece } from "src/lib/cubeDefs"
 import { SOLVED_FACELET_CUBE, applyMoves, getMaskedFaceletCube, getFaceletCubeEO } from 'src/lib/cube';
 import Cubie, { CubieFacelets } from "./Cubie"
 
@@ -23,7 +23,7 @@ export function Cube({ moves = [], mask }: CubeProps) {
   const facelets = applyMoves(solvedFaceletState, moves)
   const eo = getFaceletCubeEO(facelets)
   const cubies: Array<CubieData> = [
-    { name: "DBL",                   position: [-1, -1, -1], cubieFacelets: { D: facelets[51], B: facelets[42], L: facelets[33] } },
+    { name: "DBL",                   position: [-1, -1, -1], cubieFacelets: { D: facelets[51], B: facelets[44], L: facelets[33] } },
     { name: "DL",  oriented: eo[ 9], position: [-1, -1,  0], cubieFacelets: { D: facelets[48], L: facelets[34] } },
     { name: "DFL",                   position: [-1, -1,  1], cubieFacelets: { D: facelets[45], F: facelets[36], L: facelets[35] } },
     { name: "BL",  oriented: eo[ 4], position: [-1,  0, -1], cubieFacelets: { B: facelets[32], L: facelets[21] } },
@@ -47,7 +47,7 @@ export function Cube({ moves = [], mask }: CubeProps) {
     { name: "R",                     position: [ 1,  0,  0], cubieFacelets: { R: facelets[28] } },
     { name: "FR",  oriented: eo[ 6], position: [ 1,  0,  1], cubieFacelets: { F: facelets[26], R: facelets[27] } },
     { name: "UBR",                   position: [ 1,  1, -1], cubieFacelets: { U: facelets[ 2], B: facelets[18], R: facelets[17] } },
-    { name: "UR",  oriented: eo[ 2], position: [ 1,  1,  0], cubieFacelets: { U: facelets[ 5], R: facelets[27]} },
+    { name: "UR",  oriented: eo[ 2], position: [ 1,  1,  0], cubieFacelets: { U: facelets[ 5], R: facelets[16]} },
     { name: "UFR",                   position: [ 1,  1,  1], cubieFacelets: { U: facelets[ 8], F: facelets[14], R: facelets[15] } },
   ]
 
@@ -61,9 +61,9 @@ export function Cube({ moves = [], mask }: CubeProps) {
         enablePan={false}
         dampingFactor={0.3}
       />
-        {cubies.map(({ name, oriented, position, cubieFacelets }) => {
-          return <Cubie key={name} oriented={oriented} position={position} cubieFacelets={cubieFacelets} />
-        })}
+      {cubies.map(({ name, oriented, position, cubieFacelets }) => {
+        return <Cubie key={name} oriented={oriented} position={position} cubieFacelets={cubieFacelets} />
+      })}
     </Canvas>
   )
 }
