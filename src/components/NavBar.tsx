@@ -274,6 +274,10 @@ const NAV_ITEMS: Array<NavItem> = [
   //   href: "algs/",
   // },
   {
+    label: "trainer",
+    href: "trainer/",
+  },
+  {
     label: "tools",
     children: [
       {

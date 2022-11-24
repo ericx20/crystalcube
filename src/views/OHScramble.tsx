@@ -23,7 +23,7 @@ import { IoHandLeft, IoHandRight } from "react-icons/io5"
 import { Alg } from "cubing/alg";
 import { randomScrambleForEvent } from "cubing/scramble"
 import { translateToOH } from "../utils/translateToOH"
-import { CubeViewer } from "./CubeViewer";
+import { CubeViewer } from "../components/CubeViewer";
 
 export const OHScramble = () => {
   const [rawScramble, setRawScramble] = React.useState(new Alg(""))

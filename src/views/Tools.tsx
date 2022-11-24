@@ -4,7 +4,7 @@ import {
 } from "react-router-dom"
 import { Heading } from "@chakra-ui/react"
 import { FirstStepTrainer } from "../components/FirstStepTrainer"
-import { OHScramble } from "../components/OHScramble"
+import { OHScramble } from "./OHScramble"
 
 // TODO: remove this?
 export const Tools = () => (

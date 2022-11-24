@@ -1,5 +1,6 @@
 import { Button, Center, Container, Heading, SlideFade, Text, VStack } from "@chakra-ui/react"
 import { Link as RouterLink } from "react-router-dom"
+
 export const Home = () => (
   <SlideFade in>
     <Center>

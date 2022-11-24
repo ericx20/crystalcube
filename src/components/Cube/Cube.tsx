@@ -16,12 +16,13 @@ interface CubieData {
 interface CubeProps {
   moves?: Array<Move>
   mask?: Mask
+  showEO?: boolean
 }
 
-export function Cube({ moves = [], mask }: CubeProps) {
+export function Cube({ moves = [], mask, showEO }: CubeProps) {
   const solvedFaceletState = mask ? getMaskedFaceletCube(mask) : [...SOLVED_FACELET_CUBE]
   const facelets = applyMoves(solvedFaceletState, moves)
-  const eo = getFaceletCubeEO(facelets)
+  const eo = showEO ? getFaceletCubeEO(facelets) : Array<boolean>(12).fill(true)
   const cubies: Array<CubieData> = [
     { name: "DBL",                   position: [-1, -1, -1], cubieFacelets: { D: facelets[51], B: facelets[44], L: facelets[33] } },
     { name: "DL",  oriented: eo[ 9], position: [-1, -1,  0], cubieFacelets: { D: facelets[48], L: facelets[34] } },
