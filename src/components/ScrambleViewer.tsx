@@ -9,7 +9,7 @@ export default function ScrambleViewer({ scramble }: ScrambleViewerProps) {
   return (
     <Container maxW="container.lg">
       <Card p="1.5rem">
-        <Heading size="lg">scramble</Heading>
+        <Heading size="md">scramble</Heading>
         <Text>{ scramble.join(" ") }</Text>
       </Card>
     </Container>

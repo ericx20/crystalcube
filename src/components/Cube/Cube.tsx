@@ -19,7 +19,7 @@ interface CubeProps {
   showEO?: boolean
 }
 
-export function Cube({ moves = [], mask, showEO }: CubeProps) {
+export default function Cube({ moves = [], mask, showEO }: CubeProps) {
   const solvedFaceletState = mask ? getMaskedFaceletCube(mask) : [...SOLVED_FACELET_CUBE]
   const facelets = applyMoves(solvedFaceletState, moves)
   const eo = showEO ? getFaceletCubeEO(facelets) : Array<boolean>(12).fill(true)

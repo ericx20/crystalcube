@@ -39,7 +39,14 @@ export interface Mask {
 }
 
 // ----- SOLVER -----
+
 export interface SolverConfig {
-  moveset: Readonly<Array<Move>>
-  // TODO
+  moveset: Array<Move>
+  mask: Mask
+  isSolved: (cube: FaceletCube) => boolean
+  pruningTable: PruningTable
+  pruningDepth: number
+  depthLimit: number
 }
+
+export type PruningTable = { [k: string]: number }

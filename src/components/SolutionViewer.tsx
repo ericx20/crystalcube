@@ -1,6 +1,8 @@
-import { Cube } from "src/components/Cube/Cube"
-import { Card, Container, Heading, Text } from "@chakra-ui/react"
+import * as React from "react"
+import { Box, Card, Container, Heading, Text } from "@chakra-ui/react"
 import type { Move, Mask } from "src/lib/cubeDefs"
+
+const Cube = React.lazy(() => import("src/components/Cube/Cube"))
 
 interface SolutionViewerProps {
   scramble: Array<Move>
@@ -13,9 +15,15 @@ export default function SolutionViewer({ scramble, solution, mask, showEO }: Sol
   return (
     <Container maxW="container.lg">
       <Card p="1.5rem" /* style={{ filter: "blur(15px)" }} */>
-        <Heading size="lg">solution</Heading>
+        <Heading size="md">solution</Heading>
         <Text>{ solution.join(" ") }</Text>
-        <Cube moves={scramble} mask={mask} showEO={showEO} />
+        {/* TODO: fix suspense not working after first render */}
+        {/* is it because <Cube> loads cube.ts? */}
+        <React.Suspense fallback={<p>Loading</p>}>
+          <Box h={400}>
+            <Cube moves={scramble} mask={mask} showEO={showEO} />
+          </Box>
+        </React.Suspense>
       </Card>
     </Container>
   )

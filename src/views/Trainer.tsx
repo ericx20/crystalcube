@@ -8,7 +8,9 @@ import SolutionViewer from "src/components/SolutionViewer"
 const scram = "R' U' D' R' F' R2 D R2 D B' F2 D2 B2 D R' U' L U' D' B2 L' B' D L2 B".split(" ") as Array<Move>
 const solution = "R2 F' B R U' B' D' B' R2".split(" ") as Array<Move>
 
-
+// n-flip and n-move difficulty have to be mutually exclusive
+// it would be very hard to generate n-flip with a specified difficulty
+// also n-flip only allows for z/z2 colour neutrality at most
 export default function Trainer() {
   return (
     <SlideFade in>

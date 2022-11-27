@@ -1,5 +1,5 @@
 import { FACES, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube } from "./cubeDefs"
-import type { Cube, EO, Mask, Move, Perm } from "./cubeDefs"
+import type { Cube, EO, Mask, Move, Perm, PruningTable, SolverConfig } from "./cubeDefs"
 
 export const SOLVED_FACELET_CUBE: Readonly<FaceletCube> = [
                  "U", "U", "U",
@@ -56,7 +56,6 @@ function faceletCubeToString(cube: FaceletCube) {
   return cube.join("")
 }
 
-type PruningTable = { [k: string]: number }
 
 export function genPruningTable(solvedStates: Array<FaceletCube>, depth: number, moveset: Array<Move>): PruningTable {
   let pruningTable: PruningTable = {}
@@ -132,4 +131,47 @@ const htmMoves = FACES.flatMap(m => [m, m + "'", m + "2"]) as Array<Move>
 
 // const newTable = genPruningTable([eocrossMaskedCube], 4, htmMoves)
 
-// TODO: keep refactoring more of solver.js, move the solver parts to a web worker
+// Depth limited search
+// NOTE: MUTATES THE SOLUTION ARRAY
+function solveDLS(solver: SolverConfig, cube: FaceletCube, solution: Array<Move>, depthRemaining: number): Array<Move> | null {
+  if (solver.isSolved(cube)) return solution // cube is solved! return what we got
+  
+  // pruning
+  let lowerBound = solver.pruningTable[faceletCubeToString(cube)] // least # moves needed to solve this scram
+  if (lowerBound === undefined) {
+    // if the pruning depth was 4 and it doesn't have our cube state,
+    // then we need 5 or more moves to solve the cube
+    lowerBound = solver.pruningDepth + 1
+  }
+  if (lowerBound > depthRemaining) {
+    return null
+  }
+
+  // cube is unsolved but we still have some remaining depth
+  for (const move of solver.moveset) {
+    if (solution.length && move[0] === solution[solution.length - 1][0]) {
+      continue // optimization: never use the same layer in consecutive moves
+    }
+    // try every available move by recursively calling solve_dfs
+    solution.push(move)
+    let result = solveDLS(
+      solver,
+      applyMove(cube, move), // copy of cube + the move done
+      solution,
+      depthRemaining - 1
+    )
+    // if a recursive call found a solution, then propagate it up
+    if (result !== null) return result
+    solution.pop()
+  }
+  // ok we tried everything but nothing was found
+  return null
+}
+
+function solve(solver: SolverConfig, cube: FaceletCube) {
+  for (let depth = 0; depth <= solver.depthLimit; depth++) {
+    const solution = solveDLS(solver, cube, [], depth)
+    if (solution !== null) return solution
+  }
+  return null
+}
