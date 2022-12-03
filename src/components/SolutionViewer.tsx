@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Box, Card, Container, Heading, Text } from "@chakra-ui/react"
+import { Box, Card, Container, Heading, Input, Text } from "@chakra-ui/react"
 import type { Move, Mask } from "src/lib/cubeDefs"
 
 const Cube = React.lazy(() => import("src/components/Cube/Cube"))

@@ -226,7 +226,7 @@ const eo_facelets =
 
 // special for EO!
 export function get_eocross_masked_cube(ifcube) {
-    return [...ifcube] // deep clone because .join mutates
+    return [...ifcube]
         .map(idx => {
             if (cross_facelets.includes(idx)) return ifcube_idx_to_fcube_face(idx)
             if (eo_facelets.includes(idx)) return "o"

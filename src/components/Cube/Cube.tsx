@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from "@react-three/drei";
 import type { Mask, Move, Piece } from "src/lib/cubeDefs"
-import { SOLVED_FACELET_CUBE, applyMoves, getMaskedFaceletCube, getFaceletCubeEO } from 'src/lib/cube';
+import { SOLVED_INDEXED_FACELET_CUBE, SOLVED_FACELET_CUBE, applyMoves, getMaskedFaceletCube, getFaceletCubeEO } from 'src/lib/cube';
 import Cubie, { CubieFacelets } from "./Cubie"
 
 const checkerboard: Array<Move> = ["R2", "L2", "U2", "D2", "F2", "B2"]
@@ -20,7 +20,7 @@ interface CubeProps {
 }
 
 export default function Cube({ moves = [], mask, showEO }: CubeProps) {
-  const solvedFaceletState = mask ? getMaskedFaceletCube(mask) : [...SOLVED_FACELET_CUBE]
+  const solvedFaceletState = mask ? getMaskedFaceletCube(SOLVED_INDEXED_FACELET_CUBE, mask) : [...SOLVED_FACELET_CUBE]
   const facelets = applyMoves(solvedFaceletState, moves)
   const eo = showEO ? getFaceletCubeEO(facelets) : Array<boolean>(12).fill(true)
   const cubies: Array<CubieData> = [

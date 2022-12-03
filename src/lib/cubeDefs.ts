@@ -7,7 +7,7 @@ export type IndexedFacelet = number // int from 0 to 53, represents a facelet
 export type FaceletIndex = number // int from 0 to 53, represents a facelet's location
 export type Move = `${Face}${"'" | "2" | ""}`
 export type Alg = Array<Move>
-export type Perm<T = number> = [T, T]
+export type Perm<T = FaceletIndex> = [T, T]
 export type Piece = Exclude<`${"U" | "D" | ""}${"F" | "B" | ""}${"R" | "L" | ""}`, "">
 
 
@@ -43,8 +43,8 @@ export interface Mask {
 export interface SolverConfig {
   moveset: Array<Move>
   mask: Mask
-  isSolved: (cube: FaceletCube) => boolean
-  pruningTable: PruningTable
+  // isSolved: (cube: FaceletCube) => boolean
+  pruningTable: PruningTable // TODO: make this a pruning table ID
   pruningDepth: number
   depthLimit: number
 }
