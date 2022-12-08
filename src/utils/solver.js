@@ -282,6 +282,9 @@ export function solve_eoline(scram) {
     return solve_iddfs(eoline_solver, eoline_masked_cube, 10)
 }
 
+/**
+ * @deprecated
+ */
 export function isValidHTM(scram) {
     // either the scramble is empty, OR when you split the sequence by spaces, each token is a valid move
     return scram === "" || scram.trim().split(" ").every((token) => htm_moves.includes(token))

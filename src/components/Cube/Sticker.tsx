@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type { Face, Facelet } from "src/lib/cubeDefs"
+import type { Face, Facelet } from "src/lib/types"
 
 const colorScheme: { [name in Facelet]: string } = {
   R: "red",

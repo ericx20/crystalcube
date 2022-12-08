@@ -12,7 +12,6 @@ import NavBar from "./components/NavBar"
 import { Home } from "./views/Home"
 import Trainer from "./views/Trainer"
 import { Tools } from "./views/Tools"
-import { Resources } from "./views/Resources"
 
 export const App = () => (
   <ChakraProvider theme={theme}>
@@ -23,7 +22,7 @@ export const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="trainer/*" element={<Trainer />} />
             <Route path="tools/*" element={<Tools />} />
-            <Route path="resources/*" element={<Resources />} />
+            <Route path="secrettestpage/*" element={<p>Hello</p>} />
           </Routes>
         </Container>
     </Flex>

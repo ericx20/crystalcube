@@ -1,6 +1,6 @@
 import { RoundedBox } from "@react-three/drei";
-import { FACES } from "src/lib/cubeDefs"
-import type { Face, Facelet } from "src/lib/cubeDefs"
+import { FACES } from "src/lib/constants"
+import type { Face, Facelet } from "src/lib/types"
 import Sticker from "./Sticker"
 
 export type CubieFacelets = { [f in Face]?: Facelet }

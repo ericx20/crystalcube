@@ -1,5 +1,5 @@
 import { Card, Container, Heading, Text } from "@chakra-ui/react"
-import type { Move } from "src/lib/cubeDefs"
+import type { Move } from "src/lib/types"
 
 interface ScrambleViewerProps {
   scramble: Array<Move>,

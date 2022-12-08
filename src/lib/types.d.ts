@@ -1,6 +1,8 @@
+import { FACES, SOLVER_NAMES } from "./constants"
+
+
 // ----- FACES AND MOVES -----
 
-export const FACES = ["R", "L", "U", "D", "F", "B"] as const
 export type Face = typeof FACES[number]
 export type Facelet = Face | "O" | "X"
 export type IndexedFacelet = number // int from 0 to 53, represents a facelet
@@ -41,10 +43,9 @@ export interface Mask {
 // ----- SOLVER -----
 
 export interface SolverConfig {
+  name: string
   moveset: Array<Move>
   mask: Mask
-  // isSolved: (cube: FaceletCube) => boolean
-  pruningTable: PruningTable // TODO: make this a pruning table ID
   pruningDepth: number
   depthLimit: number
 }
