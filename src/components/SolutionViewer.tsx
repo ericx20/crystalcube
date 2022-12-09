@@ -18,10 +18,8 @@ export default function SolutionViewer({ scramble, solution, mask, showEO, child
       <Card p="1.5rem" /* style={{ filter: "blur(15px)" }} */>
         <Heading size="md">solution</Heading>
         <Text>{ solution ? solution.join(" ") : "No solution found" }</Text>
-        {/* TODO: fix suspense not working after first render */}
-        {/* is it because <Cube> loads cube.ts? */}
         <React.Suspense fallback={<p>Loading...</p>}>
-          <Box h={400}>
+          <Box h={400} borderWidth="1px" borderRadius="lg">
             <Cube moves={scramble} mask={mask} showEO={showEO} />
           </Box>
         </React.Suspense>

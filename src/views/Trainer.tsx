@@ -12,6 +12,22 @@ const parseAlg = (algString: string): Array<Move> => {
   return isValidNotation(algString) ? algString.split(" ").filter(m => m) as Array<Move> : []
 }
 
+function useSpacebar(callback: () => any) {
+  const keyDownHandler = React.useCallback((event: KeyboardEvent) => {
+    if (event.key === " ") {
+      event.preventDefault()
+      callback()
+    }
+  }, [callback])
+
+  React.useEffect(() => {
+    window.addEventListener("keyup", keyDownHandler)
+    return () => {
+      window.removeEventListener("keyup", keyDownHandler)
+    }
+  }, [callback, keyDownHandler])
+}
+
 // n-flip and n-move difficulty have to be mutually exclusive
 // it would be very hard to generate n-flip with a specified difficulty
 // also n-flip only allows for z/z2 colour neutrality at most
@@ -22,6 +38,8 @@ export default function Trainer() {
     const scramble = parseAlg(rawScramble.toString())
     setScram(scramble)
   }, [])
+
+  useSpacebar(getScramble)
 
   // this fires twice when Trainer is loaded, don't worry
   // React Strict mode makes components render twice
