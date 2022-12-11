@@ -2,6 +2,7 @@ import * as React from "react"
 import { Box, Button, Card, Container, Heading, Icon, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, VStack, Text, Wrap } from "@chakra-ui/react"
 import type { Move, Mask } from "src/lib/types"
 import { VscCircleFilled } from "react-icons/vsc"
+import { IoCube, IoCubeOutline } from "react-icons/io5"
 
 const Cube = React.lazy(() => import("src/components/Cube/Cube"))
 
@@ -17,7 +18,7 @@ function SolutionMoveLabel({ move, isSelected, isPreviousMove }: SolutionMoveLab
     <Box w={6} h={6}>
       <Text
         colorScheme={isSelected ? "blue" : "gray"}
-        fontSize="sm"
+        fontSize="md"
         textAlign="center"
         fontWeight={isSelected ? "bold" : "normal"}
         opacity={isPreviousMove ? 0.7 : 1}
@@ -70,6 +71,7 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
   const [selectedMoveIndex, setSelectedMoveIndex] = React.useState(-1) // -1 means the at the start before any moves
   const [hoveredMoveIndex, setHoveredMoveIndex] = React.useState<number | null>(null)
   const currentIndex = hoveredMoveIndex ?? selectedMoveIndex
+  const atSolutionEnd = !solution || selectedMoveIndex === solution.length - 1
 
   React.useEffect(() => {
     setSelectedMoveIndex(-1)
@@ -111,7 +113,7 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
       {/* Mobile version */}
       <Box pt={3} pb={6} px={2} display={{ sm: "none" }}>
         <Slider value={selectedMoveIndex} min={-1} max={solution.length - 1} onChange={(val) => setSelectedMoveIndex(val)}>
-          <SliderMark value={-1} ml="-0.75rem" mt={2.5}>
+          <SliderMark value={-1} ml="-0.75rem" mt={3.5}>
             <SolutionMoveLabel
               move={null}
               isSelected={selectedMoveIndex === -1}
@@ -119,7 +121,7 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
             />
           </SliderMark>
           {solution.map((move, index) => (
-            <SliderMark key={index} value={index} ml="-0.75rem" mt={2}>
+            <SliderMark key={index} value={index} ml="-0.75rem" mt={3}>
               <SolutionMoveLabel
                 move={move}
                 isSelected={selectedMoveIndex === index}
@@ -130,7 +132,9 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
           <SliderTrack>
             <SliderFilledTrack />
           </SliderTrack>
-          <SliderThumb boxSize={4} />
+          <SliderThumb boxSize={6}>
+            <Icon as={atSolutionEnd ? IoCube : IoCubeOutline} boxSize={5} color="blue.500" />
+          </SliderThumb>
         </Slider>
       </Box>
     </>
