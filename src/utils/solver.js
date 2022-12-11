@@ -244,6 +244,9 @@ const eocross_solver = {
     pruning_depth: 4,
 }
 
+/**
+ * @deprecated
+ */
 export function solve_eocross(scram) {
     const if_cube = create_ifcube(scram)
     const eocross_masked_cube = get_eocross_masked_cube(if_cube)
@@ -269,6 +272,9 @@ function get_eoline_masked_cube(ifcube) {
 
 const eoline_pruning_table = gen_pruning_table([get_eoline_masked_cube(solved_ifcube)], 4, htm_moves)
 
+/**
+ * @deprecated
+ */
 const eoline_solver = {
     is_solved: (fcube) => eoline_pruning_table[fcube] === 0,
     moves: htm_moves,

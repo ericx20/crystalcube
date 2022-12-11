@@ -32,6 +32,9 @@ const solverMap: Record<Mode, (scram: string) => Promise<string>> = {
   EOLine: solve_eoline,
 }
 
+/**
+ * @deprecated
+ */
 export const FirstStepTrainer = () => {
   const [scramble, setScramble] = React.useState("")
   const [solution, setSolution] = React.useState("")

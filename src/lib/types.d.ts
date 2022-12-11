@@ -4,7 +4,7 @@ import { FACES, SOLVER_NAMES } from "./constants"
 // ----- FACES AND MOVES -----
 
 export type Face = typeof FACES[number]
-export type Facelet = Face | "O" | "X"
+export type Facelet = Face | "O" | "X" // "O" is a facelet that identifies edge orientation, X is a wildcard facelet
 export type IndexedFacelet = number // int from 0 to 53, represents a facelet
 export type FaceletIndex = number // int from 0 to 53, represents a facelet's location
 export type Move = `${Face}${"'" | "2" | ""}`
@@ -50,4 +50,5 @@ export interface SolverConfig {
   depthLimit: number
 }
 
+// Pruning table maps a FaceletCube (concatenated into a string) to its optimally solved movecount
 export type PruningTable = { [k: string]: number }

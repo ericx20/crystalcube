@@ -62,7 +62,7 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
   }
 
   return (
-    <Wrap spacing="none" sx={{ marginX: "-0.25rem !important" }}>
+    <Wrap spacingX="0rem" sx={{ marginX: "-0.25rem !important" }}>
       <SolutionMoveButton
         move={null}
         onClick={() => onSelect(-1)}
