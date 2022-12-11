@@ -52,7 +52,7 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
 
   React.useEffect(() => {
     onScrub(currentIndex)
-  }, [currentIndex])
+  }, [currentIndex, onScrub])
 
   const onSelect = (i: number) => setSelectedMoveIndex(i)
   const onHover = (i: number | null) => setHoveredMoveIndex(i)
@@ -82,7 +82,6 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
       ))}
     </Wrap>
   )
-
 }
 
 interface SolutionViewerProps {
@@ -95,16 +94,16 @@ interface SolutionViewerProps {
 
 export default function SolutionViewer({ scramble, solution, mask, showEO, children }: SolutionViewerProps) {
   const [solutionPartToShow, setSolutionPartToShow] = React.useState([] as Array<Move>)
-  const onScrub = (currentIndex: number) => {
+  const onScrub = React.useCallback((currentIndex: number) => {
     setSolutionPartToShow(solution ? [...solution].splice(0, currentIndex + 1) : [])
-  }
+  }, [solution])
 
   return (
     <Container maxW="container.lg">
       <Card p="1.5rem" /* filter="blur(15px)" */>
         <VStack align="left">
           <Heading size="md">solution</Heading>
-          <Text>{ solution ? solution.join(" ") : "No solution found" }</Text>
+          {/* <Text>{ solution ? solution.join(" ") : "No solution found" }</Text> */}
           <SolutionScrubber
             solution={solution}
             onScrub={onScrub}
