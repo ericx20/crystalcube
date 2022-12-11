@@ -1,19 +1,44 @@
 import * as React from "react"
-import { Box, Button, Card, Container, Heading, Icon, Text, VStack, Wrap } from "@chakra-ui/react"
+import { Box, Button, Card, Container, Heading, Icon, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, VStack, Text, Wrap } from "@chakra-ui/react"
 import type { Move, Mask } from "src/lib/types"
 import { VscCircleFilled } from "react-icons/vsc"
 
 const Cube = React.lazy(() => import("src/components/Cube/Cube"))
 
+
+interface SolutionMoveLabelProps {
+  move: Move | null // null signals this move is the start
+  isSelected?: boolean
+  isPreviousMove?: boolean
+}
+
+function SolutionMoveLabel({ move, isSelected, isPreviousMove }: SolutionMoveLabelProps) {
+  return (
+    <Box w={6} h={6}>
+      <Text
+        colorScheme={isSelected ? "blue" : "gray"}
+        fontSize="sm"
+        textAlign="center"
+        fontWeight={isSelected ? "bold" : "normal"}
+        opacity={isPreviousMove ? 0.7 : 1}
+        >
+        {move ?? <Icon as={VscCircleFilled} />}
+      </Text>
+    </Box>
+  )
+}
+
+
 interface SolutionMoveButtonProps {
   move: Move | null // null signals this move is the start
   isSelected?: boolean
   isPreviousMove?: boolean
-  onClick?: React.MouseEventHandler<HTMLDivElement>
+  onClick?: () => void
   onMouseEnter?: React.MouseEventHandler<HTMLDivElement>
   onMouseLeave?: React.MouseEventHandler<HTMLDivElement>
 }
 
+// For desktop
 function SolutionMoveButton({ move, isSelected, isPreviousMove, onClick, onMouseEnter, onMouseLeave }: SolutionMoveButtonProps) {
   return (
     <Box
@@ -22,13 +47,13 @@ function SolutionMoveButton({ move, isSelected, isPreviousMove, onClick, onMouse
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       px="0.25rem"
-      sx={{ cursor: "pointer" }}
+      cursor="pointer"
     >
       <Button
-        colorScheme={isSelected ? "purple" : "gray"}
+        colorScheme={isSelected ? "blue" : "gray"}
         isActive={isPreviousMove}
-        size={["sm", "md"]}
-        width="2rem"
+        size={["xs", "sm", "md"]}
+        width="1rem"
       >
         {move ?? <Icon as={VscCircleFilled} />}
       </Button>
@@ -62,25 +87,53 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
   }
 
   return (
-    <Wrap spacingX="0rem" sx={{ marginX: "-0.25rem !important" }}>
-      <SolutionMoveButton
-        move={null}
-        onClick={() => onSelect(-1)}
-        isSelected={selectedMoveIndex === -1}
-        isPreviousMove={selectedMoveIndex > -1}
-      />
-      {solution.map((move, index) => (
+    <>
+      {/* Desktop version */}
+      <Wrap spacingX="0rem" display={{ base: "none", sm: "flex" }} sx={{ marginX: "-0.25rem !important" }}>
         <SolutionMoveButton
-          key={index}
-          move={move}
-          onClick={() => onSelect(index)}
-          onMouseEnter={() => onHover(index)}
-          onMouseLeave={() => onHover(null)}
-          isSelected={selectedMoveIndex === index}
-          isPreviousMove={selectedMoveIndex > index}
+          move={null}
+          onClick={() => onSelect(-1)}
+          isSelected={selectedMoveIndex === -1}
+          isPreviousMove={selectedMoveIndex > -1}
         />
-      ))}
-    </Wrap>
+        {solution.map((move, index) => (
+          <SolutionMoveButton
+            key={index}
+            move={move}
+            onClick={() => onSelect(index)}
+            onMouseEnter={() => onHover(index)}
+            onMouseLeave={() => onHover(null)}
+            isSelected={selectedMoveIndex === index}
+            isPreviousMove={selectedMoveIndex > index}
+          />
+        ))}
+      </Wrap>
+      {/* Mobile version */}
+      <Box pt={3} pb={6} px={2} display={{ sm: "none" }}>
+        <Slider value={selectedMoveIndex} min={-1} max={solution.length - 1} onChange={(val) => setSelectedMoveIndex(val)}>
+          <SliderMark value={-1} ml="-0.75rem" mt={2.5}>
+            <SolutionMoveLabel
+              move={null}
+              isSelected={selectedMoveIndex === -1}
+              isPreviousMove={selectedMoveIndex > -1}
+            />
+          </SliderMark>
+          {solution.map((move, index) => (
+            <SliderMark key={index} value={index} ml="-0.75rem" mt={2}>
+              <SolutionMoveLabel
+                move={move}
+                isSelected={selectedMoveIndex === index}
+                isPreviousMove={selectedMoveIndex > index}
+              />
+            </SliderMark>
+          ))}
+          <SliderTrack>
+            <SliderFilledTrack />
+          </SliderTrack>
+          <SliderThumb boxSize={4} />
+        </Slider>
+      </Box>
+    </>
   )
 }
 
@@ -107,7 +160,7 @@ export default function SolutionViewer({ scramble, solution, mask, showEO, child
           <SolutionScrubber
             solution={solution}
             onScrub={onScrub}
-            />
+          />
           <React.Suspense fallback={<p>Loading...</p>}>
             <Box h={400} borderWidth="1px" borderRadius="lg">
               <Cube moves={scramble.concat(solutionPartToShow)} mask={mask} showEO={showEO} />
