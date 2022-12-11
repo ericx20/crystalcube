@@ -49,6 +49,7 @@ export default function Trainer() {
   }, [getScramble])
 
   const solution = solveEOCross(scram) ?? []
+
   return (
     <VStack spacing="1rem">
       {/* <FormControl isInvalid={!isValid}>
