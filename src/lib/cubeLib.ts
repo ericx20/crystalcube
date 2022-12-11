@@ -1,5 +1,6 @@
-import type { Cube, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Mask, Move, Perm, PruningTable, SolverConfig } from "./types"
-import { EOCROSS_MASK, HTM_MOVESET, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE } from "./constants";
+import type { Cube, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Mask, Move, Perm, PruningTable, SolverConfig, SolverConfigName } from "./types"
+import { HTM_MOVESET, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
+import { getPruningTable } from "./pruningTableCache";
 
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
   const newCube = [...cube] as C
@@ -21,16 +22,17 @@ export function faceletCubeToString(cube: FaceletCube): string {
   return cube.join("")
 }
 
-export function genPruningTable(solvedStates: Array<FaceletCube>, depth: number, moveset: Array<Move>): PruningTable {
+export function genPruningTable(config: SolverConfig): PruningTable {
+  const solvedState = getMaskedFaceletCube(SOLVED_INDEXED_FACELET_CUBE, config.mask)
   const pruningTable: PruningTable = {}
-  let previousFrontier: Array<FaceletCube> = [...solvedStates]
-  solvedStates.forEach(state => pruningTable[faceletCubeToString(state)] = 0)
+  let previousFrontier: Array<FaceletCube> = [solvedState]
+  pruningTable[faceletCubeToString(solvedState)] = 0
 
-  for (let i = 1; i <= depth; i++) {
+  for (let i = 1; i <= config.pruningDepth; i++) {
     const frontier: Array<FaceletCube> = []
     for (const state of previousFrontier) {
       // for every previous state: try all possible moves on it
-      for (const move of moveset) {
+      for (const move of config.moveset) {
         const newState = applyMove(state, move)
         const newStateString = faceletCubeToString(newState)
         if (pruningTable[newStateString] === undefined) {
@@ -75,7 +77,7 @@ export function getMaskedFaceletCube(cube: IndexedFaceletCube, mask: Mask): Face
     if (mask.solvedFaceletIndices.includes(faceletIdx)) {
       return colorOfIndexedFacelet(faceletIdx)
     }
-    if (mask.eoFaceletIndices.includes(faceletIdx)) {
+    if (mask.eoFaceletIndices?.includes(faceletIdx)) {
       return "O"
     }
     return "X"
@@ -108,7 +110,7 @@ function solveDepth(config: SolverConfig, pruningTable: PruningTable, cube: Face
     if (solution.length && move[0] === solution[solution.length - 1][0]) {
       continue // optimization: never use the same layer in consecutive moves
     }
-    // try every available move by recursively calling solve_dfs
+    // try every available move by recursively calling solveDepth
     solution.push(move)
     let result = solveDepth(
       config,
@@ -125,16 +127,13 @@ function solveDepth(config: SolverConfig, pruningTable: PruningTable, cube: Face
   return null
 }
 
-// TODO: get masked cube and pruning tabler in the solve() function according to solver config
-// for now it's hardcoded for eocross
-const eocrossMaskedCube = getMaskedFaceletCube(SOLVED_INDEXED_FACELET_CUBE, EOCROSS_MASK)
-const EOCROSS_PRUNING_TABLE = genPruningTable([eocrossMaskedCube], 4, HTM_MOVESET)
-
-export function solve(scram: Array<Move>, config: SolverConfig): Array<Move> | null {
+export function solve(scram: Array<Move>, configName: SolverConfigName): Array<Move> | null {
+  const config = SOLVER_CONFIGS[configName]
   const scrambledCube = applyMoves(SOLVED_INDEXED_FACELET_CUBE, scram)
   const maskedCube = getMaskedFaceletCube(scrambledCube, config.mask)
+  const pruningTable = getPruningTable(configName)
   for (let depth = 0; depth <= config.depthLimit; depth++) {
-    const solution = solveDepth(config, EOCROSS_PRUNING_TABLE, maskedCube, [], depth)
+    const solution = solveDepth(config, pruningTable, maskedCube, [], depth)
     if (solution !== null) return solution
   }
   return null

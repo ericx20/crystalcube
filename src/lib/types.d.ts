@@ -1,4 +1,4 @@
-import { FACES, SOLVER_NAMES } from "./constants"
+import { FACES, SOLVER_CONFIG_NAMES } from "./constants"
 
 
 // ----- FACES AND MOVES -----
@@ -37,13 +37,13 @@ export type EO = Array<boolean>
 
 export interface Mask {
   solvedFaceletIndices: Readonly<Array<IndexedFacelet>>
-  eoFaceletIndices: Readonly<Array<IndexedFacelet>>
+  eoFaceletIndices?: Readonly<Array<IndexedFacelet>>
 }
 
 // ----- SOLVER -----
+export type SolverConfigName = typeof SOLVER_CONFIG_NAMES[number]
 
 export interface SolverConfig {
-  name: string
   moveset: Array<Move>
   mask: Mask
   pruningDepth: number
