@@ -6,7 +6,6 @@ import { IoCube, IoCubeOutline } from "react-icons/io5"
 
 const Cube = React.lazy(() => import("src/components/Cube/Cube"))
 
-
 interface SolutionMoveLabelProps {
   move: Move | null // null signals this move is the start
   isSelected?: boolean
@@ -21,7 +20,7 @@ function SolutionMoveLabel({ move, isSelected, isPreviousMove }: SolutionMoveLab
         fontSize="md"
         textAlign="center"
         fontWeight={isSelected ? "bold" : "normal"}
-        opacity={isPreviousMove ? 0.7 : 1}
+        opacity={(isSelected || isPreviousMove) ? 1 : 0.7}
         >
         {move ?? <Icon as={VscCircleFilled} />}
       </Text>
@@ -62,24 +61,35 @@ function SolutionMoveButton({ move, isSelected, isPreviousMove, onClick, onMouse
   )
 }
 
-interface SolutionScrubberProps {
+interface SolutionPlayerProps {
+  scramble: Array<Move>
   solution: Array<Move> | null
-  onScrub: (currentIndex: number) => void
+  mask?: Mask
+  showEO?: boolean
 }
 
-function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
+function SolutionPlayer({ scramble, solution, mask, showEO }: SolutionPlayerProps) {
   const [selectedMoveIndex, setSelectedMoveIndex] = React.useState(-1) // -1 means the at the start before any moves
   const [hoveredMoveIndex, setHoveredMoveIndex] = React.useState<number | null>(null)
   const currentIndex = hoveredMoveIndex ?? selectedMoveIndex
   const atSolutionEnd = !solution || selectedMoveIndex === solution.length - 1
 
-  React.useEffect(() => {
-    setSelectedMoveIndex(-1)
-  }, [solution])
+  // Cache the scramble and solution, so they update at the same time as selectedMoveIndex
+  // which prevents stateToShow from flickering
+  const [cachedScramble, setCachedScramble] = React.useState([] as Array<Move>)
+  const [cachedSolution, setCachedSolution] = React.useState([] as Array<Move>)
+  const [stateToShow, setStateToShow] = React.useState([] as Array<Move>)
 
   React.useEffect(() => {
-    onScrub(currentIndex)
-  }, [currentIndex, onScrub])
+    setSelectedMoveIndex(-1)
+    setCachedScramble(scramble)
+    setCachedSolution(solution ?? [])
+  }, [scramble, solution])
+
+  React.useEffect(() => {
+    const solutionToShow = [...cachedSolution].splice(0, currentIndex + 1)
+    setStateToShow(cachedScramble.concat(solutionToShow))
+  }, [currentIndex, cachedScramble, cachedSolution])
 
   const onSelect = (i: number) => setSelectedMoveIndex(i)
   const onHover = (i: number | null) => setHoveredMoveIndex(i)
@@ -111,17 +121,19 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
         ))}
       </Wrap>
       {/* Mobile version */}
-      <Box pt={3} pb={6} px={2} display={{ sm: "none" }}>
-        <Slider value={selectedMoveIndex} min={-1} max={solution.length - 1} onChange={(val) => setSelectedMoveIndex(val)}>
-          <SliderMark value={-1} ml="-0.75rem" mt={3.5}>
-            <SolutionMoveLabel
-              move={null}
-              isSelected={selectedMoveIndex === -1}
-              isPreviousMove={selectedMoveIndex > -1}
-            />
-          </SliderMark>
+      <Box pt={7} px={2} display={{ sm: "none" }}>
+        <Slider value={selectedMoveIndex} min={-1} max={solution.length - 1} onChange={onSelect}>
+          {solution.length && (
+            <SliderMark value={-1} ml="-0.75rem" mt="-2.35rem">
+              <SolutionMoveLabel
+                move={null}
+                isSelected={selectedMoveIndex === -1}
+                isPreviousMove={selectedMoveIndex > -1}
+              />
+            </SliderMark>
+          )}
           {solution.map((move, index) => (
-            <SliderMark key={index} value={index} ml="-0.75rem" mt={3}>
+            <SliderMark key={index} value={index} ml="-0.75rem" mt="-2.5rem">
               <SolutionMoveLabel
                 move={move}
                 isSelected={selectedMoveIndex === index}
@@ -137,6 +149,11 @@ function SolutionScrubber({ solution, onScrub }: SolutionScrubberProps) {
           </SliderThumb>
         </Slider>
       </Box>
+      <React.Suspense fallback={<p>Loading...</p>}>
+        <Box h={[200, 300, 400]} borderWidth="1px" borderRadius="lg">
+          <Cube moves={stateToShow} mask={mask} showEO={showEO} />
+        </Box>
+      </React.Suspense>
     </>
   )
 }
@@ -150,26 +167,17 @@ interface SolutionViewerProps {
 }
 
 export default function SolutionViewer({ scramble, solution, mask, showEO, children }: SolutionViewerProps) {
-  const [solutionPartToShow, setSolutionPartToShow] = React.useState([] as Array<Move>)
-  const onScrub = React.useCallback((currentIndex: number) => {
-    setSolutionPartToShow(solution ? [...solution].splice(0, currentIndex + 1) : [])
-  }, [solution])
-
   return (
     <Container maxW="container.lg">
       <Card p="1.5rem" /* filter="blur(15px)" */>
         <VStack align="left">
           <Heading size="md">solution</Heading>
-          {/* <Text>{ solution ? solution.join(" ") : "No solution found" }</Text> */}
-          <SolutionScrubber
+          <SolutionPlayer
+            scramble={scramble}
             solution={solution}
-            onScrub={onScrub}
+            mask={mask}
+            showEO={showEO}
           />
-          <React.Suspense fallback={<p>Loading...</p>}>
-            <Box h={400} borderWidth="1px" borderRadius="lg">
-              <Cube moves={scramble.concat(solutionPartToShow)} mask={mask} showEO={showEO} />
-            </Box>
-          </React.Suspense>
           {children}
         </VStack>
       </Card>

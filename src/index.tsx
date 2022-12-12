@@ -14,14 +14,14 @@ import {
 const root = createRoot(document.getElementById('root')!)
 
 root.render(
-  <React.StrictMode>
+  <>
     <ColorModeScript />
     <BrowserRouter basename="/crystalcube">
       <Routes>
         <Route path="/*" element={<App />} />
       </Routes>
     </BrowserRouter>
-  </React.StrictMode>
+  </>
 )
 
 // If you want your app to work offline and load faster, you can change

@@ -33,10 +33,13 @@ function useSpacebar(callback: () => any) {
 // also n-flip only allows for z/z2 colour neutrality at most
 export default function Trainer() {
   const [scram, setScram] = React.useState<Array<Move>>([])
+  const [sol, setSol] = React.useState<Array<Move>>([])
   const getScramble = React.useCallback(async () => {
     const rawScramble = await randomScrambleForEvent("333");
     const scramble = parseAlg(rawScramble.toString())
+    const solution = solveEOCross(scramble) ?? []
     setScram(scramble)
+    setSol(solution)
   }, [])
 
   useSpacebar(getScramble)
@@ -47,8 +50,6 @@ export default function Trainer() {
   React.useEffect(() => {
     getScramble()
   }, [getScramble])
-
-  const solution = solveEOCross(scram) ?? []
 
   return (
     <VStack spacing="1rem">
@@ -65,7 +66,7 @@ export default function Trainer() {
         )}
       </FormControl> */}
       <ScrambleViewer scramble={scram} />
-      <SolutionViewer scramble={scram} solution={solution} mask={EOCROSS_MASK} showEO>
+      <SolutionViewer scramble={scram} solution={sol} mask={EOCROSS_MASK} showEO>
         <Button onClick={getScramble}>next</Button>
       </SolutionViewer>
     </VStack>
