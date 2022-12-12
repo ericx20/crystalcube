@@ -17,21 +17,13 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react"
-// import { Alg } from "cubing/alg";
-// import { randomScrambleForEvent } from "cubing/scramble"
-import { solve_eocross, solve_eoline, isValidHTM } from "src/utils/solver"
-// import { CubeViewer } from "./CubeViewer";
+import { isValidNotation, solve } from "src/lib/cubeLib"
+import type { Move } from "src/lib/types"
 
 enum Mode {
   EOCross = "EOCross",
   EOLine = "EOLine",
 }
-
-const solverMap: Record<Mode, (scram: string) => Promise<string>> = {
-  EOCross: solve_eocross,
-  EOLine: solve_eoline,
-}
-
 /**
  * @deprecated
  */
@@ -41,14 +33,13 @@ export const FirstStepTrainer = () => {
   const [isLoading, setLoading] = React.useState(false)
   const [mode, setMode] = React.useState(Mode.EOCross)
 
-  const isValid = isValidHTM(scramble)
+  const isValid = isValidNotation(scramble)
 
   React.useEffect(() => {
     const generateSolution = async (scram: string) => {
       setLoading(true)
-      const solver = solverMap[mode]
       // TODO: ASYNC IS NOT WORKING!
-      const solution = await solver(scram)
+      const solution = scram === "" ? "" : solve(scram.split(" ").filter(m => m) as Array<Move>, mode)!.join(" ")
       setSolution(solution)
       setLoading(false)
     }

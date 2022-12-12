@@ -8,8 +8,8 @@ const colorScheme: { [name in Facelet]: string } = {
   D: "yellow",
   F: "green",
   B: "blue",
-  O: "grey", // display oriented facelet same as masked facelet
-  X: "grey",
+  O: "#718096", // display oriented facelet same as masked facelet
+  X: "#718096",
 }
 
 const quarterTurn = Math.PI / 2
