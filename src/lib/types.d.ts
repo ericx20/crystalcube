@@ -1,16 +1,23 @@
-import { FACES, SOLVER_CONFIG_NAMES } from "./constants"
+import { FACES, AXES, SOLVER_CONFIG_NAMES } from "./constants"
 
 
-// ----- FACES AND MOVES -----
+// ----- FACES  -----
 
 export type Face = typeof FACES[number]
 export type Facelet = Face | "O" | "X" // "O" is a facelet that identifies edge orientation, X is a wildcard facelet
 export type IndexedFacelet = number // int from 0 to 53, represents a facelet
 export type FaceletIndex = number // int from 0 to 53, represents a facelet's location
-export type Move = `${Face}${"'" | "2" | ""}`
-export type Alg = Array<Move>
+export type Axis = typeof AXES[number]
 export type Perm<T = FaceletIndex> = [T, T]
 export type Piece = Exclude<`${"U" | "D" | ""}${"F" | "B" | ""}${"R" | "L" | ""}`, "">
+
+
+// ----- MOVES AND NOTATION -----
+
+type Suffix = "" | "'" | "2"
+export type FaceTurn = `${Face}${Suffix}`
+export type CubeRotation = `${Axis}${Suffix}`
+export type Move = FaceTurn | CubeRotation
 
 
 // ----- CUBE STATE REPRESENTATIONS -----
@@ -39,6 +46,7 @@ export interface Mask {
   solvedFaceletIndices: Readonly<Array<IndexedFacelet>>
   eoFaceletIndices?: Readonly<Array<IndexedFacelet>>
 }
+
 
 // ----- SOLVER -----
 export type SolverConfigName = typeof SOLVER_CONFIG_NAMES[number]

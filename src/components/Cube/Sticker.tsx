@@ -1,7 +1,6 @@
 import * as THREE from "three"
 import type { Face, Facelet } from "src/lib/types"
 import { Image } from "@react-three/drei"
-import crystalcube from "./crystalcube.png"
 
 import LabelR from "./labels/label-r.png"
 import LabelL from "./labels/label-l.png"
@@ -62,47 +61,44 @@ export default function Sticker({ face, facelet, oriented, label }: StickerProps
   const sticker = (
     <mesh position={[0, 0, 0.5]}>
       <boxGeometry args={[stickerSize, stickerSize, stickerThickness]} />
-      <meshBasicMaterial color={colorScheme[facelet]} toneMapped={false} />
+      <meshBasicMaterial color={colorScheme[facelet]} />
     </mesh>
   )
 
   const dot = (
     <mesh position={[0, 0, 0.5]} rotation={[0, 0, eighthTurn]}>
       <boxGeometry args={[misorientedDotSize, misorientedDotSize, 2*stickerThickness]} />
-      <meshBasicMaterial color="#8104d4" toneMapped={false} />
+      <meshBasicMaterial color="#8104d4" />
     </mesh>
   )
   
   const hintSticker = (
     <mesh position={[0, 0, hintStickerDistance]} rotation={[0, halfTurn, 0]}>
       <planeGeometry args={[stickerSize, stickerSize]} />
-      <meshBasicMaterial color={colorScheme[facelet]} toneMapped={false} />
+      <meshBasicMaterial color={colorScheme[facelet]} />
     </mesh>
   )
 
   const hintDot = (
     <mesh position={[0, 0, hintStickerDistance - stickerThickness]} rotation={[0, halfTurn, eighthTurn]}>
       <planeGeometry args={[misorientedDotSize, misorientedDotSize]} />
-      <meshBasicMaterial color="#8104d4" toneMapped={false} />
+      <meshBasicMaterial color="#8104d4" />
     </mesh>
   )
 
-  const CenterLabel = ({ label }: { label: Face | undefined }) => {
-    if (!label) {
-      return <></>
-    }
-    return (
+  const centerLabel = (
+    label ? (
       <mesh position={[0, 0, 0.5 + labelDistance]}>
-        <Image url={labelMap[label]} transparent opacity={0.7} toneMapped={false} />
+        <Image url={labelMap[label]} transparent />
       </mesh>
-    )
-  }
+    ) : <></>
+  )
 
   return (
     <mesh rotation={stickerRotationMap[face]}>
       {sticker}
       {hintSticker}
-      <CenterLabel label={label} />
+      {centerLabel}
       {!oriented && (
         <>
           {dot}

@@ -6,6 +6,7 @@ import { IoCube, IoCubeOutline } from "react-icons/io5"
 
 const Cube = React.lazy(() => import("src/components/Cube/Cube"))
 
+// TODO: move SolutionPlayer into separate file
 interface SolutionMoveLabelProps {
   move: Move | null // null signals this move is the start
   isSelected?: boolean
@@ -150,7 +151,7 @@ function SolutionPlayer({ scramble, solution, mask, showEO }: SolutionPlayerProp
         </Slider>
       </Box>
       <React.Suspense fallback={<p>Loading...</p>}>
-        <Box h={[200, 300, 400]} borderWidth="1px" borderRadius="lg">
+        <Box h={[200, 300, 400]} borderWidth="1px" borderRadius="lg" cursor="move">
           <Cube moves={stateToShow} mask={mask} showEO={showEO} />
         </Box>
       </React.Suspense>
