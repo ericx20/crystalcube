@@ -28,6 +28,8 @@ import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Link as RouterLink } from "react-router-dom"
 import logo from "./crystalcube.png"
 
+// TODO: refactor the desktop/mobile UI switch with https://chakra-ui.com/docs/components/show-hide/usage
+
 export default function NavBar() {
   const { isOpen, onToggle } = useDisclosure()
 

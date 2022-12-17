@@ -1,5 +1,14 @@
-import * as THREE from 'three'
+import * as THREE from "three"
 import type { Face, Facelet } from "src/lib/types"
+import { Image } from "@react-three/drei"
+import crystalcube from "./crystalcube.png"
+
+import LabelR from "./labels/label-r.png"
+import LabelL from "./labels/label-l.png"
+import LabelU from "./labels/label-u.png"
+import LabelD from "./labels/label-d.png"
+import LabelF from "./labels/label-f.png"
+import LabelB from "./labels/label-b.png"
 
 const colorScheme: { [name in Facelet]: string } = {
   R: "red",
@@ -12,59 +21,92 @@ const colorScheme: { [name in Facelet]: string } = {
   X: "#718096",
 }
 
-const quarterTurn = Math.PI / 2
 const halfTurn = Math.PI
+const quarterTurn = Math.PI / 2
+const eighthTurn = Math.PI / 4
 
-// let U sticker be the "default" sticker position
+// let F sticker be the "default" sticker position
 // other stickers are rotated versions of the U sticker
 const stickerRotationMap: { [name in Face]: THREE.Euler } = {
-  R: new THREE.Euler( 0, 0, -quarterTurn),
-  L: new THREE.Euler( 0, 0, quarterTurn),
-  U: new THREE.Euler( 0, 0, 0),
-  D: new THREE.Euler(halfTurn, 0, 0),
-  F: new THREE.Euler(quarterTurn, 0, 0),
-  B: new THREE.Euler(-quarterTurn, 0, 0),
+  R: new THREE.Euler(0, quarterTurn, 0),
+  L: new THREE.Euler(0, -quarterTurn, 0),
+  U: new THREE.Euler(-quarterTurn, 0, 0),
+  D: new THREE.Euler(quarterTurn, 0, 0),
+  F: new THREE.Euler(0, 0, 0),
+  B: new THREE.Euler(0, halfTurn, 0),
+}
+
+const labelMap: { [label in Face]: string } = {
+  R: LabelR,
+  L: LabelL,
+  U: LabelU,
+  D: LabelD,
+  F: LabelF,
+  B: LabelB,
 }
 
 const stickerSize = 0.85
 const misorientedDotSize = 0.2
 const stickerThickness = 0.005
 const hintStickerDistance = 4
+const labelDistance = 0.01
 
 interface StickerProps {
   face: Face,
   facelet: Facelet,
   oriented: boolean
+  label?: Face
 }
 
-export default function Sticker({ face, facelet, oriented }: StickerProps) {
+export default function Sticker({ face, facelet, oriented, label }: StickerProps) {
+  const sticker = (
+    <mesh position={[0, 0, 0.5]}>
+      <boxGeometry args={[stickerSize, stickerSize, stickerThickness]} />
+      <meshBasicMaterial color={colorScheme[facelet]} toneMapped={false} />
+    </mesh>
+  )
+
+  const dot = (
+    <mesh position={[0, 0, 0.5]} rotation={[0, 0, eighthTurn]}>
+      <boxGeometry args={[misorientedDotSize, misorientedDotSize, 2*stickerThickness]} />
+      <meshBasicMaterial color="#8104d4" toneMapped={false} />
+    </mesh>
+  )
+  
+  const hintSticker = (
+    <mesh position={[0, 0, hintStickerDistance]} rotation={[0, halfTurn, 0]}>
+      <planeGeometry args={[stickerSize, stickerSize]} />
+      <meshBasicMaterial color={colorScheme[facelet]} toneMapped={false} />
+    </mesh>
+  )
+
+  const hintDot = (
+    <mesh position={[0, 0, hintStickerDistance - stickerThickness]} rotation={[0, halfTurn, eighthTurn]}>
+      <planeGeometry args={[misorientedDotSize, misorientedDotSize]} />
+      <meshBasicMaterial color="#8104d4" toneMapped={false} />
+    </mesh>
+  )
+
+  const CenterLabel = ({ label }: { label: Face | undefined }) => {
+    if (!label) {
+      return <></>
+    }
+    return (
+      <mesh position={[0, 0, 0.5 + labelDistance]}>
+        <Image url={labelMap[label]} transparent opacity={0.7} toneMapped={false} />
+      </mesh>
+    )
+  }
+
   return (
-    <mesh
-      rotation={stickerRotationMap[face]}
-    >
-      {/* Sticker */}
-      <mesh position={[0, 0.5, 0]}>
-        <boxGeometry args={[stickerSize, stickerThickness, stickerSize]} />
-        <meshBasicMaterial color={colorScheme[facelet]} toneMapped={false} />
-      </mesh>
-      {/* Hint sticker */}
-      <mesh position={[0, hintStickerDistance, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[stickerSize, stickerSize]} />
-        <meshBasicMaterial color={colorScheme[facelet]} toneMapped={false} />
-      </mesh>
-      {/* "Misoriented edge" indicator dot */}
+    <mesh rotation={stickerRotationMap[face]}>
+      {sticker}
+      {hintSticker}
+      <CenterLabel label={label} />
       {!oriented && (
         <>
-          {/* Dot */}
-          <mesh position={[0, 0.5, 0]}>
-            <boxGeometry args={[misorientedDotSize, 2*stickerThickness, misorientedDotSize]} />
-            <meshBasicMaterial color="purple" toneMapped={false} />
-          </mesh>
-          {/* Hint dot */}
-          <mesh position={[0, hintStickerDistance - stickerThickness, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <planeGeometry args={[misorientedDotSize, misorientedDotSize]} />
-            <meshBasicMaterial color="purple" toneMapped={false} />
-          </mesh>
+          {dot}
+          {hintDot}
         </>
       )}
     </mesh>

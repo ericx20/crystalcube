@@ -76,20 +76,20 @@ function SolutionPlayer({ scramble, solution, mask, showEO }: SolutionPlayerProp
 
   // Cache the scramble and solution, so they update at the same time as selectedMoveIndex
   // which prevents stateToShow from flickering
-  const [cachedScramble, setCachedScramble] = React.useState([] as Array<Move>)
-  const [cachedSolution, setCachedSolution] = React.useState([] as Array<Move>)
+  const [delayedScramble, setDelayedScramble] = React.useState([] as Array<Move>)
+  const [delayedSolution, setDelayedSolution] = React.useState([] as Array<Move>)
   const [stateToShow, setStateToShow] = React.useState([] as Array<Move>)
 
   React.useEffect(() => {
     setSelectedMoveIndex(-1)
-    setCachedScramble(scramble)
-    setCachedSolution(solution ?? [])
+    setDelayedScramble(scramble)
+    setDelayedSolution(solution ?? [])
   }, [scramble, solution])
 
   React.useEffect(() => {
-    const solutionToShow = [...cachedSolution].splice(0, currentIndex + 1)
-    setStateToShow(cachedScramble.concat(solutionToShow))
-  }, [currentIndex, cachedScramble, cachedSolution])
+    const solutionToShow = [...delayedSolution].splice(0, currentIndex + 1)
+    setStateToShow(delayedScramble.concat(solutionToShow))
+  }, [currentIndex, delayedScramble, delayedSolution])
 
   const onSelect = (i: number) => setSelectedMoveIndex(i)
   const onHover = (i: number | null) => setHoveredMoveIndex(i)
