@@ -60,3 +60,11 @@ export interface SolverConfig {
 
 // Pruning table maps a FaceletCube (concatenated into a string) to its optimally solved movecount
 export type PruningTable = { [k: string]: number }
+
+// TODO
+export interface SolutionWithPreRotation {
+  preRotation: Array<CubeRotation>
+  solution: Array<Move>
+}
+
+export type SolverResult = SolutionWithPreRotation | null

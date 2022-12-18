@@ -283,10 +283,6 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "tools",
     children: [
       {
-        label: "first step trainer",
-        href: "tools/firststep/",
-      },
-      {
         label: "one handed scrambles",
         href: "tools/ohscramble/",
       },

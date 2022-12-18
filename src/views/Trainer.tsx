@@ -1,11 +1,10 @@
 import * as React from "react"
 import { VStack, /* Input, FormControl, FormErrorMessage, */ Button } from "@chakra-ui/react"
-import type { Move } from "src/lib/types"
+import type { Move, SolverResult } from "src/lib/types"
 import { EOCROSS_MASK } from "src/lib/constants"
 import ScrambleViewer from "src/components/ScrambleViewer"
 import SolutionViewer from "src/components/SolutionViewer"
-import { solveEOCross } from "src/lib/solver"
-import { isValidNotation } from "src/lib/cubeLib"
+import { isValidNotation, solve } from "src/lib/cubeLib"
 import { randomScrambleForEvent } from "cubing/scramble"
 
 const parseAlg = (algString: string): Array<Move> => {
@@ -33,11 +32,11 @@ function useSpacebar(callback: () => any) {
 // also n-flip only allows for z/z2 colour neutrality at most
 export default function Trainer() {
   const [scram, setScram] = React.useState<Array<Move>>([])
-  const [sol, setSol] = React.useState<Array<Move>>([])
+  const [sol, setSol] = React.useState<Array<Move> | null>(null)
   const getScramble = React.useCallback(async () => {
     const rawScramble = await randomScrambleForEvent("333");
     const scramble = parseAlg(rawScramble.toString())
-    const solution = solveEOCross(scramble) ?? []
+    const solution = solve(scramble, "EOCross")
     setScram(scramble)
     setSol(solution)
   }, [])
