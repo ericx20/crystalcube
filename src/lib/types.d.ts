@@ -67,4 +67,5 @@ export interface SolutionWithPreRotation {
   solution: Array<Move>
 }
 
+// TODO
 export type SolverResult = SolutionWithPreRotation | null

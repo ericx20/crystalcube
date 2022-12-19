@@ -1,6 +1,10 @@
-import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Mask, Move, PruningTable, SolverConfig, SolverConfigName, SolverResult } from "./types"
+import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Mask, Move, PruningTable, SolverConfig, SolverConfigName } from "./types"
 import { HTM_MOVESET, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
 import { getPruningTable } from "./pruningTableCache";
+
+import shuffle from "lodash/shuffle"
+import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search"
+import { KState } from "cubing/kpuzzle"
 
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
   const newCube = [...cube] as C
@@ -148,7 +152,6 @@ function solveDepth(config: SolverConfig, pruningTable: PruningTable, cube: Face
 
 // NOTE: solve() is fixed orientation
 // Pre-rotation sets the desired cube orientation
-
 export function solve(scram: Array<Move>, configName: SolverConfigName, preRotation: Array<CubeRotation> = []): Array<Move> | null {
   const config = SOLVER_CONFIGS[configName]
 
@@ -172,3 +175,47 @@ export function isValidNotation(notation: string, moveset: Array<Move> = HTM_MOV
   // either the scramble is empty, OR when you split the sequence by spaces, each token is a valid move
   return notation === "" || notation.trim().split(" ").every((token) => validTokens.includes(token))
 }
+
+export function parseNotation(algString: string): Array<Move> {
+  return isValidNotation(algString)
+    ? algString.split(" ").filter(m => m) as Array<Move>
+    : []
+}
+
+export function isValidNFlip(n: number) {
+  return Number.isInteger(n) && n % 2 === 0
+}
+
+function nflipEOArray(n: number): Array<number> {
+  if (!isValidNFlip) {
+    console.error("nflipEOArray(): must be even integer from 0 to 12 inclusive")
+    return Array(12).fill(0)
+  }
+  const goodEdges = Array<number>(12 - n).fill(0)
+  const badEdges = Array<number>(n).fill(1)
+  return shuffle(goodEdges.concat(badEdges))
+}
+
+export async function nflipScramble(n: number): Promise<Array<Move>> {
+  const { kpuzzle, stateData } = await random333State()
+  const newStateData = {
+    ...stateData,
+    EDGES: {
+      orientation: nflipEOArray(n),
+      pieces: stateData.EDGES.pieces
+    }
+  }
+  const newPuzzle = new KState(kpuzzle, newStateData)
+  const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle)
+  return invertMoves(parseNotation(solution.toString()))
+}
+
+// const nflipPrint = async (n: number) => {
+//   const scram = await nflipScramble(n)
+//   console.log(n, scram.join(" "))
+// }
+
+// // test!
+// for (let n = 0; n <= 12; n += 2) {
+//   nflipPrint(n)
+// }
