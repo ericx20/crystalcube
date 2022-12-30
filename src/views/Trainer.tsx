@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { VStack, /* Input, FormControl, FormErrorMessage, */ Button } from "@chakra-ui/react"
+import { VStack, Input, FormControl, FormErrorMessage, Button } from "@chakra-ui/react"
 import type { Move } from "src/lib/types"
 import { EOCROSS_MASK } from "src/lib/constants"
 import ScrambleViewer from "src/components/ScrambleViewer"

@@ -1,5 +1,5 @@
 import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Mask, Move, PruningTable, SolverConfig, SolverConfigName } from "./types"
-import { HTM_MOVESET, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
+import { HTM_MOVESET, MOVE_PERMS, SOLVED_FACELET_CUBE, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
 import { getPruningTable } from "./pruningTableCache";
 
 import shuffle from "lodash/shuffle"
@@ -69,9 +69,6 @@ export function genPruningTable(config: SolverConfig): PruningTable {
 // EO recognition:
 // good edge: U/D/O facelet in purple group, and/or L/R facelet in black group
 
-// TODO: move these constants to constants.ts, but the [GOOD/BAD]_PURPLE_GROUP_FACELETS
-// need to become functions of the cube's center piece positions
-
 // Every edge has two facelets: one that is currently inside a "purple" group, and one currently in a "black" group
 // For each edge, these arrays categorize its two facelets into the two groups
 // The edges are indexed in the order [UB, UL, UR, UF, BL, FL, FR, BR, DF, DL, DR, DB]
@@ -93,6 +90,17 @@ export function getFaceletCubeEO(cube: FaceletCube): EO {
 }
 // TODO NOW: apply mask to a regular facelet cube on its current state
 // make a function for that, and use that instead of getMaskedFaceletCube in Cube.tsx
+export function applyMask(cube: FaceletCube, mask: Mask): FaceletCube {
+  return SOLVED_INDEXED_FACELET_CUBE.map(faceletIdx => {
+    if (mask.solvedFaceletIndices.includes(faceletIdx)) {
+      return cube[faceletIdx]
+    }
+    if (mask.eoFaceletIndices?.includes(faceletIdx)) {
+      return "O"
+    }
+    return "X"
+  })
+}
 
 // Puts a mask on an IndexedFaceletCube
 export function getMaskedFaceletCube(cube: IndexedFaceletCube, mask: Mask): FaceletCube {
