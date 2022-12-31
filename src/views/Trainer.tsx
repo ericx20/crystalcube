@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { VStack, Input, FormControl, FormErrorMessage, Button } from "@chakra-ui/react"
-import type { Move } from "src/lib/types"
+
 import { EOCROSS_MASK } from "src/lib/constants"
 import ScrambleViewer from "src/components/ScrambleViewer"
 import SolutionViewer from "src/components/SolutionViewer"
@@ -8,7 +8,7 @@ import useSpacebar from "src/hooks/useSpacebar"
 import { parseNotation, solve } from "src/lib/cubeLib"
 import { randomScrambleForEvent } from "cubing/scramble"
 import SelectNFlip from "src/components/SelectNFlip"
-
+import type { Move } from "src/lib/types"
 
 export default function Trainer() {
   const [scram, setScram] = useState<Array<Move>>([])

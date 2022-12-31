@@ -1,4 +1,4 @@
-import type { FaceletIndex, Mask, SolverConfig, SolverConfigName } from "src/lib/types"
+import type { FaceletIndex, Mask, SolverConfig, SolverConfigName } from "../types"
 import { HTM_MOVESET } from "./cube"
 
 const EO_FACELETS: Array<FaceletIndex> = [1, 3, 5, 7, 24, 26, 30, 32, 46, 48, 50, 52]

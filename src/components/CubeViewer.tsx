@@ -2,8 +2,8 @@ import * as React from "react"
 import { ExperimentalStickering, PuzzleID } from "cubing/twisty"
 import { TwistyPlayer } from "../components/TwistyPlayer"
 import { Alg } from "cubing/alg"
-/** @jsxImportSource @emotion/react */
-import { css } from "@emotion/react"
+// /** @jsxImportSource @emotion/react */
+// import { css } from "@emotion/react"
 import { Image } from "@chakra-ui/react"
 
 interface CubeViewerProps {

@@ -1,4 +1,4 @@
-import type { FaceletCube, IndexedFaceletCube, Move, Perm } from "src/lib/types"
+import type { FaceletCube, IndexedFaceletCube, Move, Perm } from "../types"
 
 export const FACES = ["R", "L", "U", "D", "F", "B"] as const
 

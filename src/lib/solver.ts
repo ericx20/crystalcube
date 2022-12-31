@@ -1,5 +1,5 @@
-import { solve } from "src/lib/cubeLib"
-import type { Move, SolverResult } from "./types"
+import { solve } from "./cubeLib"
+import type { Move } from "./types"
 
 // TODO: make this talk to a web worker, which will solve in a separate thread
 // then we can properly use this function async
