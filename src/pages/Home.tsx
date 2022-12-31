@@ -1,8 +1,9 @@
 import { Button, Center, Container, Heading, SlideFade, Text, VStack } from "@chakra-ui/react"
 import { Link as RouterLink } from "react-router-dom"
 
-export const Home = () => (
-  <SlideFade in>
+export default function Home() {
+  return (
+    <SlideFade in>
     <Center>
       <Container maxW="container.md">
         <VStack>
@@ -10,17 +11,12 @@ export const Home = () => (
           <Text>
             err0r's online cubing tools
           </Text>
-          <RouterLink to="secrettestpage/">
-            <Button>enter if you dare</Button>
+          <RouterLink to="trainer/">
+            <Button>trainer</Button>
           </RouterLink>
-          {/* <RouterLink to="tools/firststep/">
-            <Button>first step trainer</Button>
-          </RouterLink>
-          <RouterLink to="tools/ohscramble/">
-            <Button>one handed scrambles</Button>
-          </RouterLink> */}
           </VStack>
       </Container>
     </Center>
   </SlideFade>
-)
+  )
+}

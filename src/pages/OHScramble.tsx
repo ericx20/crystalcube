@@ -23,9 +23,10 @@ import { IoHandLeft, IoHandRight } from "react-icons/io5"
 import { Alg } from "cubing/alg";
 import { randomScrambleForEvent } from "cubing/scramble"
 import { translateToOH } from "../utils/translateToOH"
-import { CubeViewer } from "../components/CubeViewer";
+import CubeViewer from "../components/CubeViewer";
+import useSpacebar from "src/hooks/useSpacebar";
 
-export const OHScramble = () => {
+export default function OHScramble() {
   const [rawScramble, setRawScramble] = React.useState(new Alg(""))
   const [scramble, setScramble] = React.useState(new Alg(""))
   const [isLoading, setLoading] = React.useState(false)
@@ -55,21 +56,48 @@ export const OHScramble = () => {
     console.log("original:", rawScramble.toString())
   }, [rawScramble, isLefty, isLowercaseWide])
 
-
-  const keyDownHandler = React.useCallback((event: KeyboardEvent) => {
-    if (event.key === " ") {
-      event.preventDefault()
-      getNewScramble()
-    }
-  }, [getNewScramble])
+  useSpacebar(getNewScramble)
 
   React.useEffect(() => {
     getNewScramble()
-    window.addEventListener("keydown", keyDownHandler)
-    return () => {
-      window.removeEventListener("keydown", keyDownHandler)
-    }
-  }, [getNewScramble, keyDownHandler])
+  }, [getNewScramble])
+
+  const Buttons = () => (
+    <Flex w="100%">
+      <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
+        <Button onClick={onCopy}>copy</Button>
+      </Tooltip>
+      <Spacer />
+      <Button 
+        onClick={() => getNewScramble()}
+        isLoading={isLoading}
+        tabIndex={0}
+        colorScheme="blue"
+      >next</Button>
+      <Spacer />
+      <Button
+        onClick={toggleShowSettings}
+        colorScheme={showSettings ? "purple" : undefined}
+      >settings</Button>
+    </Flex>
+  )
+
+  const Settings = () => (
+    <Flex w="100%" bg={useColorModeValue("#EDF2F7", "#2C313D")} rounded="md" p={3}>
+      <HStack spacing={10}>
+        <HStack>
+          <Icon as={IoHandLeft}/>
+          <Switch isChecked={!isLefty} onChange={() => setIsLefty(!isLefty)} />
+          <Icon as={IoHandRight}/>
+        </HStack>
+        <HStack>
+          <Text>r</Text>
+          <Switch isChecked={!isLowercaseWide} onChange={() => setLowercaseWide(!isLowercaseWide)} />
+          <Text>Rw</Text>
+        </HStack>
+      </HStack>
+    </Flex>
+  )
 
   return (
     <SlideFade in>
@@ -87,39 +115,10 @@ export const OHScramble = () => {
           </Text>
         </Skeleton>
         <Container>
-        <Flex w="100%">
-          <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
-            <Button onClick={onCopy}>copy</Button>
-          </Tooltip>
-          <Spacer />
-          <Button 
-            onClick={() => getNewScramble()}
-            isLoading={isLoading}
-            tabIndex={0}
-            colorScheme="blue"
-          >next</Button>
-          <Spacer />
-          <Button
-            onClick={toggleShowSettings}
-            colorScheme={showSettings ? "purple" : undefined}
-          >settings</Button>
-        </Flex>
+          <Buttons />
         </Container>
         <Collapse in={showSettings} animateOpacity>
-          <Flex w="100%" bg={useColorModeValue("#EDF2F7", "#2C313D")} rounded="md" p={3}>
-            <HStack spacing={10}>
-              <HStack>
-                <Icon as={IoHandLeft}/>
-                <Switch isChecked={!isLefty} onChange={() => setIsLefty(!isLefty)} />
-                <Icon as={IoHandRight}/>
-              </HStack>
-              <HStack>
-                <Text>r</Text>
-                <Switch isChecked={!isLowercaseWide} onChange={() => setLowercaseWide(!isLowercaseWide)} />
-                <Text>Rw</Text>
-              </HStack>
-            </HStack>
-          </Flex>
+          <Settings />
         </Collapse>
       </VStack>
     </SlideFade>

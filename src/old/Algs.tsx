@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Heading, SlideFade } from "@chakra-ui/react";
-import { FourLookLastLayer } from "src/algs/FourLookLastLayer";
-import { AlgSheetViewer } from "src/components/AlgSheetViewer";
+import { FourLookLastLayer } from "./algs/FourLookLastLayer";
+import { AlgSheetViewer } from "./AlgSheetViewer";
 // const AlgCaseViewer = ({ puzzle, algCase, stickering, mode }: { puzzle: PuzzleID, algCase: AlgCase, stickering: ExperimentalStickering | "image", mode: "2D" | "3D" | "experimental-2D-LL" }) => {
 //   return (
 //     <Box

@@ -1,4 +1,4 @@
-import { AlgSheet, AlgSet } from "src/types"
+import { AlgSheet, AlgSet } from "../types"
 
 const EOLL: AlgSet = {
     name: "EOLL",

@@ -7,10 +7,10 @@ import {
   Flex,
 } from "@chakra-ui/react"
 import NavBar from "./components/NavBar"
-import { Home } from "./views/Home"
-import Trainer from "./views/Trainer"
-import { Tools } from "./views/Tools"
-import SecretTestPage from "./views/SecretTestPage"
+import Home from "./pages/Home"
+import Trainer from "./pages/Trainer"
+import Tools from "./pages/Tools"
+import SecretTestPage from "./pages/SecretTestPage"
 
 export default function App() {
   return (
