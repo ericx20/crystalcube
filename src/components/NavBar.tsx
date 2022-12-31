@@ -26,7 +26,7 @@ import {
 } from "@chakra-ui/icons"
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Link as RouterLink } from "react-router-dom"
-import logo from "./crystalcube.png"
+import logo from "src/assets/crystalcube.png"
 
 export default function NavBar() {
   const { isOpen, onToggle } = useDisclosure()
