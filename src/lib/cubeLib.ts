@@ -1,5 +1,5 @@
-import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Mask, Move, PruningTable, SolverConfig, SolverConfigName } from "./types"
-import { HTM_MOVESET, MOVE_PERMS, SOLVED_FACELET_CUBE, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
+import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Layer, Mask, Move, PruningTable, SolverConfig, SolverConfigName } from "./types"
+import { AXES, HTM_MOVESET, LAYERS_PARALLEL_TO_AXES, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
 import { getPruningTable } from "./pruningTableCache";
 
 import shuffle from "lodash/shuffle"
@@ -28,6 +28,11 @@ export function invertMoves(moves: Array<Move>): Array<Move> {
   return [...moves].reverse().map(move => invertMove(move))
 }
 
+export function layerOfMove(move: Move): Layer {
+  // This is not type-safe, TODO: find a better way
+  return move[0] as Layer
+}
+
 export function colorOfIndexedFacelet(index: number): Facelet {
   const table: Array<Facelet> = ["U", "U", "U", "L", "F", "R", "B", "L", "F", "R", "B", "L", "F", "R", "B", "D", "D", "D"]
   return table[Math.floor(index / 3)]
@@ -39,6 +44,26 @@ export function faceletCubeToString(cube: FaceletCube): string {
 
 export function indexedFaceletCubeToFaceletCube(indexedFaceletCube: IndexedFaceletCube): FaceletCube {
   return indexedFaceletCube.map(indexedFacelet => colorOfIndexedFacelet(indexedFacelet))
+}
+
+export function sequencesAreIdentical(a: Array<Move>, b: Array<Move>): boolean {
+  if (a.length !== b.length) {
+    return false
+  }
+  return a.every((move, index) => move === b[index])
+}
+
+export function movesAreSameLayer(a: Move, b: Move): boolean {
+  return layerOfMove(a) === layerOfMove(b)
+}
+
+export function movesAreParallel(a: Move, b: Move): boolean {
+  const layerA = layerOfMove(a)
+  const layerB = layerOfMove(b)
+  return AXES.some(axis => {
+    const parallelLayers = LAYERS_PARALLEL_TO_AXES[axis]
+    return parallelLayers.includes(layerA) && parallelLayers.includes(layerB)
+  })
 }
 
 export function genPruningTable(config: SolverConfig): PruningTable {
@@ -177,6 +202,129 @@ export function solve(scram: Array<Move>, configName: SolverConfigName, preRotat
   return null
 }
 
+function startsWithUselessParallelMoves(solution: Array<Move>): boolean {
+  if (solution.length < 3) {
+    return false
+  }
+  const firstMove = solution[0], secondMove = solution[1], thirdMove = solution[2]
+  return movesAreSameLayer(firstMove, thirdMove) && movesAreParallel(firstMove, secondMove)
+}
+
+// NOTE: solve() is fixed orientation
+// Pre-rotation sets the desired cube orientation
+// TODO: use numSolutions when calling solve()
+export function solveV2(scram: Array<Move>, configName: SolverConfigName, preRotation: Array<CubeRotation> = [], maxNumberOfSolutions = 5): Array<Array<Move>> {
+  const config = SOLVER_CONFIGS[configName]
+
+  const translatedScramble = invertMoves(preRotation).concat(scram).concat(preRotation)
+  const scrambledCube = applyMoves(SOLVED_INDEXED_FACELET_CUBE, translatedScramble)
+  const maskedCube = getMaskedFaceletCube(scrambledCube, config.mask)
+
+  const pruningTable = getPruningTable(configName)
+
+  const solutionsList: Array<Array<Move>> = []
+  const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
+  const addSolution = (solutionToAdd: Array<Move>) => {
+    // check for duplicates
+    if (solutionsList.some(solution => sequencesAreIdentical(solution, solutionToAdd))) {
+      return
+    }
+    solutionsList.push(solutionToAdd)
+  }
+
+  // TODO: can we increase MAX_SEARCH_COUNT to yield more solutions, or too slow?
+  const MAX_SEARCH_COUNT = 3000000
+  let searchCount = 0
+
+  const shouldStopSearch = () => isSolutionsListFull() || searchCount >= MAX_SEARCH_COUNT
+
+  const MAX_SUBOPTIMALITY = 2
+
+  // Depth limited search
+  // NOTE: MUTATES THE SOLUTION ARRAY
+  function solveDepthV2(
+    config: SolverConfig,
+    pruningTable: PruningTable,
+    cube: FaceletCube,
+    solution: Array<Move>,
+    depthRemaining: number,
+  ): boolean {
+
+    // if the accumulator is full or we reached state limit, return false immediately
+    if (shouldStopSearch()) {
+      return false
+    }
+
+    searchCount++
+
+    // pruning
+    let lowerBound: number | undefined = pruningTable[faceletCubeToString(cube)] // least # moves needed to solve this scram
+  
+    if (lowerBound === undefined) {
+      // if the pruning depth was 4 and it doesn't have our cube state,
+      // then we need 5 or more moves to solve the cube
+      lowerBound = config.pruningDepth + 1
+    }
+
+    if (lowerBound > depthRemaining) {
+      return false
+    }
+
+    if (isSolved(cube, pruningTable)) {
+      addSolution([...solution])
+      return true
+    }
+
+    // cube is unsolved but we still have some remaining depth
+    for (const move of config.moveset) {
+      // optimization: never use the same layer in consecutive moves
+      if (solution.length && layerOfMove(move) === layerOfMove(solution[solution.length - 1])) {
+        continue
+      }
+
+      // prevent exploring any solutions that are like the sequence `R L R2 L'`
+      // where the first and third moves are both the same layer
+      // and also both parallel to the second move
+      if (startsWithUselessParallelMoves(solution.concat(move))) {
+        continue
+      }
+
+      // try every available move by recursively calling solveDepth
+      solution.push(move)
+      let result = solveDepthV2(
+        config,
+        pruningTable,
+        applyMove(cube, move), // copy of cube + the move done
+        solution,
+        depthRemaining - 1,
+      )
+      // if a recursive call found a solution, then propagate the fact that a solution was found
+      if (result) return true
+      solution.pop() // otherwise, remove the move we tried and try another move
+    }
+    // ok we tried everything but nothing was found
+    return false
+  }
+
+
+  for (let depth = 0; depth <= config.depthLimit; depth++) {
+    solveDepthV2(config, pruningTable, maskedCube, [], depth)
+    if (shouldStopSearch()) {
+      break
+    }
+  }
+ 
+  // eliminate solutions that are way longer than the shortest one we found
+  if (solutionsList.length) {
+    // by nature of this algorithm, solutionsList is always sorted by length (best solutions first)
+    const bestSolutionLength = solutionsList[0].length
+    const maxSolutionLength = bestSolutionLength + MAX_SUBOPTIMALITY
+    return solutionsList.filter(solution => solution.length <= maxSolutionLength)
+  }
+
+  return solutionsList
+}
+
 // TODO: remove moveset param, and allow stuff like user-entered scrambles to be any valid Singmaster notation
 export function isValidNotation(notation: string, moveset: Array<Move> = HTM_MOVESET): boolean {
   const validTokens: Array<string> = moveset
@@ -196,7 +344,7 @@ export function isValidNFlip(n: number) {
 
 function nflipEOArray(n: number): Array<number> {
   if (!isValidNFlip) {
-    console.error("nflipEOArray(): must be even integer from 0 to 12 inclusive")
+    console.error("nflipEOArray(): must be an even integer from 0 to 12 inclusive")
     return Array(12).fill(0)
   }
   const goodEdges = Array<number>(12 - n).fill(0)

@@ -1,9 +1,11 @@
-import { FACES, AXES, SOLVER_CONFIG_NAMES } from "./constants"
+import { AXES, FACES, SLICES, SOLVER_CONFIG_NAMES } from "./constants"
 
 
 // ----- FACES  -----
 
 export type Face = typeof FACES[number]
+export type Slice = typeof SLICES[number]
+export type Layer = Face | Slice
 export type Facelet = Face | "O" | "X" // "O" is a facelet that identifies edge orientation, X is a wildcard facelet
 export type IndexedFacelet = number // int from 0 to 53, represents a facelet
 export type FaceletIndex = number // int from 0 to 53, represents a facelet's location
@@ -11,12 +13,12 @@ export type Axis = typeof AXES[number]
 export type Perm<T = FaceletIndex> = [T, T]
 export type Piece = Exclude<`${"U" | "D" | ""}${"F" | "B" | ""}${"R" | "L" | ""}`, "">
 
-
 // ----- MOVES AND NOTATION -----
 
 type Suffix = "" | "'" | "2"
 export type FaceTurn = `${Face}${Suffix}`
 export type CubeRotation = `${Axis}${Suffix}`
+// TODO: add SliceTurn as a move
 export type Move = FaceTurn | CubeRotation
 
 

@@ -10,7 +10,12 @@ import { randomScrambleForEvent } from "cubing/scramble"
 import SelectNFlip from "src/components/SelectNFlip"
 import type { Move } from "src/lib/types"
 
+import useScrambleAndSolution from "src/hooks/useScrambleAndSolution"
+
+
 export default function Trainer() {
+  // TODO
+  // const { scramble, solution, /* solutionString, isLoading, */ getNext /*, editScramble */ } = useScrambleAndSolution(scrambleConfig, solutionConfig)
   const [scram, setScram] = useState<Array<Move>>([])
   const [sol, setSol] = useState<Array<Move> | null>(null)
   const getScramble = useCallback(async () => {

@@ -42,4 +42,3 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     depthLimit: 10, // TODO: update this with god's number for cross
   }
 } as const
- 
