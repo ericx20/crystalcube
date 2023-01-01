@@ -277,5 +277,5 @@ const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) =
 
 
 const VersionBadge = () => (
-  <Badge textTransform="lowercase">v{APP_VERSION}</Badge>
+  <Badge textTransform="none">v{APP_VERSION}</Badge>
 )

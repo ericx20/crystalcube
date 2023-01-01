@@ -6,26 +6,54 @@ import ScrambleViewer from "src/components/ScrambleViewer"
 import SolutionsViewer from "src/components/View/SolutionsViewer"
 import useSpacebar from "src/hooks/useSpacebar"
 import SelectNFlip from "src/components/SelectNFlip"
-import type { Move, MoveSeq } from "src/lib/types"
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions"
-
 import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 
+import { useAtom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
+
+const scrambleModeAtom = atomWithStorage<ScrambleMode>("scrambleMode", "random")
+const nFlipAtom = atomWithStorage<number>("nFlip", 4)
+
 export default function Trainer() {
-  const [scrambleMode, setScrambleMode] = useState<ScrambleMode>("random")
-  const [nFlip, setNFlip] = useState(4)
+  const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
+  const [nFlip, setNFlip] = useAtom(nFlipAtom)
   const { scramble, solutions, getNext } = useScrambleAndSolutions(scrambleMode, nFlip)
-  useSpacebar(getNext)
+  
+  const [hideSolution, setHideSolution] = useState(true)
+
+  const getNextAndShowSpoiler = () => {
+    setHideSolution(true)
+    getNext()
+  }
+
+  const actionButtonText = hideSolution ? "reveal" : "next"
+
+  const mainAction = () => {
+    if (hideSolution) {
+      setHideSolution(false)
+    } else {
+      getNextAndShowSpoiler()
+    }
+  }
+
+  useSpacebar(mainAction)
 
   const isNFlipMode = scrambleMode === "nFlip"
   return (
     <VStack spacing="1rem">
       <ScrambleViewer scramble={scramble} nFlip = { isNFlipMode ? nFlip : undefined}/>
-      <SolutionsViewer scramble={scramble} solutions={solutions} mask={EOCROSS_MASK} showEO>
-        <Button onClick={getNext} w="100%">next</Button>
+      <SolutionsViewer
+        scramble={scramble}
+        solutions={solutions}
+        mask={EOCROSS_MASK}
+        showEO
+        hideSolution={hideSolution}
+        onRevealSolution={() => setHideSolution(false)}
+      >
+        <Button onClick={mainAction} w="100%">{actionButtonText}</Button>
       </SolutionsViewer>
-      {/* TODO */}
       <Container maxW="container.lg">
         <Card p="1.5rem">
           <VStack align="left">

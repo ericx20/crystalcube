@@ -349,8 +349,6 @@ export function solveV2(scram: MoveSeq, configName: SolverConfigName, preRotatio
     }
   }
 
-  console.log(searchCount)
-
   // eliminate solutions that are way longer than the shortest one we found
   const MAX_SUBOPTIMALITY = 2
   if (solutionsList.length) {

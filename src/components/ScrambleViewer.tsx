@@ -13,7 +13,7 @@ export default function ScrambleViewer({ scramble, nFlip }: ScrambleViewerProps)
         <Heading size="md">
           scramble
           {nFlip !== undefined && (
-            <Badge ml={2} colorScheme="purple">
+            <Badge ml={2} bg="#9b23eb" variant="solid">
               {nFlip} bad edges
             </Badge>
           )}

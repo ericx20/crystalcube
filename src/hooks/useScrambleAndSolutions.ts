@@ -5,8 +5,6 @@ import { nFlipScramble, parseNotation, solveV2 } from "src/lib/cubeLib"
 
 export type ScrambleMode = "random" | "nFlip"
 
-
-// TODO
 export default function useScrambleAndSolutions(mode: ScrambleMode, nFlip: number) {
   const [scramble, setScramble] = useState<MoveSeq>([])
   const [solutions, setSolutions] = useState<Array<MoveSeq>>([])

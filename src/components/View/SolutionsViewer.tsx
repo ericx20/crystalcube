@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Box, Badge, Button, Card, Container, Flex, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Divider, StackDivider, Stack } from "@chakra-ui/react"
+import { Box, Badge, Button, Card, Container, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Divider, StackDivider, Stack } from "@chakra-ui/react"
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
 import { moveSeqToString } from "src/lib/cubeLib"
@@ -9,10 +9,12 @@ interface SolutionsViewerProps {
   solutions: Array<MoveSeq>
   mask?: Mask
   showEO?: boolean
+  hideSolution?: boolean
+  onRevealSolution?: () => void
   children?: JSX.Element
 }
 
-export default function SolutionsViewer({ scramble, solutions, mask, showEO, children }: SolutionsViewerProps) {
+export default function SolutionsViewer({ scramble, solutions, mask, showEO, hideSolution = false, onRevealSolution = () => {}, children }: SolutionsViewerProps) {
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState(0)
   useEffect(() => {
     setSelectedSolutionIndex(0)
@@ -23,20 +25,22 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, chi
       <Card p="1.5rem">
         <VStack align="left">
           <Heading size="md">solutions</Heading>
-          <Stack direction={{ base: "column", md: "row" }} /* filter="blur(15px)" */>
-            <Box minW="17rem">
-              <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
-            </Box>          
-            {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
-            <Box w="100%" minW={0}>
-              <SolutionPlayer
-                scramble={scramble}
-                solution={selectedSolution ?? []}
-                mask={mask}
-                showEO={showEO}
-              />
-            </Box>
-          </Stack>
+          <Spoiler hide={hideSolution} onReveal={onRevealSolution}>
+            <Stack direction={{ base: "column", md: "row" }}>
+              <Box minW="17rem">
+                <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
+              </Box>          
+              {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
+              <Box w="100%" minW={0}>
+                <SolutionPlayer
+                  scramble={scramble}
+                  solution={selectedSolution ?? []}
+                  mask={mask}
+                  showEO={showEO}
+                />
+              </Box>
+            </Stack>
+          </Spoiler>
           {children}
         </VStack>
       </Card>
@@ -74,5 +78,41 @@ function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: 
         )
       })}
     </SimpleGrid>
+  )
+}
+
+interface SpoilerProps {
+  hide: boolean
+  onReveal: () => void
+  children: JSX.Element
+}
+
+function Spoiler({ hide, onReveal, children }: SpoilerProps) {
+  const styles = {
+    opacity: hide ? "0" : "1",
+    visibility: hide ? "hidden" : "visible",
+    transition: "opacity 0.3s linear",
+  }
+  return (
+    <Box
+      onClick={onReveal}
+      bg={hide ? "gray.800" : undefined}
+      borderRadius="md"
+      cursor={hide ? "pointer" : "cursor"}
+      position="relative"
+    >
+      {hide && (
+        <Badge
+          position="absolute"
+          top="50%"
+          left="50%"
+          transform="translate(-50%, -50%)"
+          fontSize="lg"
+        >
+          click to reveal
+        </Badge>
+      )}
+      <Box sx={styles}>{children}</Box>
+    </Box>
   )
 }
