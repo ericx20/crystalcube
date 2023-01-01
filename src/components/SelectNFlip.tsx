@@ -6,6 +6,7 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderMark,
+  Text,
 } from '@chakra-ui/react'
 import { isValidNFlip } from "src/lib/cubeLib"
 
@@ -22,20 +23,24 @@ export default function SelectNFlip({ nFlip, onSelectNFlip }: SelectNFlipProps) 
   }
 
   return (
-    <Slider
-      value={nFlip}
-      onChange={onSelectNFlip}
-      min={0}
-      max={12}
-      step={2}
-    >
-      {N_FLIPS.map(n => (
-        <SliderMark key={n} value={n}>{n}</SliderMark>
-      ))}
-      <SliderTrack>
-        <SliderFilledTrack/>
-      </SliderTrack>
-      <SliderThumb boxSize={6} />
-    </Slider>
+    <Box mb="1rem !important">
+      <Slider
+        value={nFlip}
+        onChange={onSelectNFlip}
+        min={0}
+        max={12}
+        step={2}
+      >
+        {N_FLIPS.map(n => (
+          <SliderMark key={n} value={n} w={6} ml={-3} mt={1}>
+            <Text align="center" fontSize="md">{n}</Text>
+          </SliderMark>
+        ))}
+        <SliderTrack>
+          <SliderFilledTrack/>
+        </SliderTrack>
+        <SliderThumb />
+      </Slider>
+    </Box>
   )
 }

@@ -47,7 +47,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO }: Sol
   return (
     <VStack align="left">
       {/* Desktop version */}
-      <Wrap spacingX="0rem" display={{ base: "none", sm: "flex" }} sx={{ marginX: "-0.25rem !important" }}>
+      <Wrap spacingX="0rem" display={{ base: "none", md: "flex" }} sx={{ marginX: "-0.25rem !important" }}>
         <SolutionMoveButton
           move={null}
           onClick={() => onSelect(-1)}
@@ -67,7 +67,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO }: Sol
         ))}
       </Wrap>
       {/* Mobile version */}
-      <Box pt={7} px={2} display={{ sm: "none" }}>
+      <Box pt={7} px={2} display={{ md: "none" }}>
         <Slider value={selectedMoveIndex} min={-1} max={solution.length - 1} onChange={onSelect}>
           {solution.length && (
             <SliderMark value={-1} ml="-0.75rem" mt="-2.35rem">
@@ -96,7 +96,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO }: Sol
         </Slider>
       </Box>
       {/* <React.Suspense fallback={<p>Loading...</p>}> */}
-      <Box h={[200, 300, 400]} borderWidth="1px" borderRadius="lg" cursor="move">
+      <Box h={[200, 250, 350]} borderWidth="1px" borderRadius="lg" cursor="move">
         <Cube moves={stateToShow} mask={mask} showEO={showEO} />
       </Box>
       {/* </React.Suspense> */}
@@ -150,7 +150,7 @@ function SolutionMoveButton({ move, isSelected, isPreviousMove, onClick, onMouse
       <Button
         colorScheme={isSelected ? "blue" : "gray"}
         isActive={isPreviousMove}
-        size={["xs", "sm", "md"]}
+        size={["xs", "xs", "sm", "md"]}
         width="1rem"
       >
         {move ?? <Icon as={VscCircleFilled} />}

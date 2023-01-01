@@ -1,15 +1,24 @@
-import { Card, Container, Heading, Text } from "@chakra-ui/react"
+import { Badge, Card, Container, Heading, Text } from "@chakra-ui/react"
 import type { Move, MoveSeq } from "src/lib/types"
 
 interface ScrambleViewerProps {
   scramble: MoveSeq,
+  nFlip?: number,
 }
 
-export default function ScrambleViewer({ scramble }: ScrambleViewerProps) {
+export default function ScrambleViewer({ scramble, nFlip }: ScrambleViewerProps) {
   return (
     <Container maxW="container.lg">
       <Card p="1.5rem">
-        <Heading size="md">scramble</Heading>
+        <Heading size="md">
+          scramble
+          {nFlip !== undefined && (
+            <Badge ml={2} colorScheme="purple">
+              {nFlip} bad edges
+            </Badge>
+          )}
+        </Heading>
+        
         <Text>{ scramble.join(" ") }</Text>
         {/* <FormControl isInvalid={!isValid}>
           <Input

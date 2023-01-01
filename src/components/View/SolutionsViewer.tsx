@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Box, Badge, Button, Card, Container, Flex, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Divider, StackDivider } from "@chakra-ui/react"
+import { Box, Badge, Button, Card, Container, Flex, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Divider, StackDivider, Stack } from "@chakra-ui/react"
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
 import { moveSeqToString } from "src/lib/cubeLib"
@@ -20,17 +20,23 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, chi
   const selectedSolution = solutions.at(selectedSolutionIndex)
   return (
     <Container maxW="container.lg">
-      <Card p="1.5rem" /* filter="blur(15px)" */>
-        <VStack align="left" display="inline-block">
+      <Card p="1.5rem">
+        <VStack align="left">
           <Heading size="md">solutions</Heading>
-          <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
-          {/* <Divider borderColor="whiteAlpha.400" /> */}
-          <SolutionPlayer
-            scramble={scramble}
-            solution={selectedSolution ?? []}
-            mask={mask}
-            showEO={showEO}
-          />
+          <Stack direction={{ base: "column", md: "row" }} /* filter="blur(15px)" */>
+            <Box minW="17rem">
+              <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
+            </Box>          
+            {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
+            <Box w="100%" minW={0}>
+              <SolutionPlayer
+                scramble={scramble}
+                solution={selectedSolution ?? []}
+                mask={mask}
+                showEO={showEO}
+              />
+            </Box>
+          </Stack>
           {children}
         </VStack>
       </Card>
@@ -46,7 +52,7 @@ interface SelectSolutionProps {
 
 function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: SelectSolutionProps) {
   return (
-    <SimpleGrid minChildWidth="20rem" spacing={2}>
+    <SimpleGrid spacing={2} minChildWidth="17rem">
       {solutions.map((solution, index) => {
         const solutionString = moveSeqToString(solution)
         const movecount = solution.length
