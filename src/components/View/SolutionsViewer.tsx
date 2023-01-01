@@ -60,6 +60,7 @@ function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: 
         return (
           <Button
             key={solutionString}
+            size={["sm", "md"]}
             onClick={() => onSelectSolution(index)}
             w="100%"
             justifyContent="left"

@@ -10,11 +10,16 @@ export default defineConfig({
     alias: {
       src: path.resolve('src/'),
     }
-    // alias: [
-    //   {
-    //     find: "@",
-    //     replacement: path.resolve(__dirname, "/src"),
-    //   },
-    // ],
+  },
+  define: {
+    'APP_VERSION': JSON.stringify(process.env.npm_package_version),
+  },
+  // This allows routing to work properly on GitHub pages
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {}
+      },
+    },
   },
 })

@@ -6,7 +6,7 @@ import {
   Container,
   Flex,
 } from "@chakra-ui/react"
-import NavBar from "./components/NavBar"
+import NavBar from "./components/NavBar/NavBar"
 import Home from "./pages/Home"
 import Trainer from "./pages/Trainer"
 import Tools from "./pages/Tools"

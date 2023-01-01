@@ -33,12 +33,12 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     moveset: HTM_MOVESET,
     mask: EOLINE_MASK,
     pruningDepth: 4, // TODO: can we increase it to 5?
-    depthLimit: 10,
+    depthLimit: 9,
   },
   Cross: {
     moveset: HTM_MOVESET,
     mask: CROSS_MASK,
     pruningDepth: 4, // TODO: can we increase it to 5?
-    depthLimit: 10, // TODO: update this with god's number for cross
+    depthLimit: 8, // TODO: update this with god's number for cross
   }
 } as const

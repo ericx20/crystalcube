@@ -21,7 +21,7 @@ export default function Cubie(props: JSX.IntrinsicElements['mesh'] & CubieProps)
     >
       {/* Base cubie */}
       <RoundedBox>
-        <meshBasicMaterial color={oriented ? "black" : "#8104d4"} />
+        <meshBasicMaterial color={oriented ? "black" : "#9b23eb"} />
       </RoundedBox>
       {/* All the stickers */}
       {FACES.flatMap(face => {

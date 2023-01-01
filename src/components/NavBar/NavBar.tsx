@@ -1,6 +1,5 @@
 import {
   Box,
-  Center,
   Flex,
   Text,
   IconButton,
@@ -17,6 +16,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   Image,
+  Badge,
 } from "@chakra-ui/react"
 import {
   HamburgerIcon,
@@ -27,9 +27,10 @@ import {
 import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Link as RouterLink } from "react-router-dom"
 import logo from "src/assets/crystalcube.png"
+import NAV_ITEMS, { NavItem } from "./navItems"
 
 export default function NavBar() {
-  const { isOpen, onToggle } = useDisclosure()
+  const { isOpen, onToggle, onClose } = useDisclosure()
 
   return (
     <Box>
@@ -45,7 +46,7 @@ export default function NavBar() {
         align="center">
         <Flex
           flex={{ base: 1, md: "auto" }}
-          ml={{ base: -2 }}
+          ml={-2}
           display={{ base: "flex", md: "none" }}>
           <IconButton
             onClick={onToggle}
@@ -56,17 +57,21 @@ export default function NavBar() {
             aria-label="Toggle Navigation"
           />
         </Flex>
-        <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <HStack as={RouterLink} to="">
+        <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
+          <HStack>
             <Image src={logo} boxSize="30px" objectFit="contain"/>
             <Text
               textAlign={useBreakpointValue({ base: "center", md: "left" })}
               fontFamily="heading"
               color={useColorModeValue("gray.800", "white")}
               fontWeight="semibold"
+              as={RouterLink} to=""
             >
               crystalcube
             </Text>
+            <Flex display={{ base: "none", sm: "flex"}}>
+              <VersionBadge />
+            </Flex>
           </HStack>
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
             <DesktopNav />
@@ -77,7 +82,9 @@ export default function NavBar() {
           flex={{ base: 1, md: 0 }}
           justify="flex-end"
           direction="row"
-          spacing={6}>
+          spacing={6}
+          mr={-2}
+        >
           {/* <Button
             as="a"
             fontSize="sm"
@@ -103,7 +110,7 @@ export default function NavBar() {
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav onClose={onClose} />
       </Collapse>
     </Box>
   )
@@ -196,32 +203,35 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   )
 }
 
-const MobileNav = () => {
+interface MobileNavProps { onClose: () => void }
+const MobileNav = ({ onClose }: MobileNavProps) => {
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
       p={4}
       display={{ md: "none" }}>
       {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem key={navItem.label} {...navItem} />
+        <MobileNavItem key={navItem.label} {...navItem} onClose={onClose} />
       ))}
     </Stack>
   )
 }
 
-const MobileNavItem = ({ label, children, href }: NavItem) => {
+type MobileNavItemProps = NavItem & MobileNavProps
+const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) => {
   const { isOpen, onToggle } = useDisclosure()
-
   return (
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
         py={2}
         as={children ? undefined : RouterLink}
         to={href ?? ""}
+        onClick={children ? undefined : onClose}
         justify="space-between"
         align="center"
         _hover={{
           textDecoration: "none",
+          cursor: "pointer",
         }}>
         <Text
           fontWeight={600}
@@ -249,7 +259,13 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
           align="start">
           {children &&
             children.map((child) => (
-              <Link as={child.href ? RouterLink : undefined} key={child.label} py={2} to={child.href ?? ""}>
+              <Link
+                as={child.href ? RouterLink : undefined}
+                key={child.label}
+                py={2}
+                to={child.href ?? ""}
+                onClick={onClose}
+                >
                 {child.label}
               </Link>
             ))}
@@ -259,25 +275,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
   )
 }
 
-interface NavItem {
-  label: string
-  subLabel?: string
-  children?: Array<NavItem>
-  href?: string
-}
 
-const NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "trainer",
-    href: "trainer/",
-  },
-  {
-    label: "tools",
-    children: [
-      {
-        label: "one handed scrambles",
-        href: "tools/ohscramble/",
-      },
-    ],
-  },
-]
+const VersionBadge = () => (
+  <Badge textTransform="lowercase">v{APP_VERSION}</Badge>
+)

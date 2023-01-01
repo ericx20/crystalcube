@@ -68,7 +68,7 @@ export default function Sticker({ face, facelet, oriented, label }: StickerProps
   const dot = (
     <mesh position={[0, 0, 0.5]} rotation={[0, 0, eighthTurn]}>
       <boxGeometry args={[misorientedDotSize, misorientedDotSize, 2*stickerThickness]} />
-      <meshBasicMaterial color="#8104d4" />
+      <meshBasicMaterial color="#9b23eb" />
     </mesh>
   )
   
@@ -82,7 +82,7 @@ export default function Sticker({ face, facelet, oriented, label }: StickerProps
   const hintDot = (
     <mesh position={[0, 0, hintStickerDistance - stickerThickness]} rotation={[0, halfTurn, eighthTurn]}>
       <planeGeometry args={[misorientedDotSize, misorientedDotSize]} />
-      <meshBasicMaterial color="#8104d4" />
+      <meshBasicMaterial color="#9b23eb" />
     </mesh>
   )
 

@@ -1,5 +1,5 @@
 import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Layer, Mask, Move, MoveSeq, PruningTable, SolverConfig, SolverConfigName } from "./types"
-import { AXES, HTM_MOVESET, LAYERS_PARALLEL_TO_AXES, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
+import { AXES, HTM_MOVESET, LAYERS_PARALLEL_TO_AXES, MOVE_PERMS, SOLVED_FACELET_CUBE, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
 import { getPruningTable } from "./pruningTableCache";
 
 import shuffle from "lodash/shuffle"
@@ -119,6 +119,37 @@ export function getFaceletCubeEO(cube: FaceletCube): EO {
     return (goodPurpleGroupFacelets.includes(purpleGroupFacelet) || GOOD_BLACK_GROUP_FACELETS.includes(blackGroupFacelet))
   })
 }
+
+function countBadEdges(cube: FaceletCube): number {
+  return getFaceletCubeEO(cube).reduce((n, x) => n + (x === false ? 1 : 0), 0)
+}
+
+// TODO: support premoves
+const EO_CHANGING_MOVES: Array<Move> = ["F", "F'", "B", "B'"]
+export function getEOSolutionAnnotation(scramble: MoveSeq, solution: MoveSeq): Array<string | null> {
+  const scrambledCube = applyMoves(SOLVED_FACELET_CUBE, scramble)
+  const badEdgeArray = [...Array(solution.length + 1).keys()].map(index => {
+    const state = applyMoves(scrambledCube, solution.slice(0, index))
+    return countBadEdges(state)
+  })
+
+  return solution.map((move, index) => {
+    const numBadEdges = badEdgeArray[index]
+    const nextNumBadEdges = badEdgeArray[index + 1]
+    const change = nextNumBadEdges - numBadEdges
+    if (!EO_CHANGING_MOVES.includes(move)) {
+      return null
+    }
+    if (change < 0) {
+      return change.toString()
+    }
+    if (change === 0) {
+      return "-0"
+    }
+    return "+" + change.toString()
+  })
+}
+
 // TODO NOW: apply mask to a regular facelet cube on its current state
 // make a function for that, and use that instead of getMaskedFaceletCube in Cube.tsx
 export function applyMask(cube: FaceletCube, mask: Mask): FaceletCube {
@@ -239,8 +270,7 @@ export function solveV2(scram: MoveSeq, configName: SolverConfigName, preRotatio
     solutionsList.push(solutionToAdd)
   }
 
-  // TODO: can we increase MAX_SEARCH_COUNT to yield more solutions, or too slow?
-  const MAX_SEARCH_COUNT = 3000000
+  const MAX_SEARCH_COUNT = 1000000
   let searchCount = 0
 
   const shouldStopSearch = () => isSolutionsListFull() || searchCount >= MAX_SEARCH_COUNT
@@ -318,7 +348,9 @@ export function solveV2(scram: MoveSeq, configName: SolverConfigName, preRotatio
       break
     }
   }
- 
+
+  console.log(searchCount)
+
   // eliminate solutions that are way longer than the shortest one we found
   const MAX_SUBOPTIMALITY = 2
   if (solutionsList.length) {

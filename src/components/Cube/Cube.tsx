@@ -54,7 +54,7 @@ export default function Cube({ moves = [], mask, showEO }: CubeProps) {
   ]
 
   return (
-    <Canvas camera={{ zoom: 2, position: [8, 8, 8] }} gl={{ antialias: true, toneMapping: NoToneMapping, pixelRatio: window.devicePixelRatio }}>
+    <Canvas camera={{ zoom: 2, position: [8, 8, 8] }} gl={{ antialias: true, toneMapping: NoToneMapping, pixelRatio: 2 }}>
       <OrbitControls
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI * 3 / 4}

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import {
   Box,
   Slider,
@@ -7,6 +6,7 @@ import {
   SliderThumb,
   SliderMark,
   Text,
+  useColorModeValue,
 } from '@chakra-ui/react'
 import { isValidNFlip } from "src/lib/cubeLib"
 
@@ -16,6 +16,9 @@ interface SelectNFlipProps {
 }
 
 const N_FLIPS = [0, 2, 4, 6, 8, 10, 12] as const
+
+// generated with https://cssgradient.io/ and https://meyerweb.com/eric/tools/color-blend/#:::hex
+const sliderGradient = "linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(222,182,248,1) 16.6%, rgba(238,218,252,1) 33.3%, rgba(188,108,242,1) 50%, rgba(205,145,245,1) 66.6%, rgba(155,35,235,1) 83.3%, rgba(172,72,238,1) 100%)"
 
 export default function SelectNFlip({ nFlip, onSelectNFlip }: SelectNFlipProps) {
   if (nFlip && !isValidNFlip(nFlip)) {
@@ -32,12 +35,12 @@ export default function SelectNFlip({ nFlip, onSelectNFlip }: SelectNFlipProps) 
         step={2}
       >
         {N_FLIPS.map(n => (
-          <SliderMark key={n} value={n} w={6} ml={-3} mt={1}>
-            <Text align="center" fontSize="md">{n}</Text>
+          <SliderMark key={n} value={n} w={6} ml={-3} mt={2}>
+            <Text align="center" fontSize={["md", "lg"]}>{n}</Text>
           </SliderMark>
         ))}
-        <SliderTrack>
-          <SliderFilledTrack/>
+        <SliderTrack bgGradient={sliderGradient}>
+          <SliderFilledTrack bg={useColorModeValue("blue.500", "blue.200")} />
         </SliderTrack>
         <SliderThumb />
       </Slider>
