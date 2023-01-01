@@ -229,9 +229,9 @@ const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) =
         onClick={children ? undefined : onClose}
         justify="space-between"
         align="center"
+        cursor="pointer"
         _hover={{
           textDecoration: "none",
-          cursor: "pointer",
         }}>
         <Text
           fontWeight={600}

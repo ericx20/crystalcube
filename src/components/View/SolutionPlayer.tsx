@@ -1,5 +1,5 @@
 import { lazy, MouseEventHandler, Suspense, useEffect, useState } from "react"
-import { Badge, Box, Button, Center, Icon, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Spinner, Text, VStack, Wrap } from "@chakra-ui/react"
+import { Box, Button, Center, Icon, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Spinner, Text, VStack, Wrap } from "@chakra-ui/react"
 import type { Move, MoveSeq, Mask } from "src/lib/types"
 import { VscCircleFilled } from "react-icons/vsc"
 import { IoCube, IoCubeOutline } from "react-icons/io5"
@@ -46,26 +46,31 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO }: Sol
   const eoAnnotation = getEOSolutionAnnotation(scramble, solution)
 
   const desktopScrubber = (
-    <Wrap spacingX="0rem" display={{ base: "none", md: "flex" }} sx={{ marginX: "-0.25rem !important" }}>
+    <Wrap
+      spacingX="0rem"
+      display={{ base: "none", md: "flex" }}
+      mx="-0.25rem !important"
+      overflow="visible"
+    >
+    <SolutionMoveButton
+      move={null}
+      moveAnnotation={null}
+      onClick={() => onSelect(-1)}
+      isSelected={selectedMoveIndex === -1}
+      isPreviousMove={selectedMoveIndex > -1}
+    />
+    {solution.map((move, index) => (
       <SolutionMoveButton
-        move={null}
-        moveAnnotation={null}
-        onClick={() => onSelect(-1)}
-        isSelected={selectedMoveIndex === -1}
-        isPreviousMove={selectedMoveIndex > -1}
+        key={index}
+        move={move}
+        moveAnnotation={eoAnnotation[index]}
+        onClick={() => onSelect(index)}
+        onMouseEnter={() => onHover(index)}
+        onMouseLeave={() => onHover(null)}
+        isSelected={selectedMoveIndex === index}
+        isPreviousMove={selectedMoveIndex > index}
       />
-      {solution.map((move, index) => (
-        <SolutionMoveButton
-          key={index}
-          move={move}
-          moveAnnotation={eoAnnotation[index]}
-          onClick={() => onSelect(index)}
-          onMouseEnter={() => onHover(index)}
-          onMouseLeave={() => onHover(null)}
-          isSelected={selectedMoveIndex === index}
-          isPreviousMove={selectedMoveIndex > index}
-        />
-      ))}
+    ))}
     </Wrap>
   )
 
@@ -166,29 +171,32 @@ function SolutionMoveButton({ move, moveAnnotation, isSelected, isPreviousMove, 
       px="0.25rem"
       cursor="pointer"
     >
-      <VStack spacing={0}>
-        <Button
-          colorScheme={isSelected ? "blue" : "gray"}
-          isActive={isPreviousMove}
-          size={["xs", "xs", "sm", "md"]}
-          width="1rem"
-          borderBottomRadius={showMoveAnnotation ? 0 : undefined}
-        >
-          {move ?? <Icon as={VscCircleFilled} />}
-        </Button>
+      <VStack spacing={0} position="relative">
         {showMoveAnnotation && (
           <Button
+            position="absolute"
+            transform="auto"
+            translateY="-1rem"
             bg="#9b23eb !important"
             color="whiteAlpha.900"
             size={["xs", "xs", "sm", "md"]}
             width="1rem"
             height="1rem !important"
             fontSize="sm"
-            borderTopRadius={showMoveAnnotation ? 0 : undefined}
+            borderBottomRadius={showMoveAnnotation ? 0 : undefined}
           >
             {moveAnnotation}
           </Button>
         )}
+        <Button
+          colorScheme={isSelected ? "blue" : "gray"}
+          isActive={isPreviousMove}
+          size={["xs", "xs", "sm", "md"]}
+          width="1rem"
+          borderTopRadius={showMoveAnnotation ? 0 : undefined}
+        >
+          {move ?? <Icon as={VscCircleFilled} />}
+        </Button>
       </VStack>
 
     </Box>
