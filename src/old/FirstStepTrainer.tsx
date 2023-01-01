@@ -18,7 +18,7 @@
 //   VStack,
 // } from "@chakra-ui/react"
 // import { isValidNotation, solve } from "src/lib/cubeLib"
-// import type { Move } from "src/lib/types"
+// import type { Move, MoveSeq } from "src/lib/types"
 //
 // enum Mode {
 //   EOCross = "EOCross",
@@ -42,7 +42,7 @@ export {}
 //     const generateSolution = async (scram: string) => {
 //       setLoading(true)
 //       // TODO: ASYNC IS NOT WORKING!
-//       const solution = scram === "" ? "" : solve(scram.split(" ").filter(m => m) as Array<Move>, mode)!.join(" ")
+//       const solution = scram === "" ? "" : solve(scram.split(" ").filter(m => m) as MoveSeq, mode)!.join(" ")
 //       setSolution(solution)
 //       setLoading(false)
 //     }

@@ -1,10 +1,12 @@
-import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Layer, Mask, Move, PruningTable, SolverConfig, SolverConfigName } from "./types"
+import type { Cube, CubeRotation, EO, Facelet, FaceletIndex, FaceletCube, IndexedFaceletCube, Layer, Mask, Move, MoveSeq, PruningTable, SolverConfig, SolverConfigName } from "./types"
 import { AXES, HTM_MOVESET, LAYERS_PARALLEL_TO_AXES, MOVE_PERMS, SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "./constants";
 import { getPruningTable } from "./pruningTableCache";
 
 import shuffle from "lodash/shuffle"
 import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search"
 import { KState } from "cubing/kpuzzle"
+
+// TODO: break up this file into multiple files
 
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
   const newCube = [...cube] as C
@@ -13,7 +15,7 @@ export function applyMove<C extends Cube>(cube: C, move: Move): C {
   return newCube
 }
 
-export function applyMoves<C extends Cube>(cube: C, moves: Array<Move>): C {
+export function applyMoves<C extends Cube>(cube: C, moves: MoveSeq): C {
   return moves.reduce(applyMove, cube)
 }
 
@@ -24,7 +26,7 @@ export function invertMove(move: Move): Move {
   return move[0] + "'" as Move;
 }
 
-export function invertMoves(moves: Array<Move>): Array<Move> {
+export function invertMoves(moves: MoveSeq): MoveSeq {
   return [...moves].reverse().map(move => invertMove(move))
 }
 
@@ -46,11 +48,15 @@ export function indexedFaceletCubeToFaceletCube(indexedFaceletCube: IndexedFacel
   return indexedFaceletCube.map(indexedFacelet => colorOfIndexedFacelet(indexedFacelet))
 }
 
-export function sequencesAreIdentical(a: Array<Move>, b: Array<Move>): boolean {
+export function sequencesAreIdentical(a: MoveSeq, b: MoveSeq): boolean {
   if (a.length !== b.length) {
     return false
   }
   return a.every((move, index) => move === b[index])
+}
+
+export function moveSeqToString(moveSeq: MoveSeq) {
+  return moveSeq.join(" ")
 }
 
 export function movesAreSameLayer(a: Move, b: Move): boolean {
@@ -147,7 +153,7 @@ function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
 // Depth limited search
 // NOTE: MUTATES THE SOLUTION ARRAY
 // TODO: nest this inside the solve() function and make it directly access its pruningTable (and solutions accumulator) in scope
-function solveDepth(config: SolverConfig, pruningTable: PruningTable, cube: FaceletCube, solution: Array<Move>, depthRemaining: number): Array<Move> | null {
+function solveDepth(config: SolverConfig, pruningTable: PruningTable, cube: FaceletCube, solution: MoveSeq, depthRemaining: number): MoveSeq | null {
   if (isSolved(cube, pruningTable)) return solution // cube is solved! return what we got
   
   // pruning
@@ -185,7 +191,8 @@ function solveDepth(config: SolverConfig, pruningTable: PruningTable, cube: Face
 
 // NOTE: solve() is fixed orientation
 // Pre-rotation sets the desired cube orientation
-export function solve(scram: Array<Move>, configName: SolverConfigName, preRotation: Array<CubeRotation> = []): Array<Move> | null {
+/** @deprecated */
+export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<CubeRotation> = []): MoveSeq | null {
   const config = SOLVER_CONFIGS[configName]
 
   const translatedScramble = invertMoves(preRotation).concat(scram).concat(preRotation)
@@ -202,7 +209,7 @@ export function solve(scram: Array<Move>, configName: SolverConfigName, preRotat
   return null
 }
 
-function startsWithUselessParallelMoves(solution: Array<Move>): boolean {
+function startsWithUselessParallelMoves(solution: MoveSeq): boolean {
   if (solution.length < 3) {
     return false
   }
@@ -213,7 +220,7 @@ function startsWithUselessParallelMoves(solution: Array<Move>): boolean {
 // NOTE: solve() is fixed orientation
 // Pre-rotation sets the desired cube orientation
 // TODO: use numSolutions when calling solve()
-export function solveV2(scram: Array<Move>, configName: SolverConfigName, preRotation: Array<CubeRotation> = [], maxNumberOfSolutions = 5): Array<Array<Move>> {
+export function solveV2(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<CubeRotation> = [], maxNumberOfSolutions = 5): Array<MoveSeq> {
   const config = SOLVER_CONFIGS[configName]
 
   const translatedScramble = invertMoves(preRotation).concat(scram).concat(preRotation)
@@ -222,9 +229,9 @@ export function solveV2(scram: Array<Move>, configName: SolverConfigName, preRot
 
   const pruningTable = getPruningTable(configName)
 
-  const solutionsList: Array<Array<Move>> = []
+  const solutionsList: Array<MoveSeq> = []
   const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
-  const addSolution = (solutionToAdd: Array<Move>) => {
+  const addSolution = (solutionToAdd: MoveSeq) => {
     // check for duplicates
     if (solutionsList.some(solution => sequencesAreIdentical(solution, solutionToAdd))) {
       return
@@ -238,15 +245,13 @@ export function solveV2(scram: Array<Move>, configName: SolverConfigName, preRot
 
   const shouldStopSearch = () => isSolutionsListFull() || searchCount >= MAX_SEARCH_COUNT
 
-  const MAX_SUBOPTIMALITY = 2
-
   // Depth limited search
   // NOTE: MUTATES THE SOLUTION ARRAY
   function solveDepthV2(
     config: SolverConfig,
     pruningTable: PruningTable,
     cube: FaceletCube,
-    solution: Array<Move>,
+    solution: MoveSeq,
     depthRemaining: number,
   ): boolean {
 
@@ -315,6 +320,7 @@ export function solveV2(scram: Array<Move>, configName: SolverConfigName, preRot
   }
  
   // eliminate solutions that are way longer than the shortest one we found
+  const MAX_SUBOPTIMALITY = 2
   if (solutionsList.length) {
     // by nature of this algorithm, solutionsList is always sorted by length (best solutions first)
     const bestSolutionLength = solutionsList[0].length
@@ -326,15 +332,15 @@ export function solveV2(scram: Array<Move>, configName: SolverConfigName, preRot
 }
 
 // TODO: remove moveset param, and allow stuff like user-entered scrambles to be any valid Singmaster notation
-export function isValidNotation(notation: string, moveset: Array<Move> = HTM_MOVESET): boolean {
+export function isValidNotation(notation: string, moveset: MoveSeq = HTM_MOVESET): boolean {
   const validTokens: Array<string> = moveset
   // either the scramble is empty, OR when you split the sequence by spaces, each token is a valid move
   return notation === "" || notation.trim().split(" ").every((token) => validTokens.includes(token))
 }
 
-export function parseNotation(algString: string): Array<Move> {
+export function parseNotation(algString: string): MoveSeq {
   return isValidNotation(algString)
-    ? algString.split(" ").filter(m => m) as Array<Move>
+    ? algString.split(" ").filter(m => m) as MoveSeq
     : []
 }
 
@@ -342,9 +348,9 @@ export function isValidNFlip(n: number) {
   return Number.isInteger(n) && n % 2 === 0
 }
 
-function nflipEOArray(n: number): Array<number> {
+function nFlipEOArray(n: number): Array<number> {
   if (!isValidNFlip) {
-    console.error("nflipEOArray(): must be an even integer from 0 to 12 inclusive")
+    console.error("nFlipEOArray(): must be an even integer from 0 to 12 inclusive")
     return Array(12).fill(0)
   }
   const goodEdges = Array<number>(12 - n).fill(0)
@@ -352,12 +358,12 @@ function nflipEOArray(n: number): Array<number> {
   return shuffle(goodEdges.concat(badEdges))
 }
 
-export async function nflipScramble(n: number): Promise<Array<Move>> {
+export async function nFlipScramble(n: number): Promise<MoveSeq> {
   const { kpuzzle, stateData } = await random333State()
   const newStateData = {
     ...stateData,
     EDGES: {
-      orientation: nflipEOArray(n),
+      orientation: nFlipEOArray(n),
       pieces: stateData.EDGES.pieces
     }
   }
@@ -365,13 +371,3 @@ export async function nflipScramble(n: number): Promise<Array<Move>> {
   const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle)
   return invertMoves(parseNotation(solution.toString()))
 }
-
-// const nflipPrint = async (n: number) => {
-//   const scram = await nflipScramble(n)
-//   console.log(n, scram.join(" "))
-// }
-
-// // test!
-// for (let n = 0; n <= 12; n += 2) {
-//   nflipPrint(n)
-// }
