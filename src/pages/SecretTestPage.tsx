@@ -23,7 +23,7 @@ import SelectNFlip from "src/components/SelectNFlip"
 // console.time('eocross')
 // scrambles.forEach((scramble) => {
 //   // const solution = solve(scramble, "EOCross")
-//   const solutions = solveV2(scramble, "EOCross")
+//   const solutions = solveV2(scramble, "EOCross", [], 10)
 //   // console.log(solution)
 //   // solutions.forEach(sol => {
 //   //   console.log(sol.length, sol.join(" "))
