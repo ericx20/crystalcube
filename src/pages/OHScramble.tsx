@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useCallback, useEffect, useState } from "react"
 import {
   Button,
   Box,
@@ -25,18 +25,23 @@ import { randomScrambleForEvent } from "cubing/scramble"
 import { translateToOH } from "../utils/translateToOH"
 import CubeViewer from "../components/CubeViewer";
 import useSpacebar from "src/hooks/useSpacebar";
+import { useAtom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
+
+const isLeftyAtom = atomWithStorage("isLefty", true)
+const isLowercaseWideAtom = atomWithStorage("isLowercaseWide", true)
 
 export default function OHScramble() {
-  const [rawScramble, setRawScramble] = React.useState(new Alg(""))
-  const [scramble, setScramble] = React.useState(new Alg(""))
-  const [isLoading, setLoading] = React.useState(false)
-  const [isLefty, setIsLefty] = React.useState(true)
-  const [isLowercaseWide, setLowercaseWide] = React.useState(true)
+  const [rawScramble, setRawScramble] = useState(new Alg(""))
+  const [scramble, setScramble] = useState(new Alg(""))
+  const [isLoading, setLoading] = useState(false)
+  const [isLefty, setIsLefty] = useAtom(isLeftyAtom)
+  const [isLowercaseWide, setLowercaseWide] = useAtom(isLowercaseWideAtom)
 
   const { hasCopied, onCopy } = useClipboard(scramble.toString())
   const { isOpen: showSettings, onToggle: toggleShowSettings } = useDisclosure()
 
-  const getNewScramble = React.useCallback(async () => {
+  const getNewScramble = useCallback(async () => {
     // promise to generate/translate OH scramble
     // resolves to false and stops the loading spinner
     const getRawScramble = new Promise<false>(async (res) => {
@@ -51,18 +56,18 @@ export default function OHScramble() {
     setLoading(showLoading)
   }, [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     setScramble(translateToOH(rawScramble, isLefty, isLowercaseWide))
     console.log("original:", rawScramble.toString())
   }, [rawScramble, isLefty, isLowercaseWide])
 
   useSpacebar(getNewScramble)
 
-  React.useEffect(() => {
+  useEffect(() => {
     getNewScramble()
   }, [getNewScramble])
 
-  const Buttons = () => (
+  const buttons = (
     <Flex w="100%">
       <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
         <Button onClick={onCopy}>copy</Button>
@@ -82,7 +87,7 @@ export default function OHScramble() {
     </Flex>
   )
 
-  const Settings = () => (
+  const settings = (
     <Flex w="100%" bg={useColorModeValue("#EDF2F7", "#2C313D")} rounded="md" p={3}>
       <HStack spacing={10}>
         <HStack>
@@ -115,10 +120,10 @@ export default function OHScramble() {
           </Text>
         </Skeleton>
         <Container>
-          <Buttons />
+          {buttons}
         </Container>
         <Collapse in={showSettings} animateOpacity>
-          <Settings />
+          {settings}
         </Collapse>
       </VStack>
     </SlideFade>
