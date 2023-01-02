@@ -22,13 +22,13 @@ import SelectNFlip from "src/components/SelectNFlip"
 
 // console.time('eocross')
 // scrambles.forEach((scramble) => {
-//   const solution = solve(scramble, "EOCross")
+//   // const solution = solve(scramble, "EOCross")
 //   const solutions = solveV2(scramble, "EOCross")
-//   console.log(solution)
-//   solutions.forEach(sol => {
-//     console.log(sol.length, sol.join(" "))
-//   })
-//   console.log("----------")
+//   // console.log(solution)
+//   // solutions.forEach(sol => {
+//   //   console.log(sol.length, sol.join(" "))
+//   // })
+//   // console.log("----------")
 // })
 // console.timeEnd('eocross')
 

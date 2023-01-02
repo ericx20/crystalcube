@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useState } from "react"
 import { Button, Card, Container, Heading, HStack, RadioGroup, Radio, VStack } from "@chakra-ui/react"
 
 import { EOCROSS_MASK } from "src/lib/constants"

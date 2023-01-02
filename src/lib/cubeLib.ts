@@ -326,7 +326,7 @@ export function solveV2(scram: MoveSeq, configName: SolverConfigName, preRotatio
 
       // try every available move by recursively calling solveDepth
       solution.push(move)
-      let result = solveDepthV2(
+      solveDepthV2(
         config,
         pruningTable,
         applyMove(cube, move), // copy of cube + the move done
@@ -334,7 +334,7 @@ export function solveV2(scram: MoveSeq, configName: SolverConfigName, preRotatio
         depthRemaining - 1,
       )
       // if a recursive call found a solution, then propagate the fact that a solution was found
-      if (result) return true
+      // if (result) return true
       solution.pop() // otherwise, remove the move we tried and try another move
     }
     // ok we tried everything but nothing was found
