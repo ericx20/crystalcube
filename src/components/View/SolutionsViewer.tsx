@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Box, Badge, Button, Card, Container, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Divider, StackDivider, Stack } from "@chakra-ui/react"
+import { Box, Badge, Button, Card, Container, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Stack } from "@chakra-ui/react"
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
 import { moveSeqToString } from "src/lib/cubeLib"
@@ -62,6 +62,8 @@ interface SelectSolutionProps {
 }
 
 function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: SelectSolutionProps) {
+  const badgeColorScheme = useColorModeValue(undefined, "gray")
+  const badgeSelectedColorScheme = useColorModeValue("blackAlpha", "blue")
   return (
     <SimpleGrid spacing={2} minChildWidth="17rem">
       {solutions.map((solution, index) => {
@@ -78,7 +80,7 @@ function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: 
             colorScheme={isSelected ? "blue" : undefined}
           >
             <HStack>
-              <Badge colorScheme={isSelected ? "grey" : undefined}>{movecount} HTM</Badge>
+              <Badge colorScheme={isSelected ? badgeSelectedColorScheme : badgeColorScheme} variant="solid">{movecount} HTM</Badge>
               <Text>{solutionString}</Text>
             </HStack>
           </Button>
