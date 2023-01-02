@@ -5,7 +5,7 @@ import { nFlipScramble, parseNotation, solveV2 } from "src/lib/cubeLib"
 
 export type ScrambleMode = "random" | "nFlip"
 
-export default function useScrambleAndSolutions(mode: ScrambleMode, nFlip: number) {
+export default function useScrambleAndSolutions(mode: ScrambleMode, nFlip: number, onNewScramble?: () => void) {
   const [scramble, setScramble] = useState<MoveSeq>([])
   const [solutions, setSolutions] = useState<Array<MoveSeq>>([])
 
@@ -22,6 +22,7 @@ export default function useScrambleAndSolutions(mode: ScrambleMode, nFlip: numbe
     const solutions = solveV2(scramble, "EOCross")
     setScramble(scramble)
     setSolutions(solutions)
+    onNewScramble && onNewScramble()
   }, [getScramble])
 
   // generate scram+solution upon load or whenever the settings change

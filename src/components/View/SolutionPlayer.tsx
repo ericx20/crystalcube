@@ -11,9 +11,10 @@ interface SolutionPlayerProps {
   solution: MoveSeq | null
   mask?: Mask
   showEO?: boolean
+  hideSolution?: boolean
 }
 
-export default function SolutionPlayer({ scramble, solution, mask, showEO }: SolutionPlayerProps) {
+export default function SolutionPlayer({ scramble, solution, mask, showEO, hideSolution }: SolutionPlayerProps) {
   const [selectedMoveIndex, setSelectedMoveIndex] = useState(-1) // -1 means the at the start before any moves
   const [hoveredMoveIndex, setHoveredMoveIndex] = useState<number | null>(null)
   const currentIndex = hoveredMoveIndex ?? selectedMoveIndex
@@ -59,18 +60,23 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO }: Sol
       isSelected={selectedMoveIndex === -1}
       isPreviousMove={selectedMoveIndex > -1}
     />
-    {solution.map((move, index) => (
-      <SolutionMoveButton
-        key={index}
-        move={move}
-        moveAnnotation={eoAnnotation[index]}
-        onClick={() => onSelect(index)}
-        onMouseEnter={() => onHover(index)}
-        onMouseLeave={() => onHover(null)}
-        isSelected={selectedMoveIndex === index}
-        isPreviousMove={selectedMoveIndex > index}
-      />
-    ))}
+    {solution.map((move, index) => {
+      const isSelected = selectedMoveIndex === index
+      const isPreviousMove = selectedMoveIndex > index
+      return (
+        <SolutionMoveButton
+          key={index}
+          move={move}
+          moveAnnotation={eoAnnotation[index]}
+          onClick={() => onSelect(index)}
+          onMouseEnter={() => onHover(index)}
+          onMouseLeave={() => onHover(null)}
+          isSelected={isSelected}
+          isPreviousMove={isPreviousMove}
+          hide={hideSolution && !isSelected && !isPreviousMove}
+        />
+      )
+    })}
     </Wrap>
   )
 
@@ -94,6 +100,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO }: Sol
               moveAnnotation={eoAnnotation[index]}
               isSelected={selectedMoveIndex === index}
               isPreviousMove={selectedMoveIndex > index}
+              hide={hideSolution}
             />
           </SliderMark>
         ))}
@@ -127,13 +134,14 @@ interface SolutionMoveLabelProps {
   moveAnnotation: string | null
   isSelected?: boolean
   isPreviousMove?: boolean
+  hide?: boolean
 }
 
-function SolutionMoveLabel({ move, moveAnnotation, isSelected, isPreviousMove }: SolutionMoveLabelProps) {
-  const showMoveAnnotation = moveAnnotation !== null
+function SolutionMoveLabel({ move, moveAnnotation, isSelected, isPreviousMove, hide = false }: SolutionMoveLabelProps) {
+  const showMoveAnnotation = moveAnnotation !== null && !hide
   return (
     <Box w={6} h={6}>
-      <Center w={6} h={3} bg={showMoveAnnotation ? "#9b23eb" : undefined} color="white" borderRadius="md">
+      <Center visibility={showMoveAnnotation ? "visible" : "hidden"} w={6} h={3} bg="#9b23eb" color="white" borderRadius="md">
         <Text fontSize="xs">{moveAnnotation}</Text>
       </Center>
       <Text
@@ -143,7 +151,7 @@ function SolutionMoveLabel({ move, moveAnnotation, isSelected, isPreviousMove }:
         fontWeight={isSelected ? "bold" : "normal"}
         opacity={(isSelected || isPreviousMove) ? 1 : 0.7}
         >
-        {move ?? <Icon as={VscCircleFilled} />}
+        {hide ? "?" : (move ?? <Icon as={VscCircleFilled} />)}
       </Text>
     </Box>
   )
@@ -154,14 +162,15 @@ interface SolutionMoveButtonProps {
   moveAnnotation: string | null
   isSelected?: boolean
   isPreviousMove?: boolean
+  hide?: boolean
   onClick?: () => void
   onMouseEnter?: MouseEventHandler<HTMLDivElement>
   onMouseLeave?: MouseEventHandler<HTMLDivElement>
 }
 
 // For desktop
-function SolutionMoveButton({ move, moveAnnotation, isSelected, isPreviousMove, onClick, onMouseEnter, onMouseLeave }: SolutionMoveButtonProps) {
-  const showMoveAnnotation = moveAnnotation !== null
+function SolutionMoveButton({ move, moveAnnotation, isSelected, isPreviousMove, hide = false, onClick, onMouseEnter, onMouseLeave }: SolutionMoveButtonProps) {
+  const showMoveAnnotation = moveAnnotation !== null && !hide
   return (
     <Box
       as="div"
@@ -195,7 +204,7 @@ function SolutionMoveButton({ move, moveAnnotation, isSelected, isPreviousMove, 
           width="1rem"
           borderTopRadius={showMoveAnnotation ? 0 : undefined}
         >
-          {move ?? <Icon as={VscCircleFilled} />}
+          {hide ? "?" : (move ?? <Icon as={VscCircleFilled} />)}
         </Button>
       </VStack>
 

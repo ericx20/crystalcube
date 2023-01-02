@@ -17,16 +17,8 @@ const scrambleModeAtom = atomWithStorage<ScrambleMode>("scrambleMode", "random")
 const nFlipAtom = atomWithStorage<number>("nFlip", 4)
 
 export default function Trainer() {
-  const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
-  const [nFlip, setNFlip] = useAtom(nFlipAtom)
-  const { scramble, solutions, getNext } = useScrambleAndSolutions(scrambleMode, nFlip)
-  
-  const [hideSolution, setHideSolution] = useState(true)
 
-  const getNextAndShowSpoiler = () => {
-    setHideSolution(true)
-    getNext()
-  }
+  const [hideSolution, setHideSolution] = useState(true)
 
   const actionButtonText = hideSolution ? "reveal" : "next"
 
@@ -34,11 +26,20 @@ export default function Trainer() {
     if (hideSolution) {
       setHideSolution(false)
     } else {
-      getNextAndShowSpoiler()
+      getNext()
     }
   }
 
   useSpacebar(mainAction)
+
+  const onNewScramble = () => {
+    setHideSolution(true)
+  }
+
+  const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
+  const [nFlip, setNFlip] = useAtom(nFlipAtom)
+  const { scramble, solutions, getNext } = useScrambleAndSolutions(scrambleMode, nFlip, onNewScramble)
+  
 
   const isNFlipMode = scrambleMode === "nFlip"
   return (

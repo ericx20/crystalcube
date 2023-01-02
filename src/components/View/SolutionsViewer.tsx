@@ -20,16 +20,23 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, hid
     setSelectedSolutionIndex(0)
   }, [solutions])
   const selectedSolution = solutions.at(selectedSolutionIndex)
+  const badgeText = solutions.length ? `best: ${solutions[0].length} HTM` : ""
   return (
     <Container maxW="container.lg">
       <Card p="1.5rem">
         <VStack align="left">
-          <Heading size="md">solutions</Heading>
-          <Spoiler hide={hideSolution} onReveal={onRevealSolution}>
+          <Heading size="md">
+            solutions
+            <Badge ml={2} colorScheme="blue" variant="solid">
+              {badgeText}
+            </Badge>
+          </Heading>
             <Stack direction={{ base: "column", md: "row" }}>
-              <Box minW="17rem">
-                <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
-              </Box>          
+              <Spoiler hide={solutions.length ? hideSolution : false} onReveal={onRevealSolution}>
+                <Box minW="17rem">
+                  <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
+                </Box>
+              </Spoiler> 
               {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
               <Box w="100%" minW={0}>
                 <SolutionPlayer
@@ -37,10 +44,10 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, hid
                   solution={selectedSolution ?? []}
                   mask={mask}
                   showEO={showEO}
+                  hideSolution={hideSolution}
                 />
               </Box>
             </Stack>
-          </Spoiler>
           {children}
         </VStack>
       </Card>
