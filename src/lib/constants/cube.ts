@@ -97,5 +97,5 @@ export const MOVE_PERMS: { [move in Move]: Array<Perm> } = {
   "z2": [[ 0, 53], [ 1, 52], [ 2, 51], [ 3, 50], [ 4, 49], [ 5, 48], [ 6, 47], [ 7, 46], [ 8, 45], [ 9, 41], [10, 40], [11, 39], [12, 38], [13, 37], [14, 36], [15, 35], [16, 34], [17, 33], [18, 44], [19, 43], [20, 42], [21, 29], [22, 28], [23, 27], [24, 26], [26, 24], [27, 23], [28, 22], [29, 21], [30, 32], [32, 30], [33, 17], [34, 16], [35, 15], [36, 14], [37, 13], [38, 12], [39, 11], [40, 10], [41,  9], [42, 20], [43, 19], [44, 18], [45,  8], [46,  7], [47,  6], [48,  5], [49,  4], [50,  3], [51,  2], [52,  1], [53,  0]],
 }
 
-const moveSearchOrder: Array<Move> = ["R", "U", "F", "L", "D", "B"]
-export const HTM_MOVESET = moveSearchOrder.flatMap(m => [m, m + "'", m + "2"]) as MoveSeq
+export const HTM_MOVESET = FACES.flatMap(m => [m, m + "'", m + "2"]) as Array<Move>
+export const HTM_MOVESET_BIASED_RUF = ["R", "U", "F", "L", "D", "B"].flatMap(m => [m, m + "'", m + "2"]) as Array<Move>

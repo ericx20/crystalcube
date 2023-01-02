@@ -91,12 +91,13 @@ function Spoiler({ hide, onReveal, children }: SpoilerProps) {
   const styles = {
     opacity: hide ? "0" : "1",
     visibility: hide ? "hidden" : "visible",
-    transition: "opacity 0.3s linear",
+    transition: "opacity 0.12s linear",
   }
+  const coverColor = useColorModeValue("gray.300", "gray.800")
   return (
     <Box
       onClick={onReveal}
-      bg={hide ? "gray.800" : undefined}
+      bg={hide ? coverColor : undefined}
       borderRadius="md"
       cursor={hide ? "pointer" : "cursor"}
       position="relative"
