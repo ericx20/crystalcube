@@ -63,6 +63,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
     {solution.map((move, index) => {
       const isSelected = selectedMoveIndex === index
       const isPreviousMove = selectedMoveIndex > index
+      const hideMove = hideSolution && !isSelected && !isPreviousMove
       return (
         <SolutionMoveButton
           key={index}
@@ -73,7 +74,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
           onMouseLeave={() => onHover(null)}
           isSelected={isSelected}
           isPreviousMove={isPreviousMove}
-          hide={hideSolution && !isSelected && !isPreviousMove}
+          hide={hideMove}
         />
       )
     })}
@@ -93,17 +94,22 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
             />
           </SliderMark>
         )}
-        {solution.map((move, index) => (
-          <SliderMark key={index} value={index} ml="-0.75rem" mt="-3.3rem">
-            <SolutionMoveLabel
-              move={move}
-              moveAnnotation={eoAnnotation[index]}
-              isSelected={selectedMoveIndex === index}
-              isPreviousMove={selectedMoveIndex > index}
-              hide={hideSolution}
-            />
-          </SliderMark>
-        ))}
+        {solution.map((move, index) => {
+          const isSelected = selectedMoveIndex === index
+          const isPreviousMove = selectedMoveIndex > index
+          const hideMove = hideSolution && !isSelected && !isPreviousMove
+          return (
+            <SliderMark key={index} value={index} ml="-0.75rem" mt="-3.3rem">
+              <SolutionMoveLabel
+                move={move}
+                moveAnnotation={eoAnnotation[index]}
+                isSelected={isSelected}
+                isPreviousMove={isPreviousMove}
+                hide={hideMove}
+              />
+            </SliderMark>
+          )
+        })}
         <SliderTrack>
           <SliderFilledTrack />
         </SliderTrack>
