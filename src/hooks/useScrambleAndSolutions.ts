@@ -9,7 +9,7 @@ export default function useScrambleAndSolutions(solverName: SolverConfigName, mo
   const [scramble, setScramble] = useState<MoveSeq>([])
   const [solutions, setSolutions] = useState<Array<MoveSeq>>([])
 
-  const getScramble: () => Promise<MoveSeq> = ({
+  const generateScramble: () => Promise<MoveSeq> = ({
     random: async () => {
       const rawScramble = await randomScrambleForEvent("333")
       return parseNotation(rawScramble.toString())
@@ -18,17 +18,23 @@ export default function useScrambleAndSolutions(solverName: SolverConfigName, mo
   })[mode]
 
   const getNext = useCallback(async () => {
-    const scramble = await getScramble()
+    const scramble = await generateScramble()
     const solutions = solveV2(scramble, solverName)
     setScramble(scramble)
     setSolutions(solutions)
     onNewScramble && onNewScramble()
-  }, [getScramble])
+  }, [generateScramble])
 
   // generate scram+solution upon load or whenever the settings change
   useEffect(() => {
     getNext()
-  }, [solverName, mode, nFlip])
+  }, [mode, nFlip])
+
+  // regenerate solution whenever solverName changes
+  useEffect(() => {
+    setSolutions(solveV2(scramble, solverName))
+    onNewScramble && onNewScramble()
+  }, [solverName])
 
   return {
     scramble,
