@@ -1,4 +1,4 @@
-import type { FaceletIndex, Mask, SolverConfig, SolverConfigName } from "../types"
+import type { FaceletIndex, Mask, Method, SolverConfig, SolverConfigName } from "../types"
 import { HTM_MOVESET_BIASED_RUF } from "./cube"
 
 const EO_FACELETS: Array<FaceletIndex> = [1, 3, 5, 7, 24, 26, 30, 32, 46, 48, 50, 52]
@@ -39,6 +39,14 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     moveset: HTM_MOVESET_BIASED_RUF,
     mask: CROSS_MASK,
     pruningDepth: 4, // TODO: can we increase it to 5?
-    depthLimit: 8, // TODO: update this with god's number for cross
+    depthLimit: 8,
   }
+} as const
+
+export const METHODS = ["CFOP", "ZZ"] as const
+
+// TODO: improve types here
+export const METHOD_SOLVERS = {
+  CFOP: ["Cross"],
+  ZZ: ["EOCross", "EOLine"],
 } as const

@@ -42,8 +42,6 @@ import SelectNFlip from "src/components/SelectNFlip"
 // })
 // console.timeEnd('eocross-old')
 
-
-
 // const test: MoveSeq = ["R", "U", "R'", "U", "R", "U2", "R'"]
 // console.log('original:', test)
 // console.log('invert:', invertMoves(test))
@@ -71,7 +69,7 @@ import SelectNFlip from "src/components/SelectNFlip"
 export default function SecretTestPage() {
   const [mode, setScrambleMode] = useState<ScrambleMode>("random")
   const [nFlip, setNFlip] = useState(4)
-  const { scramble, solutions, getNext } = useScrambleAndSolutions(mode, nFlip)
+  const { scramble, solutions, getNext } = useScrambleAndSolutions("EOCross", mode, nFlip)
   const scrambleString = moveSeqToString(scramble)
 
   const toggleMode = () => {
