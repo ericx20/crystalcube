@@ -17,7 +17,7 @@
 //   Text,
 //   VStack,
 // } from "@chakra-ui/react"
-// import { isValidNotation, solve } from "src/lib/cubeLib"
+// import { isValidNotation, solve } from "src/lib"
 // import type { Move, MoveSeq } from "src/lib/types"
 //
 // enum Mode {

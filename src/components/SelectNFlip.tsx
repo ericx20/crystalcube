@@ -8,7 +8,7 @@ import {
   Text,
   useColorModeValue,
 } from '@chakra-ui/react'
-import { isValidNFlip } from "src/lib/cubeLib"
+import { isValidNFlip } from "src/lib"
 
 interface SelectNFlipProps {
   nFlip: number

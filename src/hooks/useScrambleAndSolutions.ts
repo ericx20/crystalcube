@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { randomScrambleForEvent } from "cubing/scramble"
 import type { MoveSeq, SolverConfigName } from "src/lib/types"
-import { nFlipScramble, parseNotation, solveV2 } from "src/lib/cubeLib"
+import { nFlipScramble, parseNotation, solve } from "src/lib"
 
 export type ScrambleMode = "random" | "nFlip"
 
@@ -19,7 +19,7 @@ export default function useScrambleAndSolutions(solverName: SolverConfigName, mo
 
   const getNext = useCallback(async () => {
     const scramble = await generateScramble()
-    const solutions = solveV2(scramble, solverName)
+    const solutions = solve(scramble, solverName)
     setScramble(scramble)
     setSolutions(solutions)
     onNewScramble && onNewScramble()
@@ -32,7 +32,7 @@ export default function useScrambleAndSolutions(solverName: SolverConfigName, mo
 
   // regenerate solution whenever solverName changes
   useEffect(() => {
-    setSolutions(solveV2(scramble, solverName))
+    setSolutions(solve(scramble, solverName))
     onNewScramble && onNewScramble()
   }, [solverName])
 

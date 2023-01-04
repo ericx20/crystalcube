@@ -1,11 +1,11 @@
 import { useState } from "react"
-import { invertMove, invertMoves, parseNotation, solve, solveV2, movesAreParallel, moveSeqToString } from "src/lib/cubeLib"
+import { parseNotation, solve, movesAreParallel, moveSeqToString } from "src/lib"
+import { invertMove, invertMoves } from "src/lib/moves"
 import { CubeRotation, Move, MoveSeq } from "src/lib/types"
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions"
 import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 import { Button } from "@chakra-ui/react"
 import SelectNFlip from "src/components/SelectNFlip"
-// const scram = parseNotation("R")
 
 // const scrambles =
 // `F D2 B2 F U2 F L2 R2 U2 L2 R' B' U2 L R D2 L D' U R' 
@@ -22,29 +22,9 @@ import SelectNFlip from "src/components/SelectNFlip"
 
 // console.time('eocross')
 // scrambles.forEach((scramble) => {
-//   // const solution = solve(scramble, "EOCross")
-//   const solutions = solveV2(scramble, "EOCross", [], 10)
-//   // console.log(solution)
-//   // solutions.forEach(sol => {
-//   //   console.log(sol.length, sol.join(" "))
-//   // })
-//   // console.log("----------")
+//   solve(scramble, "EOCross", [], 1)
 // })
 // console.timeEnd('eocross')
-
-// console.time('eocross-old')
-// scrambles.forEach((scramble) => {
-//   const solution = solve(scramble, "EOCross")
-//   // solutions.forEach(sol => {
-//   //   console.log(sol.length, sol.join(" "))
-//   // })
-//   // console.log("----------")
-// })
-// console.timeEnd('eocross-old')
-
-// const test: MoveSeq = ["R", "U", "R'", "U", "R", "U2", "R'"]
-// console.log('original:', test)
-// console.log('invert:', invertMoves(test))
 
 // const allAngles: Array<Array<CubeRotation>> = [
 //   [],

@@ -2,7 +2,7 @@ import { NoToneMapping } from "three"
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from "@react-three/drei";
 import type { Face, Mask, MoveSeq, Piece } from "src/lib/types"
-import { applyMoves, getMaskedFaceletCube, getFaceletCubeEO } from 'src/lib/cubeLib';
+import { applyMoves, getMaskedFaceletCube, getFaceletCubeEO } from 'src/lib';
 import { SOLVED_INDEXED_FACELET_CUBE, SOLVED_FACELET_CUBE } from "src/lib/constants"
 import Cubie, { CubieFacelets } from "./Cubie"
 

@@ -1,9 +1,10 @@
 // TODO: persist in browser cache
 // TODO: make this load asynchronously in a web worker to not block the page from loading
 
-import { SOLVER_CONFIGS } from "./constants";
-import { genPruningTable } from "./cubeLib";
-import type { PruningTable, SolverConfigName } from "./types";
+import type { PruningTable, SolverConfigName } from "../types";
+import { SOLVER_CONFIGS } from "../constants";
+import { genPruningTable } from "./genPruningTable";
+
 
 const pruningTables = new Map<SolverConfigName, PruningTable>()
 

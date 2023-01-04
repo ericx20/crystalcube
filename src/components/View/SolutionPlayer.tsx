@@ -3,7 +3,7 @@ import { Box, Button, Center, Icon, Slider, SliderFilledTrack, SliderMark, Slide
 import type { Move, MoveSeq, Mask } from "src/lib/types"
 import { VscCircleFilled } from "react-icons/vsc"
 import { IoCube, IoCubeOutline } from "react-icons/io5"
-import { getEOSolutionAnnotation } from "src/lib/cubeLib"
+import { getEOSolutionAnnotation } from "src/lib"
 const Cube = lazy(() => import("src/components/Cube/Cube"))
 
 interface SolutionPlayerProps {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Box, Badge, Button, Card, Container, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Stack } from "@chakra-ui/react"
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
-import { moveSeqToString } from "src/lib/cubeLib"
+import { moveSeqToString } from "src/lib"
 
 interface SolutionsViewerProps {
   scramble: MoveSeq
