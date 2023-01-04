@@ -1,5 +1,5 @@
 import { Cube, Layer, Move, MoveSeq } from "./types";
-import { AXES, LAYERS_PARALLEL_TO_AXES, MOVE_PERMS } from "./constants";
+import { AXES, LAYERS_ALONG_AXES, MOVE_PERMS } from "./constants";
 
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
   const newCube = [...cube] as C;
@@ -49,7 +49,7 @@ export function movesAreParallel(a: Move, b: Move): boolean {
   const layerA = layerOfMove(a)
   const layerB = layerOfMove(b)
   return AXES.some(axis => {
-    const parallelLayers = LAYERS_PARALLEL_TO_AXES[axis]
+    const parallelLayers = LAYERS_ALONG_AXES[axis]
     return parallelLayers.includes(layerA) && parallelLayers.includes(layerB)
   })
 }

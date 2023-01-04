@@ -19,11 +19,12 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
   const solutionsList: Array<MoveSeq> = []
   const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
   const addSolution = (solutionToAdd: MoveSeq) => {
+    const sortedSolution = sortSimulMoves(solutionToAdd)
     // check for duplicates
-    if (solutionsList.some(solution => moveSeqsAreIdentical(solution, solutionToAdd))) {
+    if (solutionsList.some(solution => moveSeqsAreIdentical(solution, sortedSolution))) {
       return
     }
-    solutionsList.push(solutionToAdd)
+    solutionsList.push(sortedSolution)
   }
 
   const MAX_SEARCH_COUNT = 1000000
@@ -127,4 +128,27 @@ function startsWithUselessParallelMoves(solution: MoveSeq): boolean {
 
 function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
   return pruningTable[faceletCubeToString(cube)] === 0
+}
+
+function sortSimulMoves(solution: MoveSeq): MoveSeq {
+  const sortedSolution: MoveSeq = [...solution]
+  let i = 0
+  while (i < solution.length - 1) {
+    const currentMove = solution[i]
+    const nextMove = solution[i + 1]
+    if (movesAreParallel(currentMove, nextMove)) {
+      // sort moves lexicographically (in reverse)
+      if (currentMove > nextMove) {
+        sortedSolution[i] = currentMove
+        sortedSolution[i + 1] = nextMove
+      } else {
+        sortedSolution[i] = nextMove
+        sortedSolution[i + 1] = currentMove
+      }
+      i += 2
+    } else {
+      i++
+    }
+  }
+  return sortedSolution
 }

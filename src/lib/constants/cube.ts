@@ -4,7 +4,7 @@ export const FACES = ["R", "L", "U", "D", "F", "B"] as const
 
 export const SLICES = ["M", "E", "S"] as const
 
-export const LAYERS_PARALLEL_TO_AXES: { [layer in Axis]: Array<Layer>} = {
+export const LAYERS_ALONG_AXES: { [layer in Axis]: Array<Layer> } = {
   x: ["R", "M", "L"],
   y: ["U", "E", "D"],
   z: ["F", "S", "B"],
