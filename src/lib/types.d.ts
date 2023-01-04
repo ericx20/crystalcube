@@ -70,7 +70,4 @@ export interface SolutionWithPreRotation {
   solution: MoveSeq
 }
 
-// TODO
-export type SolverResult = SolutionWithPreRotation | null
-
 export type Method = typeof METHODS[number]

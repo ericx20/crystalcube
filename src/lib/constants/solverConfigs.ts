@@ -45,8 +45,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
 
 export const METHODS = ["CFOP", "ZZ"] as const
 
-// TODO: improve types here
 export const METHOD_SOLVERS = {
   CFOP: ["Cross"],
   ZZ: ["EOCross", "EOLine"],
-} as const
+} as const satisfies { [method in Method]: Readonly<Array<SolverConfigName>> }
