@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Button, Card, Container, Heading, HStack, RadioGroup, Radio, VStack } from "@chakra-ui/react"
 
 import { EOCROSS_MASK, EOLINE_MASK, METHOD_SOLVERS } from "src/lib/constants"
-import ScrambleViewer from "src/components/ScrambleViewer"
+import ScrambleViewer from "src/components/View/ScrambleViewer"
 import SolutionsViewer from "src/components/View/SolutionsViewer"
 import useSpacebar from "src/hooks/useSpacebar"
 import SelectNFlip from "src/components/SelectNFlip"

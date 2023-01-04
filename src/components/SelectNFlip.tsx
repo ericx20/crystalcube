@@ -18,7 +18,7 @@ interface SelectNFlipProps {
 const N_FLIPS = [0, 2, 4, 6, 8, 10, 12] as const
 
 // generated with https://cssgradient.io/ and https://meyerweb.com/eric/tools/color-blend/#:::hex
-const sliderGradient = "linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(222,182,248,1) 16.6%, rgba(238,218,252,1) 33.3%, rgba(188,108,242,1) 50%, rgba(205,145,245,1) 66.6%, rgba(155,35,235,1) 83.3%)"
+const sliderGradient = "linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(238,218,252,1) 16.67%, rgba(222,182,248,1) 33.33%, rgba(155,35,235,1) 50%, rgba(188,108,242,1) 66.67%, rgba(172,72,238,1) 83.33%, rgba(205,145,245,1) 100%)"
 
 export default function SelectNFlip({ nFlip, onSelectNFlip }: SelectNFlipProps) {
   if (nFlip && !isValidNFlip(nFlip)) {
