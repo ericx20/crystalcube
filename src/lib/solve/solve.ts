@@ -20,8 +20,8 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
   const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
   const addSolution = (solutionToAdd: MoveSeq) => {
     const sortedSolution = sortSimulMoves(solutionToAdd)
-    // check for duplicates
-    if (solutionsList.some(solution => moveSeqsAreIdentical(solution, sortedSolution))) {
+    // check for duplicates and similar solutions
+    if (solutionsList.some(solution => solutionsAreTooSimilar(solution, sortedSolution))) {
       return
     }
     solutionsList.push(sortedSolution)
@@ -118,16 +118,18 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
   return solutionsList
 }
 
+function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
+  return pruningTable[faceletCubeToString(cube)] === 0
+}
+
+// solution post-processing
+
 function startsWithUselessParallelMoves(solution: MoveSeq): boolean {
   if (solution.length < 3) {
     return false
   }
   const firstMove = solution[0], secondMove = solution[1], thirdMove = solution[2]
   return movesAreSameLayer(firstMove, thirdMove) && movesAreParallel(firstMove, secondMove)
-}
-
-function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
-  return pruningTable[faceletCubeToString(cube)] === 0
 }
 
 function sortSimulMoves(solution: MoveSeq): MoveSeq {
@@ -151,4 +153,25 @@ function sortSimulMoves(solution: MoveSeq): MoveSeq {
     }
   }
   return sortedSolution
+}
+
+// heuristic that eliminates a lot of solutions that are functionally the same
+function solutionsAreTooSimilar(solA: MoveSeq, solB: MoveSeq): boolean {
+  if (!solA.length && !solB.length) return true
+
+  const length = Math.min(solA.length, solB.length)
+
+  let numOfSimilarMoves = 0
+  for (let i = 0; i < length; i++) {
+    const moveA = solA[i]
+    const moveB = solB[i]
+    if (layerOfMove(moveA) === layerOfMove(moveB)) {
+      numOfSimilarMoves++
+    }
+    if (numOfSimilarMoves >= 3) {
+      return true
+    }
+  }
+
+  return false
 }
