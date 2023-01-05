@@ -3,6 +3,7 @@ import { Box, Badge, Button, Card, Container, Heading, HStack, VStack, useColorM
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
 import { moveSeqToString } from "src/lib"
+import TrainerCard from "./TrainerCard"
 
 interface SolutionsViewerProps {
   scramble: MoveSeq
@@ -11,7 +12,7 @@ interface SolutionsViewerProps {
   showEO?: boolean
   hideSolution?: boolean
   onRevealSolution?: () => void
-  children?: JSX.Element
+  children?: React.ReactNode
 }
 
 export default function SolutionsViewer({ scramble, solutions, mask, showEO, hideSolution = false, onRevealSolution = () => {}, children }: SolutionsViewerProps) {
@@ -22,36 +23,32 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, hid
   const selectedSolution = solutions.at(selectedSolutionIndex)
   const badgeText = solutions.length ? `best: ${solutions[0].length} HTM` : ""
   return (
-    <Container maxW="container.lg">
-      <Card p="1.5rem">
-        <VStack align="left">
-          <Heading size="md">
-            solutions
-            <Badge ml={2} colorScheme="blue" variant="solid">
-              {badgeText}
-            </Badge>
-          </Heading>
-            <Stack direction={{ base: "column", md: "row" }}>
-              <Spoiler hide={solutions.length ? hideSolution : false} onReveal={onRevealSolution}>
-                <Box minW="17rem">
-                  <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
-                </Box>
-              </Spoiler> 
-              {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
-              <Box w="100%" minW={0}>
-                <SolutionPlayer
-                  scramble={scramble}
-                  solution={selectedSolution ?? []}
-                  mask={mask}
-                  showEO={showEO}
-                  hideSolution={hideSolution}
-                />
-              </Box>
-            </Stack>
-          {children}
-        </VStack>
-      </Card>
-    </Container>
+    <TrainerCard>
+      <Heading size="md">
+        solutions
+        <Badge ml={2} colorScheme="blue" variant="solid">
+          {badgeText}
+        </Badge>
+      </Heading>
+        <Stack direction={{ base: "column", md: "row" }}>
+          <Spoiler hide={solutions.length ? hideSolution : false} onReveal={onRevealSolution}>
+            <Box minW="17rem">
+              <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
+            </Box>
+          </Spoiler> 
+          {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
+          <Box w="100%" minW={0}>
+            <SolutionPlayer
+              scramble={scramble}
+              solution={selectedSolution ?? []}
+              mask={mask}
+              showEO={showEO}
+              hideSolution={hideSolution}
+            />
+          </Box>
+        </Stack>
+      {children}
+    </TrainerCard>
   )
 }
 
@@ -81,7 +78,8 @@ function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: 
           >
             <HStack>
               <Badge colorScheme={isSelected ? badgeSelectedColorScheme : badgeColorScheme} variant="solid">{movecount} HTM</Badge>
-              <Text>{solutionString}</Text>
+              {/* TODO: REMOVE HARDCODE */}
+              <Text>x2 {solutionString}</Text>
             </HStack>
           </Button>
         )

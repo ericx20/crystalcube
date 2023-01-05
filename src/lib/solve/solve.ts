@@ -7,6 +7,8 @@ import { getPruningTable } from "../pruning"
 
 // NOTE: solve() is fixed orientation
 // Pre-rotation sets the desired cube orientation
+// TODO: add pre-rotation to the output, along with move annotations maybe
+// will be an object comprising of the solution and some "metadata" like pre-rotation etc
 export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<CubeRotation> = [], maxNumberOfSolutions = 5): Array<MoveSeq> {
   const config = SOLVER_CONFIGS[configName]
 
@@ -20,7 +22,7 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
   const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
   const addSolution = (solutionToAdd: MoveSeq) => {
     const sortedSolution = sortSimulMoves(solutionToAdd)
-    // check for duplicates and similar solutions
+    // check for duplicate/similar solutions
     if (solutionsList.some(solution => solutionsAreTooSimilar(solution, sortedSolution))) {
       return
     }
@@ -157,7 +159,9 @@ function sortSimulMoves(solution: MoveSeq): MoveSeq {
 
 // heuristic that eliminates a lot of solutions that are functionally the same
 function solutionsAreTooSimilar(solA: MoveSeq, solB: MoveSeq): boolean {
-  if (!solA.length && !solB.length) return true
+  if (moveSeqsAreIdentical(solA, solB)) {
+    return true
+  }
 
   const length = Math.min(solA.length, solB.length)
 

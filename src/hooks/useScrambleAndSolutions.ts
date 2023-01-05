@@ -19,7 +19,8 @@ export default function useScrambleAndSolutions(solverName: SolverConfigName, mo
 
   const getNext = useCallback(async () => {
     const scramble = await generateScramble()
-    const solutions = solve(scramble, solverName)
+    // TODO: REMOVE HARDCODE FOR: x2 away from scramble orientation
+    const solutions = solve(scramble, solverName, ["x2"])
     setScramble(scramble)
     setSolutions(solutions)
     onNewScramble && onNewScramble()
@@ -32,7 +33,7 @@ export default function useScrambleAndSolutions(solverName: SolverConfigName, mo
 
   // regenerate solution whenever solverName changes
   useEffect(() => {
-    setSolutions(solve(scramble, solverName))
+    setSolutions(solve(scramble, solverName, ["x2"]))
     onNewScramble && onNewScramble()
   }, [solverName])
 

@@ -1,8 +1,8 @@
 import { NoToneMapping } from "three"
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from "@react-three/drei";
-import type { Face, Mask, MoveSeq, Piece } from "src/lib/types"
-import { applyMoves, getMaskedFaceletCube, getFaceletCubeEO } from 'src/lib';
+import type { CubeRotation, Face, Mask, MoveSeq, Piece } from "src/lib/types"
+import { applyMoves, getMaskedFaceletCube, getFaceletCubeEO, applyMask, invertMoves } from 'src/lib';
 import { SOLVED_INDEXED_FACELET_CUBE, SOLVED_FACELET_CUBE } from "src/lib/constants"
 import Cubie, { CubieFacelets } from "./Cubie"
 
@@ -18,11 +18,17 @@ interface CubeProps {
   moves?: MoveSeq
   mask?: Mask
   showEO?: boolean
+  preRotation?: Array<CubeRotation>
 }
 
-export default function Cube({ moves = [], mask, showEO }: CubeProps) {
-  const solvedFaceletState = mask ? getMaskedFaceletCube(SOLVED_INDEXED_FACELET_CUBE, mask) : [...SOLVED_FACELET_CUBE]
+export default function Cube({ moves = [], mask, showEO, preRotation = [] }: CubeProps) {
+  console.log({ moves, mask, showEO, preRotation })
+  const solvedFaceletState =
+    mask
+    ? applyMoves(applyMask(applyMoves(SOLVED_FACELET_CUBE, preRotation), mask), invertMoves(preRotation ?? []))
+    : [...SOLVED_FACELET_CUBE]
   const facelets = applyMoves(solvedFaceletState, moves)
+  console.log(facelets.join(""))
   const eo = showEO ? getFaceletCubeEO(facelets) : Array<boolean>(12).fill(true)
   const cubies: Array<CubieData> = [
     { name: "DBL",                   position: [-1, -1, -1], cubieFacelets: { D: facelets[51], B: facelets[44], L: facelets[33] } },

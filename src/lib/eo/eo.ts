@@ -34,12 +34,12 @@ function countBadEdges(cube: FaceletCube): number {
   return getFaceletCubeEO(cube).reduce((n, x) => n + (x === false ? 1 : 0), 0)
 }
 
-// TODO: support premoves
+// TODO: REMOVE HARDCODED X2, support premoves
 const EO_CHANGING_MOVES: Array<Move> = ["F", "F'", "B", "B'"]
 export function getEOSolutionAnnotation(scramble: MoveSeq, solution: MoveSeq): Array<string | null> {
   const scrambledCube = applyMoves(SOLVED_FACELET_CUBE, scramble)
   const badEdgeArray = [...Array(solution.length + 1).keys()].map(index => {
-    const state = applyMoves(scrambledCube, solution.slice(0, index))
+    const state = applyMoves(scrambledCube, ["x2" as Move].concat(solution.slice(0, index)))
     return countBadEdges(state)
   })
 

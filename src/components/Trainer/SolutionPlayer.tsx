@@ -34,7 +34,8 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
 
   useEffect(() => {
     const solutionToShow = [...delayedSolution].splice(0, currentIndex + 1)
-    setStateToShow(delayedScramble.concat(solutionToShow))
+    // TODO: REMOVE HARDCODE FOR: x2 away from scramble orientation
+    setStateToShow(delayedScramble.concat(["x2"]).concat(solutionToShow))
   }, [currentIndex, delayedScramble, delayedSolution])
 
   const onSelect = (i: number) => setSelectedMoveIndex(i)
@@ -54,7 +55,8 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
       overflow="visible"
     >
     <SolutionMoveButton
-      move={null}
+      // TODO: REMOVE HARDCODE
+      move={"x2"}
       moveAnnotation={null}
       onClick={() => onSelect(-1)}
       isSelected={selectedMoveIndex === -1}
@@ -85,9 +87,10 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
     <Box pt={8} px={2} display={{ md: "none" }}>
       <Slider value={selectedMoveIndex} min={-1} max={solution.length - 1} onChange={onSelect}>
         {solution.length && (
-          <SliderMark value={-1} ml="-0.75rem" mt="-3.15rem">
+          <SliderMark value={-1} ml="-0.75rem" mt="-3.3rem">
             <SolutionMoveLabel
-              move={null}
+              // TODO: REMOVE HARDCODE
+              move={"x2"}
               moveAnnotation={null}
               isSelected={selectedMoveIndex === -1}
               isPreviousMove={selectedMoveIndex > -1}
@@ -128,7 +131,7 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
       {mobileScrubber}
       <Center h={[200, 250, 350]} borderWidth="1px" borderRadius="lg" cursor="move">
         <Suspense fallback={<Spinner />}>
-          <Cube moves={stateToShow} mask={mask} showEO={showEO} />
+          <Cube moves={stateToShow} mask={mask} showEO={showEO} preRotation={["x2"]}/>
         </Suspense>
       </Center>
     </VStack>
