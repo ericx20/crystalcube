@@ -76,10 +76,8 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
         continue
       }
 
-      // prevent exploring any solutions that are like the sequence `R L R2 L'`
-      // where the first and third moves are both the same layer
-      // and also both parallel to the second move
-      if (startsWithUselessParallelMoves(solution.concat(move))) {
+      // prevent exploring further if the solution has a redundant segment like R L R', guaranteed a better one would be found
+      if (endsWithUselessParallelMoves(solution.concat(move))) {
         continue
       }
 
@@ -126,12 +124,12 @@ function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
 
 // solution post-processing
 
-function startsWithUselessParallelMoves(solution: MoveSeq): boolean {
+function endsWithUselessParallelMoves(solution: MoveSeq): boolean {
   if (solution.length < 3) {
     return false
   }
-  const firstMove = solution[0], secondMove = solution[1], thirdMove = solution[2]
-  return movesAreSameLayer(firstMove, thirdMove) && movesAreParallel(firstMove, secondMove)
+  const [thirdLast, secondLast, last] = solution.slice(-3)
+  return movesAreSameLayer(thirdLast, last) && movesAreParallel(thirdLast, secondLast)
 }
 
 function sortSimulMoves(solution: MoveSeq): MoveSeq {

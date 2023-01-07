@@ -1,17 +1,26 @@
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 export default function useSpacebar(callback: () => any) {
-  const keyDownHandler = useCallback((event: KeyboardEvent) => {
+  const [enabled, setEnabled] = useState(true)
+
+  const onKeyDown = useCallback((event: KeyboardEvent) => {
     if (event.key === " ") {
       event.preventDefault()
-      callback()
+      if (enabled) {
+        callback()
+        setEnabled(false)
+      }
     }
-  }, [callback])
+  }, [enabled, callback])
+
+  const onKeyUp = useCallback(() => setEnabled(true), [])
 
   useEffect(() => {
-    window.addEventListener("keyup", keyDownHandler)
+    window.addEventListener("keydown", onKeyDown)
+    window.addEventListener("keyup", onKeyUp)
     return () => {
-      window.removeEventListener("keyup", keyDownHandler)
+      window.removeEventListener("keydown", onKeyDown)
+      window.removeEventListener("keyup", onKeyUp)
     }
-  }, [callback, keyDownHandler])
+  }, [callback])
 }

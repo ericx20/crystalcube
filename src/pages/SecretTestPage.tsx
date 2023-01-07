@@ -512,8 +512,8 @@ import SelectNFlip from "src/components/Trainer/ZZ/SelectNFlip"
 // `.split("\n").filter(m => m).map(thing => parseNotation(thing))
 
 // console.time('eocross')
-// scrambles.forEach((scramble) => {
-//   solve(scramble, "EOCross", [], 1)
+// scrambles.slice(100).forEach((scramble) => {
+//   solve(scramble, "EOCross", [], 5)
 // })
 // console.timeEnd('eocross')
 
@@ -588,6 +588,12 @@ import SelectNFlip from "src/components/Trainer/ZZ/SelectNFlip"
 // console.log({ cnAvgMovecount, fixedAvgMovecount })
 // console.log((fixedTotalMovecount - cnTotalMovecount) / fixedTotalMovecount)
 
+const scram = parseNotation("U' L2 B' U2 F2 U2 R2 D2 F U2 B F2 L' F D2 B R B' U' B'")
+solve(scram, "EOCross").forEach(sol => console.log(sol.join(" ")))
+
+const example: MoveSeq = ["R", "U", "R'", "L", "R"]
+const [thirdLast, secondLast, last] = example.slice(-3)
+console.log(thirdLast, secondLast, last)
 
 export default function SecretTestPage() {
   const [mode, setScrambleMode] = useState<ScrambleMode>("random")

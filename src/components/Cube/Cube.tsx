@@ -22,13 +22,11 @@ interface CubeProps {
 }
 
 export default function Cube({ moves = [], mask, showEO, preRotation = [] }: CubeProps) {
-  console.log({ moves, mask, showEO, preRotation })
   const solvedFaceletState =
     mask
-    ? applyMoves(applyMask(applyMoves(SOLVED_FACELET_CUBE, preRotation), mask), invertMoves(preRotation ?? []))
+    ? applyMoves(applyMask(applyMoves(SOLVED_FACELET_CUBE, preRotation), mask), invertMoves(preRotation))
     : [...SOLVED_FACELET_CUBE]
   const facelets = applyMoves(solvedFaceletState, moves)
-  console.log(facelets.join(""))
   const eo = showEO ? getFaceletCubeEO(facelets) : Array<boolean>(12).fill(true)
   const cubies: Array<CubieData> = [
     { name: "DBL",                   position: [-1, -1, -1], cubieFacelets: { D: facelets[51], B: facelets[44], L: facelets[33] } },

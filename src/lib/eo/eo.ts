@@ -2,7 +2,7 @@ import type { FaceletIndex, FaceletCube, EO, Facelet, Move, MoveSeq } from "../t
 import { SOLVED_FACELET_CUBE } from "../constants"
 import { applyMoves, invertMoves } from "../moves"
 import { parseNotation } from "../notation"
-import { shuffle } from "lodash"
+import shuffle from "lodash/shuffle"
 import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search"
 import { KState } from "cubing/kpuzzle"
 
