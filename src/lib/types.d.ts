@@ -1,4 +1,4 @@
-import { AXES, FACES, METHODS, SLICES, SOLVER_CONFIG_NAMES } from "./constants"
+import { AXES, FACES, METHODS, METHOD_SOLVERS, SLICES, SOLVER_CONFIG_NAMES } from "./constants"
 
 
 // ----- FACES  -----
@@ -71,3 +71,4 @@ export interface SolutionWithPreRotation {
 }
 
 export type Method = typeof METHODS[number]
+export type ZZConfigName = typeof METHOD_SOLVERS.ZZ[number]

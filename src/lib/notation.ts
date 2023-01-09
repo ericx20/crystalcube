@@ -1,5 +1,5 @@
+import type { MoveSeq } from "./types"
 import { HTM_MOVESET } from "./constants"
-import { MoveSeq } from "./types"
 
 
 // TODO: remove moveset param, and allow stuff like user-entered scrambles to be any valid Singmaster notation

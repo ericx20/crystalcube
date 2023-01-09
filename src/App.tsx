@@ -16,7 +16,7 @@ export default function App() {
   return (
   <Flex direction="column" height="100vh" fontSize="xl">
     <NavBar />
-      <Container className="content" h="100%" pt={14} marginTop="16px" px={0} maxW="100vw">
+      <Container className="content" px={0} pt={14} maxW="100vw">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="trainer/*" element={<Trainer />} />
