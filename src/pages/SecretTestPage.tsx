@@ -591,10 +591,6 @@ import SelectNFlip from "src/components/Trainer/ZZ/SelectNFlip"
 // const scram = parseNotation("U' L2 B' U2 F2 U2 R2 D2 F U2 B F2 L' F D2 B R B' U' B'")
 // solve(scram, "EOCross").forEach(sol => console.log(sol.join(" ")))
 
-const example: MoveSeq = ["R", "U", "R'", "L", "R"]
-const [thirdLast, secondLast, last] = example.slice(-3)
-console.log(thirdLast, secondLast, last)
-
 export default function SecretTestPage() {
   const [mode, setScrambleMode] = useState<ScrambleMode>("random")
   const [nFlip, setNFlip] = useState(4)

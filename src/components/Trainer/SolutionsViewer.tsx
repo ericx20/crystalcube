@@ -79,7 +79,7 @@ function SelectSolution({ solutions, selectedSolutionIndex, onSelectSolution }: 
             <HStack>
               <Badge colorScheme={isSelected ? badgeSelectedColorScheme : badgeColorScheme} variant="solid">{movecount} HTM</Badge>
               {/* TODO: REMOVE HARDCODE */}
-              <Text>x2 {solutionString}</Text>
+              <Text fontWeight={500} >x2 {solutionString}</Text>
             </HStack>
           </Button>
         )

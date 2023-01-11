@@ -5,9 +5,12 @@ const theme = extendTheme({
     initialColorMode: "dark",
   },
   fonts: {
-    heading: `'Roboto', sans-serif`,
-    body: `'Roboto', sans-serif`,
-  }
+    heading: `'Inter', sans-serif`,
+    body: `'Inter', sans-serif`,
+  },
+  fontWeights: {
+    bold: 600,
+  },
 })
 
 export default theme
