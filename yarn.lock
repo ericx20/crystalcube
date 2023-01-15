@@ -1531,10 +1531,10 @@
   resolved "https://registry.yarnpkg.com/@types/scheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
   integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
 
-"@types/three@^0.144.0":
-  version "0.144.0"
-  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.144.0.tgz#a154f40122dbc3668c5424a5373f3965c6564557"
-  integrity sha512-psvEs6q5rLN50jUYZ3D4pZMfxTbdt3A243blt0my7/NcL6chaCZpHe2csbCtx0SOD9fI/XnF3wnVUAYZGqCSYg==
+"@types/three@^0.146.0":
+  version "0.146.0"
+  resolved "https://registry.yarnpkg.com/@types/three/-/three-0.146.0.tgz#83813ba0d2fff6bdc6d7fda3a77993a932bba45f"
+  integrity sha512-75AgysUrIvTCB054eQa2pDVFurfeFW8CrMQjpzjt3yHBfuuknoSvvsESd/3EhQxPrz9si3+P0wiDUVsWUlljfA==
   dependencies:
     "@types/webxr" "*"
 
@@ -1545,10 +1545,10 @@
   dependencies:
     "@types/webxr" "*"
 
-"@types/web-bluetooth@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.15.tgz#d60330046a6ed8a13b4a53df3813c44942ebdf72"
-  integrity sha512-w7hEHXnPMEZ+4nGKl/KDRVpxkwYxYExuHOYXyzIzCDzEZ9ZCGMAewulr9IqJu2LR4N37fcnb1XVeuZ09qgOxhA==
+"@types/web-bluetooth@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@types/web-bluetooth/-/web-bluetooth-0.0.16.tgz#1d12873a8e49567371f2a75fe3e7f7edca6662d8"
+  integrity sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==
 
 "@types/webxr@*":
   version "0.5.0"
@@ -1726,16 +1726,16 @@ csstype@^3.0.11, csstype@^3.0.2:
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.1.tgz#841b532c45c758ee546a11d5bd7b7b473c8c30b9"
   integrity sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==
 
-cubing@^0.34.6:
-  version "0.34.6"
-  resolved "https://registry.yarnpkg.com/cubing/-/cubing-0.34.6.tgz#199daea315e5e3084397b76ac939d696ded8738d"
-  integrity sha512-PGdKfwWLegU2GXZpYuHmnUFjDldOzVEd9OcI6vZIeLh6GskhKrjySWfOladjUM5BjF1uiKZIweUeKNlsapQeDQ==
+cubing@^0.35.6:
+  version "0.35.6"
+  resolved "https://registry.yarnpkg.com/cubing/-/cubing-0.35.6.tgz#3843b14eddfef0e908e90921e098433efc7222aa"
+  integrity sha512-ULXEfAh5QQgfQjTjIH0969bt3E8f8dBOFgR3YjzTaLZuxmwmpHZt5DBcUIDSMlLJp6ufndyKhXGAPodaplku+Q==
   dependencies:
-    "@types/three" "^0.144.0"
-    "@types/web-bluetooth" "^0.0.15"
+    "@types/three" "^0.146.0"
+    "@types/web-bluetooth" "^0.0.16"
     comlink "^4.3.1"
     random-uint-below "^2.0.0"
-    three "^0.144.0"
+    three "^0.147.0"
 
 debounce@^1.2.1:
   version "1.2.1"
@@ -2394,10 +2394,10 @@ three-stdlib@^2.20.4:
     potpack "^1.0.1"
     zstddec "^0.0.2"
 
-three@^0.144.0:
-  version "0.144.0"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.144.0.tgz#2818517169f8ff94eea5f664f6ff1fcdcd436cc8"
-  integrity sha512-R8AXPuqfjfRJKkYoTQcTK7A6i3AdO9++2n8ubya/GTU+fEHhYKu1ZooRSCPkx69jbnzT7dD/xEo6eROQTt2lJw==
+three@^0.147.0:
+  version "0.147.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.147.0.tgz#1974af9e8e0c1efb3a8561334d57c0b6c29a7951"
+  integrity sha512-LPTOslYQXFkmvceQjFTNnVVli2LaVF6C99Pv34fJypp8NbQLbTlu3KinZ0zURghS5zEehK+VQyvWuPZ/Sm8fzw==
 
 three@^0.148.0:
   version "0.148.0"
