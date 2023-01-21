@@ -30,25 +30,25 @@ export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "Cross"] as const
 
 export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
   EO: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EO_MASK,
     pruningDepth: 4, // TODO: can we increase it to 5?
     depthLimit: 7,
   },
   EOLine: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EOLINE_MASK,
     pruningDepth: 4,
     depthLimit: 9,
   },
   EOCross: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EOCROSS_MASK,
     pruningDepth: 4,
     depthLimit: 10,
   },
   Cross: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: CROSS_MASK,
     pruningDepth: 4,
     depthLimit: 8,

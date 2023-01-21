@@ -21,7 +21,7 @@ export type CubeRotation = `${Axis}${Suffix}`
 // TODO: add SliceTurn as a move
 export type Move = FaceTurn | CubeRotation
 export type MoveSeq = Array<Move>
-
+export type MoveSet = Readonly<Array<Move>>
 
 // ----- CUBE STATE REPRESENTATIONS -----
 
@@ -55,7 +55,7 @@ export interface Mask {
 export type SolverConfigName = typeof SOLVER_CONFIG_NAMES[number]
 
 export interface SolverConfig {
-  moveset: MoveSeq
+  moveSet: MoveSet
   mask: Mask
   pruningDepth: number
   depthLimit: number

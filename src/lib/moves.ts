@@ -1,5 +1,6 @@
-import { Cube, Layer, Move, MoveSeq } from "./types";
-import { AXES, LAYERS_ALONG_AXES, MOVE_PERMS } from "./constants";
+import type { Cube, Layer, Move, MoveSeq } from "./types";
+import { AXES, HTM_MOVESET, LAYERS_ALONG_AXES, MOVE_PERMS } from "./constants";
+import sample from "lodash/sample"
 
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
   const newCube = [...cube] as C;
@@ -52,4 +53,36 @@ export function movesAreParallel(a: Move, b: Move): boolean {
     const parallelLayers = LAYERS_ALONG_AXES[axis]
     return parallelLayers.includes(layerA) && parallelLayers.includes(layerB)
   })
+}
+
+export function endsWithUselessParallelMoves(solution: MoveSeq): boolean {
+  if (solution.length < 3) {
+    return false
+  }
+  const [thirdLast, secondLast, last] = solution.slice(-3)
+  return movesAreSameLayer(thirdLast, last) && movesAreParallel(thirdLast, secondLast)
+}
+
+export function randomMoves(length: number, moveSet = HTM_MOVESET): MoveSeq {
+  const moves: MoveSeq = []
+  for (let i = 0; i < length; i++) {
+    appendRandomMove(moves, moveSet)
+  }
+  return moves
+}
+
+// NOTE: mutates the `moves` array!
+export function appendRandomMove(moves: MoveSeq, moveSet = HTM_MOVESET): void {
+  const lastMove = moves.at(moves.length - 1)
+  const secondLastMove = moves.at(moves.length - 2)
+  const choiceIsValid = (choice: Move) => (
+    !lastMove // if there is no last move, we can choose any move as valid
+    || (
+      !movesAreSameLayer(choice, lastMove)
+      && (!secondLastMove || !endsWithUselessParallelMoves([secondLastMove, lastMove, choice]))
+    )
+  )
+  const validChoices = moveSet.filter(choiceIsValid)
+  const move = sample(validChoices)
+  move && moves.push(move)
 }

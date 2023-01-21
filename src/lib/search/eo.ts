@@ -1,10 +1,6 @@
 import type { FaceletIndex, FaceletCube, EO, Facelet, Move, MoveSeq } from "../types"
 import { SOLVED_FACELET_CUBE } from "../constants"
-import { applyMoves, invertMoves } from "../moves"
-import { parseNotation } from "../notation"
-import shuffle from "lodash/shuffle"
-import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search"
-import { KState } from "cubing/kpuzzle"
+import { applyMoves } from "../moves"
 
 
 // EO recognition:
@@ -63,28 +59,4 @@ export function getEOSolutionAnnotation(scramble: MoveSeq, solution: MoveSeq): A
 
 export function isValidNFlip(n: number) {
   return Number.isInteger(n) && n % 2 === 0
-}
-
-function nFlipEOArray(n: number): Array<number> {
-  if (!isValidNFlip) {
-    console.error("nFlipEOArray(): must be an even integer from 0 to 12 inclusive")
-    return Array(12).fill(0)
-  }
-  const goodEdges = Array<number>(12 - n).fill(0)
-  const badEdges = Array<number>(n).fill(1)
-  return shuffle(goodEdges.concat(badEdges))
-}
-
-export async function nFlipScramble(n: number): Promise<MoveSeq> {
-  const { kpuzzle, stateData } = await random333State()
-  const newStateData = {
-    ...stateData,
-    EDGES: {
-      orientation: nFlipEOArray(n),
-      pieces: stateData.EDGES.pieces
-    }
-  }
-  const newPuzzle = new KState(kpuzzle, newStateData)
-  const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle)
-  return invertMoves(parseNotation(solution.toString()))
 }

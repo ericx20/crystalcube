@@ -61,7 +61,12 @@ export default function ZZTrainer() {
         hideSolution={hideSolution}
         onRevealSolution={() => setHideSolution(false)}
       >
-        <Button onClick={mainAction} w="100%">{actionButtonText}</Button>
+        <Button
+          onClick={mainAction}
+          w="100%"
+        >
+          {actionButtonText}
+        </Button>
       </SolutionsViewer>
 
       <SelectLevel

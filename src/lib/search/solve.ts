@@ -1,8 +1,8 @@
 import type { MoveSeq, FaceletCube, PruningTable, SolverConfigName, CubeRotation, SolverConfig } from "../types"
 import { SOLVER_CONFIGS, SOLVED_INDEXED_FACELET_CUBE } from "../constants"
 import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState"
-import { movesAreSameLayer, movesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfMove, applyMove } from "../moves"
-import { getPruningTable } from "../pruning"
+import { endsWithUselessParallelMoves, movesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfMove, applyMove } from "../moves"
+import { getPruningTable } from "./prune"
 
 
 // NOTE: solve() is fixed orientation
@@ -70,7 +70,7 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
     }
 
     // cube is unsolved but we still have some remaining depth
-    for (const move of config.moveset) {
+    for (const move of config.moveSet) {
       // optimization: never use the same layer in consecutive moves
       if (solution.length && layerOfMove(move) === layerOfMove(solution[solution.length - 1])) {
         continue
@@ -123,15 +123,6 @@ function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
 }
 
 // solution post-processing
-
-function endsWithUselessParallelMoves(solution: MoveSeq): boolean {
-  if (solution.length < 3) {
-    return false
-  }
-  const [thirdLast, secondLast, last] = solution.slice(-3)
-  return movesAreSameLayer(thirdLast, last) && movesAreParallel(thirdLast, secondLast)
-}
-
 function sortSimulMoves(solution: MoveSeq): MoveSeq {
   const sortedSolution: MoveSeq = [...solution]
   let i = 0

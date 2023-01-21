@@ -15,8 +15,7 @@ export function indexedFaceletCubeToFaceletCube(indexedFaceletCube: IndexedFacel
   return indexedFaceletCube.map(indexedFacelet => colorOfIndexedFacelet(indexedFacelet));
 }
 
-// TODO: apply mask to a regular facelet cube on its current state
-// make a function for that, and use that instead of getMaskedFaceletCube in Cube.tsx
+// apply mask to a regular facelet cube on its current state
 export function applyMask(cube: FaceletCube, mask: Mask): FaceletCube {
   return SOLVED_INDEXED_FACELET_CUBE.map(faceletIdx => {
     if (mask.solvedFaceletIndices.includes(faceletIdx)) {
