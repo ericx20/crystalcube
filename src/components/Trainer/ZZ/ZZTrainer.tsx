@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Button, VStack } from "@chakra-ui/react"
+import { Button, Heading, HStack, VStack } from "@chakra-ui/react"
 
 import { SOLVER_CONFIGS } from "src/lib/constants"
 import ScrambleViewer from "../ScrambleViewer"
@@ -13,13 +13,13 @@ import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import type { ZZConfigName } from "src/lib/types"
 import SelectLevel from "./SelectLevel"
-import SelectEOStep from "./SelectEOStep"
+import SelectEOStepDropdown from "./SelectEOStepDropdown"
 
 // TODO: rename the keys because they'll collide with the cross trainer's
-const scrambleModeAtom = atomWithStorage<ScrambleMode>("scrambleMode", "random")
-const nFlipAtom = atomWithStorage<number>("nFlip", 4)
-const eoStepAtom = atomWithStorage<ZZConfigName>("eoStep", "EOCross")
-const nMoveAtom = atomWithStorage<number>("nMove", 3)
+const scrambleModeAtom = atomWithStorage<ScrambleMode>("zz-scramble-mode", "random")
+const nFlipAtom = atomWithStorage<number>("zz-nflip", 4)
+const eoStepAtom = atomWithStorage<ZZConfigName>("zz-eostep", "EOCross")
+const nMoveAtom = atomWithStorage<number>("zz-nmove", 3)
 
 export default function ZZTrainer() {
   const [hideSolution, setHideSolution] = useState(true)
@@ -62,6 +62,14 @@ export default function ZZTrainer() {
 
   return (
     <VStack spacing={4} my={4}>
+      <HStack spacing={4}>
+        <Heading>ZZ Trainer</Heading>
+        <SelectEOStepDropdown
+          eoStep={eoStep}
+          setEOStep={handleEOStepChange}
+        />
+      </HStack>
+
       <ScrambleViewer
         scramble={scramble}
         nFlip={isNFlipMode ? nFlip : undefined}
@@ -91,11 +99,6 @@ export default function ZZTrainer() {
         setNFlip={setNFlip}
         nMove={nMove}
         setNMove={setNMove}
-      />
-
-      <SelectEOStep
-        eoStep={eoStep}
-        setEOStep={handleEOStepChange}
       />
     </VStack>
   )

@@ -21,7 +21,6 @@ export default function useScrambleAndSolutions(
     },
     nFlip: () => nFlipScramble(nFlip),
     nMove: async () => {
-      // TODO: prerotations not working
       return await nMoveScrambleForSolver(nMove, solverName, ["x2"]) ?? []
     }
   })[mode]
