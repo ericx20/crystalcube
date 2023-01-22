@@ -1,26 +1,26 @@
-import type { MoveSeq, FaceletCube, PruningTable, SolverConfigName, CubeRotation, SolverConfig } from "../types"
+import type { MoveSeq, FaceletCube, PruningTable, SolverConfigName, RotationMove, SolverConfig, LayerMoveSeq } from "../types"
 import { SOLVER_CONFIGS, SOLVED_INDEXED_FACELET_CUBE } from "../constants"
 import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState"
-import { movesAreSameLayer, movesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfMove, applyMove } from "../moves"
-import { getPruningTable } from "../pruning"
+import { endsWithUselessParallelMoves, layerMovesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfLayerMove, applyMove } from "../moves"
+import { getPruningTable } from "./prune"
 
 
 // NOTE: solve() is fixed orientation
 // Pre-rotation sets the desired cube orientation
 // TODO: add pre-rotation to the output, along with move annotations maybe
 // will be an object comprising of the solution and some "metadata" like pre-rotation etc
-export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<CubeRotation> = [], maxNumberOfSolutions = 5): Array<MoveSeq> {
+export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<RotationMove> = [], maxNumberOfSolutions = 5): Array<LayerMoveSeq> {
   const config = SOLVER_CONFIGS[configName]
 
-  const translatedScramble = invertMoves(preRotation).concat(scram).concat(preRotation)
-  const scrambledCube = applyMoves(SOLVED_INDEXED_FACELET_CUBE, translatedScramble)
+  const translatedScramble = [...invertMoves(preRotation), ...scram, ...preRotation]
+  const scrambledCube = applyMoves([...SOLVED_INDEXED_FACELET_CUBE], translatedScramble)
   const maskedCube = getMaskedFaceletCube(scrambledCube, config.mask)
 
   const pruningTable = getPruningTable(configName)
 
-  const solutionsList: Array<MoveSeq> = []
+  const solutionsList: Array<LayerMoveSeq> = []
   const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
-  const addSolution = (solutionToAdd: MoveSeq) => {
+  const addSolution = (solutionToAdd: LayerMoveSeq) => {
     const sortedSolution = sortSimulMoves(solutionToAdd)
     // check for duplicate/similar solutions
     if (solutionsList.some(solution => solutionsAreTooSimilar(solution, sortedSolution))) {
@@ -40,7 +40,7 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
     config: SolverConfig,
     pruningTable: PruningTable,
     cube: FaceletCube,
-    solution: MoveSeq,
+    solution: LayerMoveSeq,
     depthRemaining: number,
   ): boolean {
 
@@ -70,9 +70,10 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
     }
 
     // cube is unsolved but we still have some remaining depth
-    for (const move of config.moveset) {
+    for (const move of config.moveSet) {
       // optimization: never use the same layer in consecutive moves
-      if (solution.length && layerOfMove(move) === layerOfMove(solution[solution.length - 1])) {
+      const previousMove = solution[solution.length - 1]
+      if (solution.length && layerOfLayerMove(move) === layerOfLayerMove(previousMove)) {
         continue
       }
 
@@ -123,22 +124,13 @@ function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
 }
 
 // solution post-processing
-
-function endsWithUselessParallelMoves(solution: MoveSeq): boolean {
-  if (solution.length < 3) {
-    return false
-  }
-  const [thirdLast, secondLast, last] = solution.slice(-3)
-  return movesAreSameLayer(thirdLast, last) && movesAreParallel(thirdLast, secondLast)
-}
-
-function sortSimulMoves(solution: MoveSeq): MoveSeq {
-  const sortedSolution: MoveSeq = [...solution]
+function sortSimulMoves(solution: LayerMoveSeq): LayerMoveSeq {
+  const sortedSolution: LayerMoveSeq = [...solution]
   let i = 0
   while (i < solution.length - 1) {
     const currentMove = solution[i]
     const nextMove = solution[i + 1]
-    if (movesAreParallel(currentMove, nextMove)) {
+    if (layerMovesAreParallel(currentMove, nextMove)) {
       // sort moves lexicographically (in reverse)
       if (currentMove > nextMove) {
         sortedSolution[i] = currentMove
@@ -156,7 +148,7 @@ function sortSimulMoves(solution: MoveSeq): MoveSeq {
 }
 
 // heuristic that eliminates a lot of solutions that are functionally the same
-function solutionsAreTooSimilar(solA: MoveSeq, solB: MoveSeq): boolean {
+function solutionsAreTooSimilar(solA: LayerMoveSeq, solB: LayerMoveSeq): boolean {
   if (moveSeqsAreIdentical(solA, solB)) {
     return true
   }
@@ -167,7 +159,7 @@ function solutionsAreTooSimilar(solA: MoveSeq, solB: MoveSeq): boolean {
   for (let i = 0; i < length; i++) {
     const moveA = solA[i]
     const moveB = solB[i]
-    if (layerOfMove(moveA) === layerOfMove(moveB)) {
+    if (layerOfLayerMove(moveA) === layerOfLayerMove(moveB)) {
       numOfSimilarMoves++
     }
     if (numOfSimilarMoves >= 3) {

@@ -15,8 +15,7 @@ export function indexedFaceletCubeToFaceletCube(indexedFaceletCube: IndexedFacel
   return indexedFaceletCube.map(indexedFacelet => colorOfIndexedFacelet(indexedFacelet));
 }
 
-// TODO: apply mask to a regular facelet cube on its current state
-// make a function for that, and use that instead of getMaskedFaceletCube in Cube.tsx
+// apply mask to a regular facelet cube on its current state
 export function applyMask(cube: FaceletCube, mask: Mask): FaceletCube {
   return SOLVED_INDEXED_FACELET_CUBE.map(faceletIdx => {
     if (mask.solvedFaceletIndices.includes(faceletIdx)) {
@@ -40,4 +39,37 @@ export function getMaskedFaceletCube(cube: IndexedFaceletCube, mask: Mask): Face
     }
     return "X"
   })
+}
+
+const xxx = "➖➖➖"
+const xxxxxx = "➖➖➖➖➖➖"
+const xxxxxxxxxxxx = "➖➖➖➖➖➖➖➖➖➖➖➖"
+export function printFaceletCube(cube: FaceletCube): void {
+  const emojiCube = faceletCubeToEmojiCube(cube)
+  const slice = (start: number, end: number) => emojiCube.slice(start, end).join("")
+  console.log(xxxxxxxxxxxx)
+  console.log(xxx + slice( 0,  3) + xxxxxx)
+  console.log(xxx + slice( 3,  6) + xxxxxx)
+  console.log(xxx + slice( 6,  9) + xxxxxx)
+  console.log(slice( 9, 21))
+  console.log(slice(21, 33))
+  console.log(slice(33, 45))
+  console.log(xxx + slice(45, 48) + xxxxxx)
+  console.log(xxx + slice(48, 51) + xxxxxx)
+  console.log(xxx + slice(51, 54) + xxxxxx)
+  console.log(xxxxxxxxxxxx)
+}
+
+const faceletToEmoji: { [f in Facelet]: string } = {
+  R: "🟥",
+  L: "🟧",
+  U: "⬜",
+  D: "🟨",
+  F: "🟩",
+  B: "🟦",
+  O: "🟪",
+  X: "⬛",
+}
+function faceletCubeToEmojiCube(cube: FaceletCube): Array<string> {
+  return cube.map(facelet => faceletToEmoji[facelet])
 }

@@ -159,7 +159,7 @@ function SolutionMoveLabel({ move, moveAnnotation, isSelected, isPreviousMove, h
         textAlign="center"
         fontWeight={isSelected ? "bold" : "normal"}
         opacity={(isSelected || isPreviousMove) ? 1 : 0.7}
-        >
+      >
         {hide ? "?" : (move ?? <Icon as={VscCircleFilled} />)}
       </Text>
     </Box>

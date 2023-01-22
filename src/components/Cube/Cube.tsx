@@ -1,9 +1,9 @@
 import { NoToneMapping } from "three"
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from "@react-three/drei";
-import type { CubeRotation, Face, Mask, MoveSeq, Piece } from "src/lib/types"
-import { applyMoves, getMaskedFaceletCube, getFaceletCubeEO, applyMask, invertMoves } from 'src/lib';
-import { SOLVED_INDEXED_FACELET_CUBE, SOLVED_FACELET_CUBE } from "src/lib/constants"
+import type { RotationMove, Face, Mask, MoveSeq, Piece } from "src/lib/types"
+import { applyMoves, getFaceletCubeEO, applyMask, invertMoves } from 'src/lib';
+import { SOLVED_FACELET_CUBE } from "src/lib/constants"
 import Cubie, { CubieFacelets } from "./Cubie"
 
 interface CubieData {
@@ -18,13 +18,13 @@ interface CubeProps {
   moves?: MoveSeq
   mask?: Mask
   showEO?: boolean
-  preRotation?: Array<CubeRotation>
+  preRotation?: Array<RotationMove>
 }
 
 export default function Cube({ moves = [], mask, showEO, preRotation = [] }: CubeProps) {
   const solvedFaceletState =
     mask
-    ? applyMoves(applyMask(applyMoves(SOLVED_FACELET_CUBE, preRotation), mask), invertMoves(preRotation))
+    ? applyMoves(applyMask(applyMoves([...SOLVED_FACELET_CUBE], preRotation), mask), invertMoves(preRotation))
     : [...SOLVED_FACELET_CUBE]
   const facelets = applyMoves(solvedFaceletState, moves)
   const eo = showEO ? getFaceletCubeEO(facelets) : Array<boolean>(12).fill(true)

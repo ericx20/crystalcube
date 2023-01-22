@@ -30,28 +30,51 @@ export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "Cross"] as const
 
 export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
   EO: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EO_MASK,
     pruningDepth: 4, // TODO: can we increase it to 5?
     depthLimit: 7,
+    nMoveScrambleConfig: {
+      min: 2,
+      max: 7,
+      iterationLimit: 2000,
+    },
+    isEOStep: true,
   },
   EOLine: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EOLINE_MASK,
     pruningDepth: 4,
     depthLimit: 9,
+    nMoveScrambleConfig: {
+      min: 2,
+      max: 8,
+      iterationLimit: 1000,
+    },
+    isEOStep: true,
   },
   EOCross: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EOCROSS_MASK,
     pruningDepth: 4,
     depthLimit: 10,
+    nMoveScrambleConfig: {
+      min: 2,
+      max: 9,
+      iterationLimit: 200,
+    },
+    isEOStep: true,
   },
   Cross: {
-    moveset: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_RUF,
     mask: CROSS_MASK,
     pruningDepth: 4,
     depthLimit: 8,
+    nMoveScrambleConfig: {
+      min: 2,
+      max: 7,
+      iterationLimit: 500,
+    },
   }
 } as const
 

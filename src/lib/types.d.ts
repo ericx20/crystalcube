@@ -16,12 +16,18 @@ export type Piece = Exclude<`${"U" | "D" | ""}${"F" | "B" | ""}${"R" | "L" | ""}
 // ----- MOVES AND NOTATION -----
 
 type Suffix = "" | "'" | "2"
-export type FaceTurn = `${Face}${Suffix}`
-export type CubeRotation = `${Axis}${Suffix}`
-// TODO: add SliceTurn as a move
-export type Move = FaceTurn | CubeRotation
-export type MoveSeq = Array<Move>
+export type FaceMove = `${Face}${Suffix}`
+export type SliceMove = `${Slice}${Suffix}`
+// TODO: once we support slices, add SliceMove to LayerMove
+export type LayerMove = FaceMove // | SliceMove
 
+export type RotationMove = `${Axis}${Suffix}`
+
+export type Move = LayerMove | RotationMove
+export type MoveSeq = Array<Move>
+export type LayerMoveSeq = Array<LayerMove>
+export type RotationSeq = Array<RotationMove>
+export type MoveSet = Readonly<Array<LayerMove>>
 
 // ----- CUBE STATE REPRESENTATIONS -----
 
@@ -55,10 +61,18 @@ export interface Mask {
 export type SolverConfigName = typeof SOLVER_CONFIG_NAMES[number]
 
 export interface SolverConfig {
-  moveset: MoveSeq
+  moveSet: MoveSet
   mask: Mask
   pruningDepth: number
   depthLimit: number
+  nMoveScrambleConfig: NMoveScrambleConfig
+  isEOStep?: boolean,
+}
+
+export interface NMoveScrambleConfig {
+  min: number,
+  max: number, // cannot exceed `depthLimit` from the solver config
+  iterationLimit: number,
 }
 
 // Pruning table maps a FaceletCube (concatenated into a string) to its optimally solved movecount
@@ -66,7 +80,7 @@ export type PruningTable = { [k: string]: number }
 
 // TODO
 export interface SolutionWithPreRotation {
-  preRotation: Array<CubeRotation>
+  preRotation: Array<RotationMove>
   solution: MoveSeq
 }
 

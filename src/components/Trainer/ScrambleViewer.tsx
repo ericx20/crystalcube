@@ -7,6 +7,7 @@ interface ScrambleViewerProps {
   nFlip?: number,
 }
 
+// TODO: show "Failed to generate scramble" message if scramble === null
 export default function ScrambleViewer({ scramble, nFlip }: ScrambleViewerProps) {
   return (
     <TrainerCard>
