@@ -34,19 +34,22 @@ export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure()
 
   return (
-    <Box position="fixed" w="100%" zIndex={3}>
+    <Box
+      position="fixed"
+      w="100%"
+      h={14}
+      zIndex={3}
+      bg={useColorModeValue("#FFFFFF99", "#1A202C99")}
+      color={useColorModeValue("gray.600", "white")}
+      backdropFilter="blur(5px)"
+      borderBottom={1}
+      borderStyle="solid"
+      borderColor={useColorModeValue("gray.200", "gray.900")}
+    >
       <Container maxW="container.lg" p={0}>
         <Flex
-          bg={useColorModeValue("#FFFFFF99", "#1A202C99")}
-          color={useColorModeValue("gray.600", "white")}
-          backdropFilter="blur(5px)"
-          h={14}
           py={{ base: 2 }}
           px={{ base: 4 }}
-          borderBottom={1}
-          borderStyle="solid"
-          borderColor={useColorModeValue("gray.200", "gray.900")}
-          align="center"
         >
           <Flex
             flex={{ base: 1, md: "auto" }}

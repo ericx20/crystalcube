@@ -194,13 +194,13 @@ function SolutionMoveButton({ move, moveAnnotation, isSelected, isPreviousMove, 
           <Button
             position="absolute"
             transform="auto"
-            translateY="-1rem"
+            translateY="-1.2rem"
             bg="#9b23eb !important"
             color="whiteAlpha.900"
             size={["xs", "xs", "sm", "md"]}
             width="1rem"
-            height="1rem !important"
-            fontSize="sm"
+            height="1.2rem !important"
+            fontSize="0.9rem !important"
             borderBottomRadius={showMoveAnnotation ? 0 : undefined}
           >
             {moveAnnotation}
