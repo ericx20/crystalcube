@@ -17,6 +17,7 @@ import {
   useDisclosure,
   Image,
   Badge,
+  Container,
 } from "@chakra-ui/react"
 import {
   HamburgerIcon,
@@ -34,86 +35,88 @@ export default function NavBar() {
 
   return (
     <Box position="fixed" w="100%" zIndex={3}>
-      <Flex
-        bg={useColorModeValue("#FFFFFF99", "#1A202C99")}
-        color={useColorModeValue("gray.600", "white")}
-        backdropFilter="blur(5px)"
-        h={14}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle="solid"
-        borderColor={useColorModeValue("gray.200", "gray.900")}
-        align="center"
-      >
+      <Container maxW="container.lg" p={0}>
         <Flex
-          flex={{ base: 1, md: "auto" }}
-          ml={-2}
-          display={{ base: "flex", md: "none" }}>
-          <IconButton
-            onClick={onToggle}
-            icon={
-              isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
-            }
-            variant="ghost"
-            aria-label="Toggle Navigation"
-          />
-        </Flex>
-        <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
-          <HStack>
-            <Image src={logo} boxSize="30px" objectFit="contain"/>
-            <Text
-              textAlign={useBreakpointValue({ base: "center", md: "left" })}
-              fontFamily="heading"
-              color={useColorModeValue("gray.800", "white")}
-              fontWeight="semibold"
-              as={RouterLink} to=""
-            >
-              crystalcube
-            </Text>
-            <Flex display={{ base: "none", sm: "flex"}}>
-              <VersionBadge />
-            </Flex>
-          </HStack>
-          <Flex display={{ base: "none", md: "flex" }} ml={10}>
-            <DesktopNav />
-          </Flex>
-        </Flex>
-
-        <Stack
-          flex={{ base: 1, md: 0 }}
-          justify="flex-end"
-          direction="row"
-          spacing={6}
-          mr={-2}
+          bg={useColorModeValue("#FFFFFF99", "#1A202C99")}
+          color={useColorModeValue("gray.600", "white")}
+          backdropFilter="blur(5px)"
+          h={14}
+          py={{ base: 2 }}
+          px={{ base: 4 }}
+          borderBottom={1}
+          borderStyle="solid"
+          borderColor={useColorModeValue("gray.200", "gray.900")}
+          align="center"
         >
-          {/* <Button
-            as="a"
-            fontSize="sm"
-            fontWeight={400}
-            variant="link"
-            href="#">
-            Sign In
-          </Button>
-          <Button
-            display={{ base: "none", md: "inline-flex" }}
-            fontSize="sm"
-            fontWeight={600}
-            color="white"
-            bg="cyan.500"
-            href="#"
-            _hover={{
-              bg: "cyan.400",
-            }}>
-            Sign Up
-          </Button> */}
-          <ColorModeSwitcher />
-        </Stack>
-      </Flex>
+          <Flex
+            flex={{ base: 1, md: "auto" }}
+            ml={-2}
+            display={{ base: "flex", md: "none" }}>
+            <IconButton
+              onClick={onToggle}
+              icon={
+                isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
+              }
+              variant="ghost"
+              aria-label="Toggle Navigation"
+            />
+          </Flex>
+          <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
+            <HStack>
+              <Image src={logo} boxSize="30px" objectFit="contain"/>
+              <Text
+                textAlign={useBreakpointValue({ base: "center", md: "left" })}
+                fontFamily="heading"
+                color={useColorModeValue("gray.800", "white")}
+                fontWeight="semibold"
+                as={RouterLink} to=""
+              >
+                crystalcube
+              </Text>
+              <Flex display={{ base: "none", sm: "flex"}}>
+                <VersionBadge />
+              </Flex>
+            </HStack>
+            <Flex display={{ base: "none", md: "flex" }} ml={10}>
+              <DesktopNav />
+            </Flex>
+          </Flex>
 
-      <Collapse in={isOpen} animateOpacity>
-        <MobileNav onClose={onClose} />
-      </Collapse>
+          <Stack
+            flex={{ base: 1, md: 0 }}
+            justify="flex-end"
+            direction="row"
+            spacing={6}
+            mr={-2}
+          >
+            {/* <Button
+              as="a"
+              fontSize="sm"
+              fontWeight={400}
+              variant="link"
+              href="#">
+              Sign In
+            </Button>
+            <Button
+              display={{ base: "none", md: "inline-flex" }}
+              fontSize="sm"
+              fontWeight={600}
+              color="white"
+              bg="cyan.500"
+              href="#"
+              _hover={{
+                bg: "cyan.400",
+              }}>
+              Sign Up
+            </Button> */}
+            <ColorModeSwitcher />
+          </Stack>
+        </Flex>
+
+        <Collapse in={isOpen} animateOpacity>
+          <MobileNav onClose={onClose} />
+        </Collapse>
+      </Container>
     </Box>
   )
 }
