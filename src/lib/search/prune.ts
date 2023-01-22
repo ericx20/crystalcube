@@ -5,7 +5,7 @@ import { applyMove } from "../moves"
 
 
 export function genPruningTable(config: SolverConfig): PruningTable {
-  const solvedState = applyMask(SOLVED_FACELET_CUBE, config.mask)
+  const solvedState = applyMask([...SOLVED_FACELET_CUBE], config.mask)
   const pruningTable: PruningTable = {}
   let previousFrontier: Array<FaceletCube> = [solvedState]
   pruningTable[faceletCubeToString(solvedState)] = 0

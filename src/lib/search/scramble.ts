@@ -1,8 +1,8 @@
-import type { CubeRotation, MoveSeq, SolverConfigName } from "../types";
-import { SOLVED_FACELET_CUBE, SOLVER_CONFIGS } from "../constants";
-import { applyMask, faceletCubeToString } from "../cubeState";
+import type { RotationMove, MoveSeq, SolverConfigName } from "../types";
+import { SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "../constants";
+import { faceletCubeToString, getMaskedFaceletCube, printFaceletCube } from "../cubeState";
 import { isValidNFlip } from "./eo";
-import { applyMoves, appendRandomMove, invertMoves, randomMoves } from "../moves";
+import { applyMoves, appendRandomMove, invertMoves, randomMoves, translateMoves } from "../moves";
 import { parseNotation } from "../notation";
 import { getPruningTable } from "./prune";
 import { solve } from "./solve";
@@ -37,14 +37,17 @@ function nFlipEOArray(n: number): Array<number> {
 
 // generate scrambles that need n moves to solve optimally
 // n must be integer from 0 to solverConfig.nMoveScrambleLimit
-// TODO: add nMoveScrambleLimit and nMoveScrambleMaxIterations to solver configs
-// TODO: make this async
-export function nMoveScrambleForSolver(n: number, solverName: SolverConfigName, preRotation: Array<CubeRotation> = []): MoveSeq | null {
-  const MAX_ITERATIONS = 200
+// TODO: add nMoveScrambleLimit and nMoveScrambleMaxIterations to solver configs, same with maxIterations
+// better yet, some range so minimum 2 move eocross to maximum 9 move eocross
+// TODO: make this actually async
+export async function nMoveScrambleForSolver(
+  n: number,
+  solverName: SolverConfigName,
+  preRotation: Array<RotationMove> = []
+): Promise<MoveSeq | null> {
   const solverConfig = SOLVER_CONFIGS[solverName]
-
-  // TODO: change this to solverConfig.nMoveScrambleLimit
-  if (n > solverConfig.depthLimit) {
+  const { min, max, iterationLimit } = solverConfig.nMoveScrambleConfig
+  if (n < min || n > max) {
     return null
   }
 
@@ -52,36 +55,42 @@ export function nMoveScrambleForSolver(n: number, solverName: SolverConfigName, 
   // e.g. if you scramble with 3 moves, the optimal solution will always be at most 3 moves long
   // therefore optimalSolutionLength <= n
   let scramble: MoveSeq = randomMoves(n)
-  for (let i = 0; i < MAX_ITERATIONS; i++) {
-    console.log(`iteration #${i+1}`);
-    // console.log(scramble.join(" "))
+  for (let i = 0; i < iterationLimit; i++) {
+    // console.log(`iteration #${i+1}`);
     // check pruning table to see if it has length of optimal solution
-    const solvedCube = applyMask(SOLVED_FACELET_CUBE, solverConfig.mask)
-    const scrambledCube = applyMoves(solvedCube, scramble)
-    const stringCube = faceletCubeToString(scrambledCube)
+    const translatedScramble = [...invertMoves(preRotation), ...scramble, ...preRotation]
+    const scrambledCube = applyMoves([...SOLVED_INDEXED_FACELET_CUBE], translatedScramble)
+    const maskedCube = getMaskedFaceletCube(scrambledCube, solverConfig.mask)
+    const stringCube = faceletCubeToString(maskedCube)
+
     const optimalSolutionLength = getPruningTable(solverName)[stringCube]
       ?? solve(scramble, solverName, preRotation, 1)[0].length
     if (optimalSolutionLength === n) {
       // the scramble is the right difficulty, bingo
+      console.log(`iteration #${i+1}`);
       return simplifyScramble(scramble, solverName, preRotation)
     }
 
     // the scramble is not hard enough, add an extra move
     appendRandomMove(scramble)
   }
+  console.log(`failed to gen scramble`);
   return null
 }
 
 export function simplifyScramble(
-  moves: MoveSeq,
+  scramble: MoveSeq,
   solverName: SolverConfigName,
-  preRotation: Array<CubeRotation> = [],
+  preRotation: Array<RotationMove> = [],
   nthSolutionToPick: number = 1
 ): MoveSeq {
+  console.log(scramble.join(" "))
   const numSolutions = nthSolutionToPick
-  const solution = solve(moves, solverName, preRotation, numSolutions)
-  if (solution.length) {
-    return invertMoves(solution[solution.length - 1])
+  const solutions = solve(scramble, solverName, preRotation, numSolutions)
+  if (solutions.length) {
+    const solutionToPick = solutions[solutions.length - 1]
+    const scramble = translateMoves(invertMoves(solutionToPick), invertMoves(preRotation))
+    return scramble
   }
-  return moves
+  return scramble
 }

@@ -1,10 +1,10 @@
-import type { Axis, FaceletCube, FaceTurn, IndexedFaceletCube, Layer, Move, MoveSet, Perm } from "../types"
+import type { Axis, FaceletCube, FaceMove, IndexedFaceletCube, Layer, Move, MoveSet, Perm, RotationMove, SliceMove } from "../types"
 
 export const FACES = ["R", "L", "U", "D", "F", "B"] as const
 
 export const SLICES = ["M", "E", "S"] as const
 
-export const LAYERS_ALONG_AXES: { [layer in Axis]: Array<Layer> } = {
+export const LAYERS_ALONG_AXES: Readonly<{ [layer in Axis]: Readonly<Array<Layer>> }> = {
   x: ["R", "M", "L"],
   y: ["U", "E", "D"],
   z: ["F", "S", "B"],
@@ -12,7 +12,7 @@ export const LAYERS_ALONG_AXES: { [layer in Axis]: Array<Layer> } = {
 
 export const AXES = ["x", "y", "z"] as const
 
-export const SOLVED_FACELET_CUBE: FaceletCube = [
+export const SOLVED_FACELET_CUBE: Readonly<FaceletCube> = [
                  "U", "U", "U",
                  "U", "U", "U",
                  "U", "U", "U",
@@ -44,7 +44,7 @@ export const SOLVED_FACELET_CUBE: FaceletCube = [
 //                +----+----+----+
 //                | 51 | 52 | 53 |
 //                +----+----+----+
-export const SOLVED_INDEXED_FACELET_CUBE: IndexedFaceletCube = [...Array(54).keys()]
+export const SOLVED_INDEXED_FACELET_CUBE: Readonly<IndexedFaceletCube> = [...Array(54).keys()]
 
 export const MOVE_PERMS: { [move in Move]: Array<Perm> } = {
   "B":  [[ 0, 33], [ 1, 21], [ 2,  9], [ 9, 51], [17,  0], [18, 20], [19, 32], [20, 44], [21, 52], [29,  1], [30, 19], [32, 43], [33, 53], [41,  2], [42, 18], [43, 30], [44, 42], [51, 41], [52, 29], [53, 17]],
@@ -97,15 +97,28 @@ export const MOVE_PERMS: { [move in Move]: Array<Perm> } = {
   "z2": [[ 0, 53], [ 1, 52], [ 2, 51], [ 3, 50], [ 4, 49], [ 5, 48], [ 6, 47], [ 7, 46], [ 8, 45], [ 9, 41], [10, 40], [11, 39], [12, 38], [13, 37], [14, 36], [15, 35], [16, 34], [17, 33], [18, 44], [19, 43], [20, 42], [21, 29], [22, 28], [23, 27], [24, 26], [26, 24], [27, 23], [28, 22], [29, 21], [30, 32], [32, 30], [33, 17], [34, 16], [35, 15], [36, 14], [37, 13], [38, 12], [39, 11], [40, 10], [41,  9], [42, 20], [43, 19], [44, 18], [45,  8], [46,  7], [47,  6], [48,  5], [49,  4], [50,  3], [51,  2], [52,  1], [53,  0]],
 }
 
-export const HTM_MOVESET: MoveSet = [
+export const FACE_MOVES: Readonly<Array<FaceMove>> = [
   "R", "R'", "R2",
   "L", "L'", "L2",
   "U", "U'", "U2",
   "D", "D'", "D2",
   "F", "F'", "F2",
   "B", "B'", "B2",
-] satisfies Readonly<Array<FaceTurn>>
+]
 
+export const SLICE_MOVES: Readonly<Array<SliceMove>> = [
+  "M", "M'", "M2",
+  "E", "E'", "E2",
+  "S", "S'", "S2",
+]
+
+export const ROTATIONS: Readonly<Array<RotationMove>> = [
+  "x", "x'", "x2",
+  "y", "y'", "y2",
+  "z", "z'", "z2",
+]
+
+export const HTM_MOVESET: MoveSet = FACE_MOVES
 
 export const HTM_MOVESET_BIASED_RUF: MoveSet = [
   "R", "R'", "R2",
@@ -114,4 +127,4 @@ export const HTM_MOVESET_BIASED_RUF: MoveSet = [
   "L", "L'", "L2",
   "D", "D'", "D2",
   "B", "B'", "B2",
-] satisfies Readonly<Array<FaceTurn>>
+]

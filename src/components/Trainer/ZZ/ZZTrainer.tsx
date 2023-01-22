@@ -15,10 +15,11 @@ import type { ZZConfigName } from "src/lib/types"
 import SelectLevel from "./SelectLevel"
 import SelectEOStep from "./SelectEOStep"
 
-
+// TODO: rename the keys because they'll collide with the cross trainer's
 const scrambleModeAtom = atomWithStorage<ScrambleMode>("scrambleMode", "random")
 const nFlipAtom = atomWithStorage<number>("nFlip", 4)
 const eoStepAtom = atomWithStorage<ZZConfigName>("eoStep", "EOCross")
+const nMoveAtom = atomWithStorage<number>("nMove", 3)
 
 export default function ZZTrainer() {
   const [hideSolution, setHideSolution] = useState(true)
@@ -40,9 +41,22 @@ export default function ZZTrainer() {
   const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
   const [nFlip, setNFlip] = useAtom(nFlipAtom)
   const [eoStep, setEOStep] = useAtom(eoStepAtom)
+  const [nMove, setNMove] = useAtom(nMoveAtom)
+
+  const handleEOStepChange = (newEOStep: ZZConfigName) => {
+    const { min, max } = SOLVER_CONFIGS[newEOStep].nMoveScrambleConfig
+    if (nMove < min) {
+      setNMove(min)
+    } else if (nMove > max) {
+      setNMove(max)
+    }
+    console.log('hello')
+    setEOStep(newEOStep)
+  }
+
   const isNFlipMode = scrambleMode === "nFlip"
 
-  const { scramble, solutions, getNext } = useScrambleAndSolutions(eoStep, scrambleMode, nFlip, onNewScramble)
+  const { scramble, solutions, getNext } = useScrambleAndSolutions(eoStep, scrambleMode, nFlip, nMove, onNewScramble)
 
   const mask = SOLVER_CONFIGS[eoStep].mask
 
@@ -50,7 +64,7 @@ export default function ZZTrainer() {
     <VStack spacing={4} my={4}>
       <ScrambleViewer
         scramble={scramble}
-        nFlip={ isNFlipMode ? nFlip : undefined}
+        nFlip={isNFlipMode ? nFlip : undefined}
       />
 
       <SolutionsViewer
@@ -70,15 +84,18 @@ export default function ZZTrainer() {
       </SolutionsViewer>
 
       <SelectLevel
+        solverName={eoStep}
         scrambleMode={scrambleMode}
         setScrambleMode={setScrambleMode}
         nFlip={nFlip}
         setNFlip={setNFlip}
+        nMove={nMove}
+        setNMove={setNMove}
       />
 
       <SelectEOStep
         eoStep={eoStep}
-        setEOStep={setEOStep}
+        setEOStep={handleEOStepChange}
       />
     </VStack>
   )

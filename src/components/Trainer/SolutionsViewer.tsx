@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Box, Badge, Button, Card, Container, Heading, HStack, VStack, useColorModeValue, Text, SimpleGrid, Stack } from "@chakra-ui/react"
+import { Box, Badge, Button, Heading, HStack, useColorModeValue, Text, SimpleGrid, Stack } from "@chakra-ui/react"
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
 import { moveSeqToString } from "src/lib"
@@ -21,6 +21,7 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, hid
     setSelectedSolutionIndex(0)
   }, [solutions])
   const selectedSolution = solutions.at(selectedSolutionIndex)
+  // TODO: add functions that calculate metrics, since we shouldn't assume the length of a solution is its HTM metric (slice moves, rotations etc.)
   const badgeText = solutions.length ? `best: ${solutions[0].length} HTM` : ""
   return (
     <TrainerCard>
@@ -33,7 +34,11 @@ export default function SolutionsViewer({ scramble, solutions, mask, showEO, hid
         <Stack direction={{ base: "column", md: "row" }}>
           <Spoiler hide={solutions.length ? hideSolution : false} onReveal={onRevealSolution}>
             <Box minW="17rem">
-              <SelectSolution solutions={solutions} selectedSolutionIndex={selectedSolutionIndex} onSelectSolution={setSelectedSolutionIndex} />
+              <SelectSolution
+                solutions={solutions}
+                selectedSolutionIndex={selectedSolutionIndex}
+                onSelectSolution={setSelectedSolutionIndex}
+              />
             </Box>
           </Spoiler> 
           {/* set minWidth to 0 to force 3D cube canvas to resize properly */}
