@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Button, Heading, HStack, VStack } from "@chakra-ui/react"
 
 import { SOLVER_CONFIGS } from "src/lib/constants"
@@ -15,12 +15,13 @@ import type { ZZConfigName } from "src/lib/types"
 import SelectLevel from "./SelectLevel"
 import SelectEOStepDropdown from "./SelectEOStepDropdown"
 
-// TODO: rename the keys because they'll collide with the cross trainer's
+
 const scrambleModeAtom = atomWithStorage<ScrambleMode>("zz-scramble-mode", "random")
 const nFlipAtom = atomWithStorage<number>("zz-nflip", 4)
 const eoStepAtom = atomWithStorage<ZZConfigName>("zz-eostep", "EOCross")
 const nMoveAtom = atomWithStorage<number>("zz-nmove", 3)
 
+// TODO: generalize this for CFOP too, and make the method a prop
 export default function ZZTrainer() {
   const [hideSolution, setHideSolution] = useState(true)
 
@@ -34,8 +35,18 @@ export default function ZZTrainer() {
   }
   useSpacebar(mainAction)
 
+  const headerRef = useRef<HTMLDivElement>(null)
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: headerRef.current?.offsetTop ?? 0,
+      behavior: "smooth",
+    });
+  }
+
   const onNewScramble = () => {
     setHideSolution(true)
+    scrollToTop()
   }
 
   const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
@@ -62,8 +73,8 @@ export default function ZZTrainer() {
 
   return (
     <VStack spacing={4} my={4}>
-      <HStack spacing={4}>
-        <Heading>ZZ Trainer</Heading>
+      <HStack spacing={4} ref={headerRef}>
+        <Heading fontSize="2xl">ZZ Trainer</Heading>
         <SelectEOStepDropdown
           eoStep={eoStep}
           setEOStep={handleEOStepChange}
