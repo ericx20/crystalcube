@@ -29,9 +29,11 @@ import { ColorModeSwitcher } from "./ColorModeSwitcher"
 import { Link as RouterLink } from "react-router-dom"
 import logo from "src/assets/crystalcube.png"
 import NAV_ITEMS, { NavItem } from "./navItems"
+import { useNavigate } from "react-router-dom"
 
 export default function NavBar() {
   const { isOpen, onToggle, onClose } = useDisclosure()
+  const navigate = useNavigate();
 
   return (
     <Box
@@ -66,7 +68,13 @@ export default function NavBar() {
           </Flex>
           <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
             <HStack>
-              <Image src={logo} boxSize="30px" objectFit="contain"/>
+              <Image
+                src={logo}
+                boxSize="30px"
+                objectFit="contain"
+                onClick={() => navigate("")}
+                cursor="pointer"
+              />
               <Text
                 textAlign={useBreakpointValue({ base: "center", md: "left" })}
                 fontFamily="heading"
