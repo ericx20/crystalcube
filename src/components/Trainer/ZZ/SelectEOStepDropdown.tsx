@@ -16,7 +16,11 @@ export default function SelectEOStepDropdown({ eoStep, setEOStep }: SelectEOStep
       variant="filled"
       width="8rem"
     >
-      {METHOD_SOLVERS.ZZ.map(step => <option value={step}>{step}</option>)}
+      {METHOD_SOLVERS.ZZ.map(step => (
+        <option key={step} value={step}>
+          {step}
+        </option>
+      ))}
     </Select>
   )
 }

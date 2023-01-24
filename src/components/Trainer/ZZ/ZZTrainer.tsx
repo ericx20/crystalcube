@@ -1,19 +1,19 @@
 import { useRef, useState } from "react"
 import { Button, Heading, HStack, VStack } from "@chakra-ui/react"
 
+import type { ZZConfigName } from "src/lib/types"
 import { SOLVER_CONFIGS } from "src/lib/constants"
 import ScrambleViewer from "../ScrambleViewer"
 import SolutionsViewer from "../SolutionsViewer"
-import useSpacebar from "src/hooks/useSpacebar"
+import SelectLevel from "./SelectLevel"
+import SelectEOStepDropdown from "./SelectEOStepDropdown"
 
+import useSpacebar from "src/hooks/useSpacebar"
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions"
 import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import type { ZZConfigName } from "src/lib/types"
-import SelectLevel from "./SelectLevel"
-import SelectEOStepDropdown from "./SelectEOStepDropdown"
 
 
 const scrambleModeAtom = atomWithStorage<ScrambleMode>("zz-scramble-mode", "random")
@@ -61,8 +61,6 @@ export default function ZZTrainer() {
     }
     setEOStep(newEOStep)
   }
-
-  const isNFlipMode = scrambleMode === "nFlip"
 
   const { scramble, solutions, getNext } = useScrambleAndSolutions(eoStep, scrambleMode, nFlip, nMove, onNewScramble)
 
