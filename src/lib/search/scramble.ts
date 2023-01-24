@@ -1,15 +1,21 @@
-import type { RotationMove, MoveSeq, SolverConfigName } from "../types";
+import type { RotationMove, MoveSeq, SolverConfigName, LayerMoveSeq } from "../types";
 import { SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "../constants";
-import { faceletCubeToString, getMaskedFaceletCube, printFaceletCube } from "../cubeState";
+import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState";
 import { isValidNFlip } from "./eo";
 import { applyMoves, appendRandomMove, invertMoves, randomMoves, translateMoves } from "../moves";
 import { parseNotation } from "../notation";
 import { getPruningTable } from "./prune";
 import { solve } from "./solve";
 
+import { randomScrambleForEvent } from "cubing/scramble"
 import { KState } from "cubing/kpuzzle"
 import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search";
 import shuffle from "lodash/shuffle"
+
+export async function randomScramble(): Promise<MoveSeq> {
+  const rawScramble = await randomScrambleForEvent("333")
+  return parseNotation(rawScramble.toString())
+}
 
 export async function nFlipScramble(n: number): Promise<MoveSeq> {
   const { kpuzzle, stateData } = await random333State()
@@ -43,7 +49,8 @@ function nFlipEOArray(n: number): Array<number> {
 export async function nMoveScrambleForSolver(
   n: number,
   solverName: SolverConfigName,
-  preRotation: Array<RotationMove> = []
+  preRotation: Array<RotationMove> = [],
+  simplify: boolean = true,
 ): Promise<MoveSeq | null> {
   const solverConfig = SOLVER_CONFIGS[solverName]
   const { min, max, iterationLimit } = solverConfig.nMoveScrambleConfig
@@ -68,7 +75,7 @@ export async function nMoveScrambleForSolver(
     if (optimalSolutionLength === n) {
       // the scramble is the right difficulty, bingo
       console.log(`iteration #${i+1}`);
-      return simplifyScramble(scramble, solverName, preRotation)
+      return simplify ? simplifyScramble(scramble, solverName, preRotation) : scramble
     }
 
     // the scramble is not hard enough, add an extra move
@@ -84,13 +91,20 @@ export function simplifyScramble(
   preRotation: Array<RotationMove> = [],
   nthSolutionToPick: number = 1
 ): MoveSeq {
-  console.log(scramble.join(" "))
   const numSolutions = nthSolutionToPick
   const solutions = solve(scramble, solverName, preRotation, numSolutions)
   if (solutions.length) {
-    const solutionToPick = solutions[solutions.length - 1]
-    const scramble = translateMoves(invertMoves(solutionToPick), invertMoves(preRotation))
-    return scramble
+    return getScrambleFromSolutions(solutions, preRotation)
   }
   return scramble
+}
+
+// given a list of solutions, it picks the worst solution and translates it into a scramble
+export function getScrambleFromSolutions(solutions: Array<LayerMoveSeq>, preRotation: Array<RotationMove> = []) {
+  if (solutions.length) {
+    const worstSolution = solutions[solutions.length - 1]
+    const scramble = translateMoves(invertMoves(worstSolution), invertMoves(preRotation))
+    return scramble
+  }
+  return []
 }

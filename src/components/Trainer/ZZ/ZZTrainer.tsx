@@ -78,10 +78,7 @@ export default function ZZTrainer() {
         />
       </HStack>
 
-      <ScrambleViewer
-        scramble={scramble}
-        nFlip={isNFlipMode ? nFlip : undefined}
-      />
+      <ScrambleViewer scramble={scramble} />
 
       <SolutionsViewer
         scramble={scramble}

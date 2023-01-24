@@ -4,22 +4,13 @@ import TrainerCard from "./TrainerCard"
 
 interface ScrambleViewerProps {
   scramble: MoveSeq,
-  nFlip?: number,
 }
 
 // TODO: show "Failed to generate scramble" message if scramble === null
-export default function ScrambleViewer({ scramble, nFlip }: ScrambleViewerProps) {
+export default function ScrambleViewer({ scramble }: ScrambleViewerProps) {
   return (
     <TrainerCard>
-      <Heading size="md">
-        scramble
-        {nFlip !== undefined && (
-          <Badge ml={2} bg="#9b23eb" variant="solid">
-            {nFlip} bad edges
-          </Badge>
-        )}
-      </Heading>
-      <Text>{ scramble.join(" ") }</Text>
+      <Text><b>scramble:</b> { scramble.join(" ") }</Text>
     </TrainerCard>
   )
 }

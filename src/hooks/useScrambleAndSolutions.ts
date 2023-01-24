@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { randomScrambleForEvent } from "cubing/scramble"
 import type { MoveSeq, SolverConfigName } from "src/lib/types"
-import { nFlipScramble, nMoveScrambleForSolver, parseNotation, solve } from "src/lib"
+import { getScrambleFromSolutions, nFlipScramble, nMoveScrambleForSolver, parseNotation, randomScramble, solve } from "src/lib"
 
 export type ScrambleMode = "random" | "nFlip" | "nMove"
 
@@ -15,21 +15,21 @@ export default function useScrambleAndSolutions(
   const [solutions, setSolutions] = useState<Array<MoveSeq>>([])
 
   const generateScramble: () => Promise<MoveSeq> = ({
-    random: async () => {
-      const rawScramble = await randomScrambleForEvent("333")
-      return parseNotation(rawScramble.toString())
-    },
+    random: randomScramble,
     nFlip: () => nFlipScramble(nFlip),
-    nMove: async () => {
-      return await nMoveScrambleForSolver(nMove, solverName, ["x2"]) ?? []
-    }
+    nMove: async () => await nMoveScrambleForSolver(nMove, solverName, ["x2"]) ?? [],
   })[mode]
 
   const getNext = useCallback(async () => {
     const scramble = await generateScramble()
     // TODO: REMOVE HARDCODE FOR: x2 away from scramble orientation
-    const solutions = solve(scramble, solverName, ["x2"])
-    setScramble(scramble)
+    // generate (up to) 6 solutions, present the worst one as a scramble and the rest as solutions
+    const solutions = solve(scramble, solverName, ["x2"], 6)
+    const scrambleToShow = getScrambleFromSolutions(solutions, ["x2"])
+    if (solutions.length > 5) {
+      solutions.pop()
+    }
+    setScramble(scrambleToShow)
     setSolutions(solutions)
     onNewScramble && onNewScramble()
   }, [generateScramble])
