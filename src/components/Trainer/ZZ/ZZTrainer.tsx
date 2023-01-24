@@ -23,20 +23,7 @@ const nMoveAtom = atomWithStorage<number>("zz-nmove", 3)
 
 // TODO: generalize this for CFOP too, and make the method a prop
 export default function ZZTrainer() {
-  const [hideSolution, setHideSolution] = useState(true)
-
-  const actionButtonText = hideSolution ? "reveal" : "next"
-  const mainAction = () => {
-    if (hideSolution) {
-      setHideSolution(false)
-    } else {
-      getNext()
-    }
-  }
-  useSpacebar(mainAction)
-
   const headerRef = useRef<HTMLDivElement>(null)
-
   const scrollToTop = () => {
     window.scrollTo({
       top: headerRef.current?.offsetTop ?? 0,
@@ -44,9 +31,20 @@ export default function ZZTrainer() {
     });
   }
 
+  const [hideSolution, setHideSolution] = useState(true)
+  const actionButtonText = hideSolution ? "reveal" : "next"
+  const mainAction = () => {
+    if (hideSolution) {
+      setHideSolution(false)
+    } else {
+      scrollToTop()
+      getNext()
+    }
+  }
+  useSpacebar(mainAction)
+
   const onNewScramble = () => {
     setHideSolution(true)
-    scrollToTop()
   }
 
   const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
@@ -61,7 +59,6 @@ export default function ZZTrainer() {
     } else if (nMove > max) {
       setNMove(max)
     }
-    console.log('hello')
     setEOStep(newEOStep)
   }
 
