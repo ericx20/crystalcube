@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react"
 
-export default function useSpacebar(callback: () => any) {
+export default function useKey(key: KeyboardEvent["key"], callback: () => any) {
   const [enabled, setEnabled] = useState(true)
 
   const onKeyDown = useCallback((event: KeyboardEvent) => {
-    if (event.key === " ") {
+    if (event.key === key) {
       event.preventDefault()
       if (enabled) {
         callback()

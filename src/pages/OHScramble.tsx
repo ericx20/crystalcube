@@ -23,8 +23,8 @@ import { IoHandLeft, IoHandRight } from "react-icons/io5"
 import { Alg } from "cubing/alg";
 import { randomScrambleForEvent } from "cubing/scramble"
 import { translateToOH } from "../utils/translateToOH"
-import CubeViewer from "../components/CubeViewer";
-import useSpacebar from "src/hooks/useSpacebar";
+import CubeViewer from "../components/CubeViewer"
+import useKey from "src/hooks/useKey"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
@@ -61,7 +61,7 @@ export default function OHScramble() {
     console.log("original:", rawScramble.toString())
   }, [rawScramble, isLefty, isLowercaseWide])
 
-  useSpacebar(getNewScramble)
+  useKey(" ", getNewScramble)
 
   useEffect(() => {
     getNewScramble()

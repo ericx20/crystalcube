@@ -8,7 +8,7 @@ import SolutionsViewer from "../SolutionsViewer"
 import SelectLevel from "./SelectLevel"
 import SelectEOStepDropdown from "./SelectEOStepDropdown"
 
-import useSpacebar from "src/hooks/useSpacebar"
+import useKey from "src/hooks/useKey"
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions"
 import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 
@@ -31,20 +31,24 @@ export default function ZZTrainer() {
     });
   }
 
-  const [hideSolution, setHideSolution] = useState(true)
-  const actionButtonText = hideSolution ? "reveal" : "next"
+  const [isSolutionHidden, setSolutionHidden] = useState(true)
+  const hideSolution = () => setSolutionHidden(true)
+  const showSolution = () => setSolutionHidden(false)
+
+  const actionButtonText = isSolutionHidden ? "reveal" : "next"
   const mainAction = () => {
-    if (hideSolution) {
-      setHideSolution(false)
+    if (isSolutionHidden) {
+      showSolution()
     } else {
       scrollToTop()
       getNext()
     }
   }
-  useSpacebar(mainAction)
+  useKey(" ", mainAction)
+  useKey("Backspace", hideSolution)
 
   const onNewScramble = () => {
-    setHideSolution(true)
+    setSolutionHidden(true)
   }
 
   const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom)
@@ -83,15 +87,19 @@ export default function ZZTrainer() {
         solutions={solutions}
         mask={mask}
         showEO
-        hideSolution={hideSolution}
-        onRevealSolution={() => setHideSolution(false)}
+        hideSolution={isSolutionHidden}
+        onRevealSolution={showSolution}
       >
-        <Button
-          onClick={mainAction}
-          w="100%"
-        >
-          {actionButtonText}
-        </Button>
+        <HStack>
+          <Button onClick={mainAction} w="100%">
+            {actionButtonText}
+          </Button>
+          {!isSolutionHidden && (
+            <Button onClick={hideSolution} w="4rem">
+              hide
+            </Button>
+          )}
+        </HStack>
       </SolutionsViewer>
 
       <SelectLevel
