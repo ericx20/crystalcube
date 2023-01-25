@@ -22,8 +22,69 @@ export function invertMove<M extends Move>(move: M): M {
   return move[0] + "'" as M;
 }
 
+// TODO: move to types.d.ts
+type MovePower = 1 | 2 | 3
+
+export function powerOfMove(move: Move): MovePower {
+  const suffix = move[1]
+  if (suffix === "'") {
+    return 3
+  }
+  if (suffix === "2") {
+    return 2
+  }
+  return 1
+}
+
+const SUFFIXES = {
+  1: "",
+  2: "2",
+  3: "'",
+} as const
+
+export function movePowerToSuffix(power: MovePower): string {
+  return SUFFIXES[power]
+}
+
+
 export function invertMoves<M extends Move>(moves: Array<M>): Array<M> {
   return [...moves].reverse().map(move => invertMove(move));
+}
+
+export function simplifyMoves<M extends Move>(movesToSimplify: Array<M>) {
+  const moves = [...movesToSimplify]
+  for (let i = 0; i < moves.length;) {
+    const currentMove = moves[i] // guaranteed to exist
+    const nextMove = moves.at(i + 1) // may not exist
+    if (nextMove === undefined) {
+      // we're at the last element, no cancelling is possible
+      break
+    }
+
+    if (currentMove[0] === nextMove[0]) {
+      const powerOfNewMove = (powerOfMove(currentMove) + powerOfMove(nextMove)) % 4 as MovePower | 0
+      // cancel
+      if (powerOfNewMove === 0) {
+        // moves like R R' (1+3) or U2 U2 (2+2): cancel completely
+        // delete the two moves
+        moves.splice(i, 2)
+        // move a step back if not at the start
+        i && (i -= 1)
+        continue
+      }
+      // otherwise, it's something like R R2
+      console.log({ currentMove, nextMove, powerOfNewMove })
+      const newMove = currentMove[0] + movePowerToSuffix(powerOfNewMove) as M
+      // change the first move, delete the second
+      moves[i] = newMove
+      moves.splice(i + 1, 1)
+      i++
+    } else {
+      // no cancel
+      i++
+    }
+  }
+  return moves
 }
 
 // This does not include rotations
@@ -71,7 +132,7 @@ export function isRotation(move: Move): move is RotationMove {
   return ROTATIONS.includes(move as RotationMove)
 }
 
-export function endsWithUselessParallelMoves(solution: MoveSeq): boolean {
+export function endsWithRedundantParallelMoves(solution: MoveSeq): boolean {
   if (solution.length < 3) {
     return false
   }
@@ -98,7 +159,7 @@ export function appendRandomMove(moves: MoveSeq, moveSet = HTM_MOVESET): void {
     !lastMove // if there is no last move, we can choose any move as valid
     || (
       !movesAreSameLayer(choice, lastMove)
-      && (!secondLastMove || !endsWithUselessParallelMoves([secondLastMove, lastMove, choice]))
+      && (!secondLastMove || !endsWithRedundantParallelMoves([secondLastMove, lastMove, choice]))
     )
   )
   const validChoices = moveSet.filter(choiceIsValid)
@@ -197,16 +258,6 @@ function translateRotation(rotationToTranslate: RotationMove, rotation: Rotation
   return translatedRotation
 }
 
-function nextElement<T>(arr: Array<T>, index: number) {
+function nextElement<T>(arr: Array<T>, index: number): T {
   return arr[(index + 1) % arr.length]
-}
-
-function powerOfMove(move: Move) {
-  if (move[1] === "'") {
-    return 3
-  }
-  if (move[1] === "2") {
-    return 2
-  }
-  return 1
 }

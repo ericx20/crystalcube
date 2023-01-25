@@ -2,7 +2,7 @@ import type { RotationMove, MoveSeq, SolverConfigName, LayerMoveSeq } from "../t
 import { SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "../constants";
 import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState";
 import { isValidNFlip } from "./eo";
-import { applyMoves, appendRandomMove, invertMoves, randomMoves, translateMoves } from "../moves";
+import { applyMoves, appendRandomMove, invertMoves, randomMoves, translateMoves, simplifyMoves } from "../moves";
 import { parseNotation } from "../notation";
 import { getPruningTable } from "./prune";
 import { solve } from "./solve";
@@ -11,6 +11,7 @@ import { randomScrambleForEvent } from "cubing/scramble"
 import { KState } from "cubing/kpuzzle"
 import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search";
 import shuffle from "lodash/shuffle"
+
 
 export async function randomScramble(): Promise<MoveSeq> {
   const rawScramble = await randomScrambleForEvent("333")
@@ -42,9 +43,7 @@ function nFlipEOArray(n: number): Array<number> {
 }
 
 // generate scrambles that need n moves to solve optimally
-// n must be integer from 0 to solverConfig.nMoveScrambleLimit
-// TODO: add nMoveScrambleLimit and nMoveScrambleMaxIterations to solver configs, same with maxIterations
-// better yet, some range so minimum 2 move eocross to maximum 9 move eocross
+// n must be integer within a range defined by nMoveScrambleConfig
 // TODO: make this actually async
 export async function nMoveScrambleForSolver(
   n: number,
@@ -89,22 +88,15 @@ export function simplifyScramble(
   scramble: MoveSeq,
   solverName: SolverConfigName,
   preRotation: Array<RotationMove> = [],
-  nthSolutionToPick: number = 1
+  suboptimality: number = 0,
 ): MoveSeq {
-  const numSolutions = nthSolutionToPick
-  const solutions = solve(scramble, solverName, preRotation, numSolutions)
-  if (solutions.length) {
-    return getScrambleFromSolutions(solutions, preRotation)
-  }
-  return scramble
-}
-
-// given a list of solutions, it picks the worst solution and translates it into a scramble
-export function getScrambleFromSolutions(solutions: Array<LayerMoveSeq>, preRotation: Array<RotationMove> = []) {
-  if (solutions.length) {
-    const worstSolution = solutions[solutions.length - 1]
-    const scramble = translateMoves(invertMoves(worstSolution), invertMoves(preRotation))
+  const extraMoves = randomMoves(suboptimality)
+  const newScramble = [...scramble, ...extraMoves]
+  const solution = solve(newScramble, solverName, preRotation, 1).at(0)
+  if (!solution) {
     return scramble
   }
-  return []
+  const solutionInverse = translateMoves(invertMoves(solution), preRotation)
+  // cancel out any moves if possible
+  return simplifyMoves([...solutionInverse, ...invertMoves(extraMoves)])
 }

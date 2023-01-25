@@ -1,7 +1,7 @@
 import type { MoveSeq, FaceletCube, PruningTable, SolverConfigName, RotationMove, SolverConfig, LayerMoveSeq } from "../types"
 import { SOLVER_CONFIGS, SOLVED_INDEXED_FACELET_CUBE } from "../constants"
 import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState"
-import { endsWithUselessParallelMoves, layerMovesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfLayerMove, applyMove } from "../moves"
+import { endsWithRedundantParallelMoves, layerMovesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfLayerMove, applyMove } from "../moves"
 import { getPruningTable } from "./prune"
 
 
@@ -78,7 +78,7 @@ export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation:
       }
 
       // prevent exploring further if the solution has a redundant segment like R L R', guaranteed a better one would be found
-      if (endsWithUselessParallelMoves(solution.concat(move))) {
+      if (endsWithRedundantParallelMoves(solution.concat(move))) {
         continue
       }
 
