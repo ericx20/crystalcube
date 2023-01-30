@@ -1,5 +1,5 @@
 import { Box, Grid, Heading, HStack, Text } from "@chakra-ui/react";
-import CubeViewer from "src/components/CubeViewer";
+import CubeViewer from "src/old/CubeViewer";
 import { AlgSheet, AlgSet, AlgCase, CaseAlg, PuzzleConfig } from "./types"
 
 export declare interface AlgSheetViewerProps {

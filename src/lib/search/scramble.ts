@@ -49,7 +49,7 @@ export async function nMoveScrambleForSolver(
   n: number,
   solverName: SolverConfigName,
   preRotation: Array<RotationMove> = [],
-  simplify: boolean = true,
+  simplify = true,
 ): Promise<MoveSeq | null> {
   const solverConfig = SOLVER_CONFIGS[solverName]
   const { min, max, iterationLimit } = solverConfig.nMoveScrambleConfig
@@ -60,9 +60,8 @@ export async function nMoveScrambleForSolver(
   // the optimal solution for an n-move sequence will always be at most n
   // e.g. if you scramble with 3 moves, the optimal solution will always be at most 3 moves long
   // therefore optimalSolutionLength <= n
-  let scramble: MoveSeq = randomMoves(n)
+  const scramble: MoveSeq = randomMoves(n)
   for (let i = 0; i < iterationLimit; i++) {
-    // console.log(`iteration #${i+1}`);
     // check pruning table to see if it has length of optimal solution
     const translatedScramble = [...invertMoves(preRotation), ...scramble, ...preRotation]
     const scrambledCube = applyMoves([...SOLVED_INDEXED_FACELET_CUBE], translatedScramble)
@@ -73,14 +72,13 @@ export async function nMoveScrambleForSolver(
       ?? solve(scramble, solverName, preRotation, 1)[0].length
     if (optimalSolutionLength === n) {
       // the scramble is the right difficulty, bingo
-      console.log(`iteration #${i+1}`);
       return simplify ? simplifyScramble(scramble, solverName, preRotation) : scramble
     }
 
     // the scramble is not hard enough, add an extra move
     appendRandomMove(scramble)
   }
-  console.log(`failed to gen scramble`);
+  console.warn("failed to gen scramble")
   return null
 }
 
@@ -88,7 +86,7 @@ export function simplifyScramble(
   scramble: MoveSeq,
   solverName: SolverConfigName,
   preRotation: Array<RotationMove> = [],
-  suboptimality: number = 0,
+  suboptimality = 0,
 ): MoveSeq {
   const extraMoves = randomMoves(suboptimality)
   const newScramble = [...scramble, ...extraMoves]

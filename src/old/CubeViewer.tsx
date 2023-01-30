@@ -12,6 +12,7 @@ interface CubeViewerProps {
   imageUrl?: string
 }
 
+/** @deprecated */
 export default function CubeViewer({ puzzle, alg, isSetup, mode, stickering, imageUrl }: CubeViewerProps) {
   if (stickering === "image") {
     return <Image boxSize="120px" objectFit='cover' src={imageUrl}/>

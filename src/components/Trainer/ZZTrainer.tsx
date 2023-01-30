@@ -1,14 +1,15 @@
-import { useRef, useState } from "react"
+import { useCallback, useRef, useState } from "react"
 import { Button, Heading, HStack, VStack } from "@chakra-ui/react"
 
 import type { ZZConfigName } from "src/lib/types"
 import { SOLVER_CONFIGS } from "src/lib/constants"
-import ScrambleViewer from "../ScrambleViewer"
-import SolutionsViewer from "../SolutionsViewer"
-import SelectLevel from "./SelectLevel"
-import SelectEOStepDropdown from "./SelectEOStepDropdown"
+import ScrambleEditor from "./ScrambleEditor"
+import SolutionsViewer from "./SolutionsViewer"
+import SelectLevel from "./select/SelectLevel"
+import SelectEOStepDropdown from "./select/SelectEOStepDropdown"
 
-import useKey from "src/hooks/useKey"
+// import useHotkey from "src/hooks/useKey"
+import { useHotkeys } from "react-hotkeys-hook"
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions"
 import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 
@@ -44,8 +45,9 @@ export default function ZZTrainer() {
       getNext()
     }
   }
-  useKey(" ", mainAction)
-  useKey("Backspace", hideSolution)
+
+  useHotkeys(" ", mainAction, [isSolutionHidden], { preventDefault: true })
+  useHotkeys("Backspace", hideSolution)
 
   const onNewScramble = () => {
     setSolutionHidden(true)
@@ -66,7 +68,7 @@ export default function ZZTrainer() {
     setEOStep(newEOStep)
   }
 
-  const { scramble, solutions, getNext } = useScrambleAndSolutions(eoStep, scrambleMode, nFlip, nMove, onNewScramble)
+  const { scramble, setScramble, solutions, isLoading, getNext } = useScrambleAndSolutions(eoStep, scrambleMode, nFlip, nMove, onNewScramble)
 
   const mask = SOLVER_CONFIGS[eoStep].mask
 
@@ -80,7 +82,7 @@ export default function ZZTrainer() {
         />
       </HStack>
 
-      <ScrambleViewer scramble={scramble} />
+      <ScrambleEditor scramble={scramble} setScramble={setScramble} />
 
       <SolutionsViewer
         scramble={scramble}
@@ -91,7 +93,7 @@ export default function ZZTrainer() {
         onRevealSolution={showSolution}
       >
         <HStack>
-          <Button onClick={mainAction} w="100%">
+          <Button onClick={mainAction} isLoading={isLoading} w="100%">
             {actionButtonText}
           </Button>
           {!isSolutionHidden && (

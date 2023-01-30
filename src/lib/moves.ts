@@ -73,7 +73,6 @@ export function simplifyMoves<M extends Move>(movesToSimplify: Array<M>) {
         continue
       }
       // otherwise, it's something like R R2
-      console.log({ currentMove, nextMove, powerOfNewMove })
       const newMove = currentMove[0] + movePowerToSuffix(powerOfNewMove) as M
       // change the first move, delete the second
       moves[i] = newMove
@@ -124,8 +123,17 @@ export function layerMovesAreParallel(a: LayerMove, b: LayerMove): boolean {
   })
 }
 
+export function isFaceMove(move: Move): move is FaceMove {
+  return FACE_MOVES.includes(move as FaceMove)
+}
+
+// export function isSliceMove(move: Move): move is SliceMove {
+//   return SLICE_MOVES.includes(move as SliceMove)
+// }
+
 export function isLayerMove(move: Move): move is LayerMove {
-  return FACE_MOVES.includes(move as FaceMove) || SLICE_MOVES.includes(move as SliceMove)
+  // TODO: add slice move support
+  return isFaceMove(move) // || isSliceMove(move)
 }
 
 export function isRotation(move: Move): move is RotationMove {

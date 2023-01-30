@@ -21,6 +21,7 @@ export const TwistyPlayer = ({
     if (className) {
       newTwisty.className = className;
     }
+    newTwisty.style.maxWidth = '90vw';
     setTwisty(newTwisty);
     spanRef.current?.appendChild(newTwisty);
     if (onTwistyInit) onTwistyInit(newTwisty);

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { nMoveScrambleForSolver, SOLVER_CONFIGS } from "src/lib"
-import SelectNMove from "src/components/Trainer/ZZ/SelectNMove";
+import SelectNMove from "src/components/Trainer/select/SelectNMove";
 import { Button } from "@chakra-ui/react";
 
 /*

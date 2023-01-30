@@ -1,4 +1,4 @@
-import ZZTrainer from "src/components/Trainer/ZZ/ZZTrainer";
+import ZZTrainer from "src/components/Trainer/ZZTrainer";
 
 // TODO
 export default function Trainer() {

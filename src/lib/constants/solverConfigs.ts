@@ -35,7 +35,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     pruningDepth: 4, // TODO: can we increase it to 5?
     depthLimit: 7,
     nMoveScrambleConfig: {
-      min: 2,
+      min: 3,
       max: 7,
       iterationLimit: 2000,
     },
@@ -47,7 +47,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     pruningDepth: 4,
     depthLimit: 9,
     nMoveScrambleConfig: {
-      min: 2,
+      min: 3,
       max: 8,
       iterationLimit: 1000,
     },
@@ -59,7 +59,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     pruningDepth: 4,
     depthLimit: 10,
     nMoveScrambleConfig: {
-      min: 2,
+      min: 3,
       max: 9,
       iterationLimit: 200,
     },
@@ -71,7 +71,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     pruningDepth: 4,
     depthLimit: 8,
     nMoveScrambleConfig: {
-      min: 2,
+      min: 3,
       max: 7,
       iterationLimit: 500,
     },

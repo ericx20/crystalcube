@@ -3,7 +3,7 @@ import { Box, Badge, Button, Heading, HStack, useColorModeValue, Text, SimpleGri
 import type { MoveSeq, Mask } from "src/lib/types"
 import SolutionPlayer from "./SolutionPlayer"
 import { moveSeqToString } from "src/lib"
-import TrainerCard from "./TrainerCard"
+import TrainerCard from "./common/TrainerCard"
 
 interface SolutionsViewerProps {
   scramble: MoveSeq
@@ -15,7 +15,15 @@ interface SolutionsViewerProps {
   children?: React.ReactNode
 }
 
-export default function SolutionsViewer({ scramble, solutions, mask, showEO, hideSolution = false, onRevealSolution = () => {}, children }: SolutionsViewerProps) {
+export default function SolutionsViewer({
+  scramble,
+  solutions,
+  mask,
+  showEO,
+  hideSolution = false,
+  onRevealSolution = () => { /* do nothing */ },
+  children,
+}: SolutionsViewerProps) {
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState(0)
   useEffect(() => {
     setSelectedSolutionIndex(0)
@@ -105,7 +113,8 @@ function Spoiler({ hide, onReveal, children }: SpoilerProps) {
     visibility: hide ? "hidden" : "visible",
     transition: "opacity 0.12s linear",
   }
-  const coverColor = useColorModeValue("gray.300", "gray.800")
+  const coverColor = useColorModeValue("gray.200", "gray.800")
+  const badgeColor = useColorModeValue("gray.500", "gray.700")
   return (
     <Box
       onClick={onReveal}
@@ -121,6 +130,9 @@ function Spoiler({ hide, onReveal, children }: SpoilerProps) {
           left="50%"
           transform="translate(-50%, -50%)"
           fontSize="lg"
+          bg={badgeColor}
+          color="white"
+          // colorScheme="blackAlpha"
         >
           click to reveal
         </Badge>

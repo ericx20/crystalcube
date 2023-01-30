@@ -23,10 +23,10 @@ import { IoHandLeft, IoHandRight } from "react-icons/io5"
 import { Alg } from "cubing/alg";
 import { randomScrambleForEvent } from "cubing/scramble"
 import { translateToOH } from "../utils/translateToOH"
-import CubeViewer from "../components/CubeViewer"
-import useKey from "src/hooks/useKey"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
+import { useHotkeys } from "react-hotkeys-hook";
+import { TwistyPlayer } from "src/components/TwistyPlayer";
 
 const isLeftyAtom = atomWithStorage("isLefty", true)
 const isLowercaseWideAtom = atomWithStorage("isLowercaseWide", true)
@@ -61,7 +61,7 @@ export default function OHScramble() {
     console.log("original:", rawScramble.toString())
   }, [rawScramble, isLefty, isLowercaseWide])
 
-  useKey(" ", getNewScramble)
+  useHotkeys(" ", getNewScramble, { preventDefault: true })
 
   useEffect(() => {
     getNewScramble()
@@ -108,9 +108,12 @@ export default function OHScramble() {
     <SlideFade in>
       <VStack spacing={3}>
         <Heading textAlign="center">one handed scrambles</Heading>
-        <Box maxW="384px">
-          <CubeViewer alg={scramble.toString()} mode="2D" />
-        </Box>
+        <TwistyPlayer
+          alg={scramble}
+          visualization="2D"
+          background="none"
+          controlPanel="none"
+        />
         <Skeleton isLoaded={!isLoading}>
           <Text
             textAlign="center"

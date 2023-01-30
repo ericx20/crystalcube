@@ -1,5 +1,5 @@
 import { lazy, MouseEventHandler, Suspense, useEffect, useState } from "react"
-import { Box, Button, Center, Icon, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Spinner, Text, VStack, Wrap } from "@chakra-ui/react"
+import { Box, Button, Center, Icon, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, Spinner, Text, useColorModeValue, VStack, Wrap } from "@chakra-ui/react"
 import type { Move, MoveSeq, Mask } from "src/lib/types"
 import { VscCircleFilled } from "react-icons/vsc"
 import { IoCube, IoCubeOutline } from "react-icons/io5"
@@ -46,6 +46,8 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
   }
 
   const eoAnnotation = getEOSolutionAnnotation(scramble, solution)
+
+  const cubeBackground = useColorModeValue("gray.200", undefined)
 
   const desktopScrubber = (
     <Wrap
@@ -129,9 +131,19 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
       {desktopScrubber}
       {/* Mobile version */}
       {mobileScrubber}
-      <Center h={[200, 250, 350]} borderWidth="1px" borderRadius="lg" cursor="move">
+      <Center
+        h={[200, 250, 350]}
+        borderWidth="1px"
+        borderRadius="lg"
+        cursor="move"
+        bg={cubeBackground}
+      >
         <Suspense fallback={<Spinner />}>
-          <Cube moves={stateToShow} mask={mask} showEO={showEO} preRotation={["x2"]}/>
+          <Cube
+            moves={stateToShow}
+            mask={mask}
+            showEO={showEO}
+            preRotation={["x2"]}/>
         </Suspense>
       </Center>
     </VStack>

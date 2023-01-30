@@ -9,6 +9,8 @@ import { getPruningTable } from "./prune"
 // Pre-rotation sets the desired cube orientation
 // TODO: add pre-rotation to the output, along with move annotations maybe
 // will be an object comprising of the solution and some "metadata" like pre-rotation etc
+// TODO: make the solver handle scrambles that can change the cube's orientation
+// e.g. rotations or slice moves, make the solver figure out how to rotate the cube to solving orientation
 export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<RotationMove> = [], maxNumberOfSolutions = 5): Array<LayerMoveSeq> {
   const config = SOLVER_CONFIGS[configName]
 

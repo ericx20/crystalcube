@@ -2,7 +2,7 @@ import { Heading, RadioGroup, HStack, Radio } from "@chakra-ui/react";
 import { ScrambleMode } from "src/hooks/useScrambleAndSolutions";
 import { SOLVER_CONFIGS } from "src/lib";
 import type { SolverConfigName } from "src/lib/types";
-import TrainerCard from "../TrainerCard";
+import TrainerCard from "../common/TrainerCard";
 import SelectNFlip from "./SelectNFlip";
 import SelectNMove from "./SelectNMove"
 
