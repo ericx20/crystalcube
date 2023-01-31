@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import * as THREE from "three"
 import type { Face, Facelet } from "src/lib/types"
 import { Image } from "@react-three/drei"

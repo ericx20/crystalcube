@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import {
   Button,
-  Box,
   Container,
   Collapse,
   Flex,
@@ -44,15 +43,15 @@ export default function OHScramble() {
   const getNewScramble = useCallback(async () => {
     // promise to generate/translate OH scramble
     // resolves to false and stops the loading spinner
-    const getRawScramble = new Promise<false>(async (res) => {
+    const getRawScramble = async (): Promise<false> => {
       setRawScramble(await randomScrambleForEvent("333"))
       setLoading(false)
-      res(false)
-    })
+      return false
+    }
     // promise to resolve to true after 200 ms
     const loadingTimeout = new Promise<true>((res) => setTimeout(() => res(true), 200))
     // show the loading spinner only if scramble takes more than 200 ms to generate
-    const showLoading = await Promise.race([getRawScramble, loadingTimeout])
+    const showLoading = await Promise.race([getRawScramble(), loadingTimeout])
     setLoading(showLoading)
   }, [])
 
