@@ -1,5 +1,6 @@
 # crystalcube
 A collection of unique speedcubing tools
+![screenshot of crystalcube](src/assets/mockup-dark.webp)
 
 ## ZZ Trainer
 Improves your EOStep efficiency: lets you learn from computer-optimal solutions with powerful EO visualization
@@ -7,6 +8,7 @@ Improves your EOStep efficiency: lets you learn from computer-optimal solutions 
 - Scrambles are random-state or can be set to a specific level
 - Solver that suggests optimal solutions for EO, EOLine, EOCross
 - Inspired by [Onionhoney's Roux Trainers](https://onionhoney.github.io/roux-trainers/)
+
 Support for CFOP is coming soon!
 
 ## OH Scrambler
@@ -42,19 +44,21 @@ yarn dev
 - Helped me get started with `cubing.js`  and resolve issues with build tools
 
 **S1neWav_**
-- Encouraged me to start the ZZ Trainer
+- Encouraged me to start the ZZ Trainer project
 - Supports `crystalcube`
 
-**Testers:**
+**Testers:** provided lots of suggestions
 - [S1neWav_](https://www.youtube.com/@S1neWav_)
 - [Ryan Hudgens](https://www.youtube.com/@OreKehStrah)
 - [Gen The Snail](https://www.youtube.com/@GenTheSnail)
 - [yoruba 7](https://www.youtube.com/@yoruba7807)
-Provided lots of feedback and feature suggestions
 
 ## License
-Released under GPLv3
+This software is released under GPLv3
+
+The `crystalcube` logo is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
 
 ---
 Made with ❤️ by err0r
+
 If you need help or have suggestions, DM me on Discord: `err0r#8462`
