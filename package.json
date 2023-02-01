@@ -14,7 +14,7 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@fontsource/inter": "^4.5.14",
-    "@react-three/drei": "^9.56.8",
+    "@react-three/drei": "^9.56.11",
     "@react-three/fiber": "^8.10.0",
     "@types/three": "^0.147.0",
     "cubing": "^0.35.6",
