@@ -13,7 +13,7 @@
     "@chakra-ui/react": "^2.4.7",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
-    "@fontsource/inter": "^4.5.14",
+    "@fontsource/inter": "^4.5.15",
     "@react-three/drei": "^9.56.8",
     "@react-three/fiber": "^8.10.0",
     "@types/three": "^0.147.0",
