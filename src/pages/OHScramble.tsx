@@ -14,9 +14,9 @@ import {
   Spacer,
   Switch,
   VStack,
-  useClipboard,
   useColorModeValue,
   useDisclosure,
+  useClipboard,
 } from "@chakra-ui/react"
 import { IoHandLeft, IoHandRight } from "react-icons/io5"
 import { Alg } from "cubing/alg";
@@ -26,6 +26,7 @@ import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { useHotkeys } from "react-hotkeys-hook";
 import { TwistyPlayer } from "src/components/TwistyPlayer";
+import Balancer from "react-wrap-balancer"
 
 const isLeftyAtom = atomWithStorage("isLefty", true)
 const isLowercaseWideAtom = atomWithStorage("isLowercaseWide", true)
@@ -37,7 +38,17 @@ export default function OHScramble() {
   const [isLefty, setIsLefty] = useAtom(isLeftyAtom)
   const [isLowercaseWide, setLowercaseWide] = useAtom(isLowercaseWideAtom)
 
-  const { hasCopied, onCopy } = useClipboard(scramble.toString())
+  const {
+    onCopy,
+    hasCopied,
+    value: scrambleString,
+    setValue: setScrambleString
+  } = useClipboard(scramble.toString())
+
+  useEffect(() => {
+    setScrambleString(scramble.toString())
+  }, [scramble])
+
   const { isOpen: showSettings, onToggle: toggleShowSettings } = useDisclosure()
 
   const getNewScramble = useCallback(async () => {
@@ -114,12 +125,14 @@ export default function OHScramble() {
           controlPanel="none"
         />
         <Skeleton isLoaded={!isLoading}>
-          <Text
-            textAlign="center"
-            fontSize={isLowercaseWide ? "2xl" : { base: "lg", md: "xl" }}
-          >
-            {scramble.toString()}
-          </Text>
+          <Balancer>
+            <Text
+              textAlign="center"
+              fontSize={isLowercaseWide ? "2xl" : { base: "lg", md: "xl" }}
+            >
+              {scrambleString}
+            </Text>
+          </Balancer>
         </Skeleton>
         <Container>
           {buttons}

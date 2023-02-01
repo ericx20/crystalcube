@@ -74,6 +74,7 @@ export default function NavBar() {
                 objectFit="contain"
                 onClick={() => navigate("")}
                 cursor="pointer"
+                draggable={false}
               />
               <Text
                 textAlign={useBreakpointValue({ base: "center", md: "left" })}

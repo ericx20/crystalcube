@@ -55,6 +55,7 @@ export default function ScrambleEditor({ scramble, setScramble }: ScrambleViewer
                 <Input
                   value={inputScramble}
                   onChange={handleInputChange}
+                  autoFocus
                 />
                 {inputIsInvalid && (
                   <FormErrorMessage
