@@ -1,5 +1,5 @@
-import type { Axis, Cube, RotationMove, LayerMove, Layer, Move, MoveSeq, FaceMove, SliceMove } from "./types";
-import { AXES, FACE_MOVES, HTM_MOVESET, LAYERS_ALONG_AXES, MOVE_PERMS, ROTATIONS, SLICE_MOVES } from "./constants";
+import type { Axis, Cube, RotationMove, LayerMove, Layer, Move, MoveSeq, FaceMove } from "./types";
+import { AXES, FACE_MOVES, HTM_MOVESET, LAYERS_ALONG_AXES, MOVE_PERMS, ROTATIONS } from "./constants";
 import sample from "lodash/sample"
 
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
@@ -51,37 +51,77 @@ export function invertMoves<M extends Move>(moves: Array<M>): Array<M> {
   return [...moves].reverse().map(move => invertMove(move));
 }
 
-export function simplifyMoves<M extends Move>(movesToSimplify: Array<M>) {
+// given two moves A and B, it returns:
+// true if A and B are inverses of each other (cancel completely)
+// false if A and B can't cancel each other at all
+// C where C = A B, if A and B can combine into one move
+function cancelTwoMoves<M extends Move>(a: M, b: M): boolean | M {
+  // if not the same layer/rotation, they cannot cancel
+  if (a[0] !== b[0]) return false
+  const powerOfC = (powerOfMove(a) + powerOfMove(b)) % 4 as MovePower | 0
+  if (powerOfC === 0) {
+    // A and B are like R R' (1+3) or U2 U2 (2+2): cancel completely
+    return true
+  }
+  // otherwise, A and B are like R R2
+  const newMove = a[0] + movePowerToSuffix(powerOfC) as M
+  return newMove
+}
+
+export function simplifyMoves<M extends Move>(movesToSimplify: Array<M>): Array<M> {
   const moves = [...movesToSimplify]
-  for (let i = 0; i < moves.length;) {
-    const currentMove = moves[i] // guaranteed to exist
-    const nextMove = moves.at(i + 1) // may not exist
-    if (nextMove === undefined) {
-      // we're at the last element, no cancelling is possible
-      break
+  let i = 0;
+  // don't consider the last move, there's nothing after it to cancel with
+  while (i < moves.length - 1) {
+    const currentMove = moves[i]
+    const nextMove = moves[i + 1]
+    const afterNextMove = moves.at(i + 2) // this may not exist
+
+    // 1. compare the current and next moves
+    const cancelResult = cancelTwoMoves(currentMove, nextMove)
+    if (cancelResult === true) {
+      // current and next move cancel completely, delete them
+      moves.splice(i, 2)
+      // step back a move if we're not already at the start
+      if (i !== 0) i--
+    } else if (cancelResult === false) {
+      // no moves can be cancelled
+      // check if currentMove, nextMove and afterNextMove are redundant parallel moves
+      // if they are, cancel currentMove and afterNextMove
+      // otherwise, advance to the next move
+      if (isLayerMove(currentMove)
+        && isLayerMove(nextMove)
+        && afterNextMove && isLayerMove(afterNextMove)
+        && layerMovesAreParallel(currentMove, nextMove)
+      ) {
+        const result = cancelTwoMoves(currentMove, afterNextMove)
+        if (result === true) {
+          // currentMove and afterNextMove cancel completely, delete them
+          moves.splice(i + 2, 1)
+          moves.splice(i, 1)
+          // step back a move if we're not already at the start
+          if (i !== 0) i--
+        } else if (result === false) {
+          // no moves can be cancelled, advance
+          i++
+        } else {
+          // currentMove and afterNextMove combine into one move
+          moves[i] = result // set currentMove to combined move
+          moves.splice(i + 2, 1) // delete afterNextMove
+          // step back a move if we're not already at the start
+          if (i !== 0) i--
+        }
+      } else {
+        i++
+      }
+    } else {
+      // current and next move combine into one move
+      moves[i] = cancelResult // set currentMove to combined move
+      moves.splice(i + 1, 1) // delete the next move
+      // step back a move if we're not already at the start
+      if (i !== 0) i--
     }
 
-    if (currentMove[0] === nextMove[0]) {
-      const powerOfNewMove = (powerOfMove(currentMove) + powerOfMove(nextMove)) % 4 as MovePower | 0
-      // cancel
-      if (powerOfNewMove === 0) {
-        // moves like R R' (1+3) or U2 U2 (2+2): cancel completely
-        // delete the two moves
-        moves.splice(i, 2)
-        // move a step back if not at the start
-        i && (i -= 1)
-        continue
-      }
-      // otherwise, it's something like R R2
-      const newMove = currentMove[0] + movePowerToSuffix(powerOfNewMove) as M
-      // change the first move, delete the second
-      moves[i] = newMove
-      moves.splice(i + 1, 1)
-      i++
-    } else {
-      // no cancel
-      i++
-    }
   }
   return moves
 }
