@@ -1,5 +1,5 @@
 import type { FaceletIndex, Mask, Method, SolverConfig, SolverConfigName } from "../types"
-import { HTM_MOVESET_BIASED_RUF } from "./cube"
+import { HTM_MOVESET_BIASED_RUF, HTM_MOVESET_BIASED_DRU } from "./cube"
 
 const CENTERS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 49]
 const EO_FACELETS: Array<FaceletIndex> = [1, 3, 5, 7, 24, 26, 30, 32, 46, 48, 50, 52]
@@ -54,7 +54,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     isEOStep: true,
   },
   EOCross: {
-    moveSet: HTM_MOVESET_BIASED_RUF,
+    moveSet: HTM_MOVESET_BIASED_DRU,
     mask: EOCROSS_MASK,
     pruningDepth: 4,
     depthLimit: 10,
