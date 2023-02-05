@@ -24,7 +24,6 @@ export default function useScrambleAndSolutions(
     setLoading(true)
     const newScramble = await generateScramble()
     // TODO: REMOVE HARDCODE FOR: x2 away from scramble orientation
-    // generate (up to) 6 solutions, present the worst one as a scramble and the rest as solutions
     const newSolutions = solve(newScramble, solverName, ["x2"], 5)
     const optimalSolutionLength = newSolutions.at(0)?.length ?? 0
     const suboptimality = (optimalSolutionLength < 5) ? (10 - optimalSolutionLength) : 3
