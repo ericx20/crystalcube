@@ -153,7 +153,7 @@ function generateCopyText({ solverName, scramble, preRotation, solutions }: Copy
     `${solverName} solutions:`,
     ...solutions.map((solution, index) => {
       const prefixText = `${index + 1}.`
-      const movecountText = `(${solutions.length} HTM)` // TODO: compute HTM instead of checking length
+      const movecountText = `(${solution.length} HTM)` // TODO: compute HTM instead of checking length
       const solutionText = moveSeqToString([...preRotation, ...solution])
       const eoProgressionText = isEOStep
          ? "[" + getEOSolutionAnnotation(scramble, solution).filter(a => a !== null).join(" ") + "]"
