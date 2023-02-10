@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 import type { MoveSeq, SolverConfigName } from "src/lib/types"
-import { nFlipScramble, nMoveScrambleForSolver, randomScramble, simplifyScramble, solve } from "src/lib"
+import { nFlipScramble, nMoveScrambleForSolver, simplifyScramble, solve } from "src/lib"
+import { randomScramble } from "src/utils/randomScramble"
+
 
 export type ScrambleMode = "random" | "nFlip" | "nMove"
 

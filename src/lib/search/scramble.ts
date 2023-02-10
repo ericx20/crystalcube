@@ -1,4 +1,4 @@
-import type { RotationMove, MoveSeq, SolverConfigName, LayerMoveSeq } from "../types";
+import type { RotationMove, MoveSeq, SolverConfigName } from "../types";
 import { SOLVED_INDEXED_FACELET_CUBE, SOLVER_CONFIGS } from "../constants";
 import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState";
 import { isValidNFlip } from "./eo";
@@ -7,16 +7,10 @@ import { parseNotation } from "../notation";
 import { getPruningTable } from "./prune";
 import { solve } from "./solve";
 
-import { randomScrambleForEvent } from "cubing/scramble"
 import { KState } from "cubing/kpuzzle"
 import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search";
 import shuffle from "lodash/shuffle"
 
-
-export async function randomScramble(): Promise<MoveSeq> {
-  const rawScramble = await randomScrambleForEvent("333")
-  return parseNotation(rawScramble.toString())
-}
 
 export async function nFlipScramble(n: number): Promise<MoveSeq> {
   const { kpuzzle, stateData } = await random333State()
