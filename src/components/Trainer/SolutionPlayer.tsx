@@ -39,7 +39,9 @@ export default function SolutionPlayer({ scramble, solution, mask, showEO, hideS
   }, [currentIndex, delayedScramble, delayedSolution])
 
   const onSelect = (i: number) => setSelectedMoveIndex(i)
-  const onHover = (i: number | null) => setHoveredMoveIndex(i)
+  const onHover = (i: number | null) => {
+    if (!hideSolution) setHoveredMoveIndex(i)
+  }
   
   if (solution === null) {
     return <SolutionMoveButton move={null} moveAnnotation={null} isSelected={true} />
