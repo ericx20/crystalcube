@@ -1,24 +1,28 @@
 export interface NavItem {
-  label: string
-  subLabel?: string
-  children?: Array<NavItem>
-  href?: string
+  label: string;
+  subLabel?: string;
+  children?: Array<NavItem>;
+  href?: string;
 }
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "trainer",
-    href: "trainer/",
+    label: "3x3",
+    href: "3x3/",
   },
-  {
-    label: "tools",
-    children: [
-      {
-        label: "one handed scrambles",
-        href: "tools/ohscramble/",
-      },
-    ],
-  },
-]
+  // {
+  //   label: "trainer",
+  //   href: "trainer/",
+  // },
+  // {
+  //   label: "tools",
+  //   children: [
+  //     {
+  //       label: "one handed scrambles",
+  //       href: "tools/ohscramble/",
+  //     },
+  //   ],
+  // },
+];
 
-export default NAV_ITEMS
+export default NAV_ITEMS;

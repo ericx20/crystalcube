@@ -1,21 +1,31 @@
-import { Routes, Route } from "react-router-dom"
-import { Container, Flex } from "@chakra-ui/react"
-import NavBar from "./components/NavBar/NavBar"
-import Home from "./pages/Home"
-import Trainer from "./pages/Trainer"
-import Tools from "./pages/Tools"
+import {
+  Route,
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+} from "react-router-dom";
+import Home from "./pages/Home";
+import Trainer from "./pages/Trainer";
+import Tools from "./pages/Tools";
+import Page3x3 from "./pages/3x3/Page3x3";
+import Layout from "./components/Layout";
+import ErrorPage from "./pages/ErrorPage";
+import PageCFOP from "./pages/3x3/cfop/PageCFOP";
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />} errorElement={<ErrorPage />}>
+      <Route index element={<Home />} />
+      <Route path="3x3">
+        <Route index element={<Page3x3 />} />
+        <Route path="cfop">
+          <Route index element={<PageCFOP />} />
+        </Route>
+      </Route>
+    </Route>
+  )
+);
 
 export default function App() {
-  return (
-  <Flex direction="column" h="100vh" fontSize="xl">
-    <NavBar />
-      <Container className="content" px={0} pt={14} maxW="100vw">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="trainer/*" element={<Trainer />} />
-          <Route path="tools/*" element={<Tools />} />
-        </Routes>
-      </Container>
-    </Flex>
-  )
+  return <RouterProvider router={router} />;
 }
