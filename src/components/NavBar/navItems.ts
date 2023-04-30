@@ -7,8 +7,12 @@ export interface NavItem {
 
 const NAV_ITEMS: Array<NavItem> = [
   {
-    label: "3x3",
-    href: "3x3/",
+    label: "CFOP",
+    href: "cfop/",
+  },
+  {
+    label: "ZZ",
+    href: "zz/",
   },
   // {
   //   label: "trainer",

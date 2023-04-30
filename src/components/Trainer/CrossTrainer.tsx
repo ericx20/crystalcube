@@ -8,17 +8,11 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 
-import type {
-  MoveSeq,
-  RotationMove,
-  SolverConfigName,
-  ZZConfigName,
-} from "src/lib/types";
+import type { MoveSeq, RotationMove, SolverConfigName } from "src/lib/types";
 import { SOLVER_CONFIGS } from "src/lib/constants";
 import ScrambleEditor from "./ScrambleEditor";
 import SolutionsViewer from "./SolutionsViewer";
 import SelectLevel from "./select/SelectLevel";
-import SelectEOStepDropdown from "./select/SelectEOStepDropdown";
 
 import { useHotkeys } from "react-hotkeys-hook";
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
@@ -29,15 +23,13 @@ import { atomWithStorage } from "jotai/utils";
 import { getEOSolutionAnnotation, moveSeqToString } from "src/lib";
 
 const scrambleModeAtom = atomWithStorage<ScrambleMode>(
-  "zz-scramble-mode",
+  "cross-scramble-mode",
   "random"
 );
-const nFlipAtom = atomWithStorage<number>("zz-nflip", 4);
-const eoStepAtom = atomWithStorage<ZZConfigName>("zz-eostep", "EOCross");
-const nMoveAtom = atomWithStorage<number>("zz-nmove", 3);
 
-// TODO: generalize this for CFOP too, and make the method a prop
-export default function ZZTrainer() {
+const nMoveAtom = atomWithStorage<number>("cross-nmove", 3);
+
+export default function CrossTrainer() {
   const headerRef = useRef<HTMLDivElement>(null);
   const scrollToTop = () => {
     window.scrollTo({
@@ -66,30 +58,17 @@ export default function ZZTrainer() {
   const onNewScramble = hideSolution;
 
   const [scrambleMode, setScrambleMode] = useAtom(scrambleModeAtom);
-  const [nFlip, setNFlip] = useAtom(nFlipAtom);
-  const [eoStep, setEOStep] = useAtom(eoStepAtom);
   const [nMove, setNMove] = useAtom(nMoveAtom);
 
-  const handleEOStepChange = (newEOStep: ZZConfigName) => {
-    const { min, max } = SOLVER_CONFIGS[newEOStep].nMoveScrambleConfig;
-    if (nMove < min) {
-      setNMove(min);
-    } else if (nMove > max) {
-      setNMove(max);
-    }
-    setEOStep(newEOStep);
-  };
-
   const { scramble, setScramble, solutions, isLoading, getNext } =
-    useScrambleAndSolutions(eoStep, scrambleMode, nMove, onNewScramble, nFlip);
+    useScrambleAndSolutions("Cross", scrambleMode, nMove, onNewScramble);
 
-  const mask = SOLVER_CONFIGS[eoStep].mask;
+  const mask = SOLVER_CONFIGS.Cross.mask;
 
   return (
     <VStack spacing={4} my={4}>
       <HStack spacing={4} ref={headerRef}>
-        <Heading fontSize="2xl">ZZ Trainer</Heading>
-        <SelectEOStepDropdown eoStep={eoStep} setEOStep={handleEOStepChange} />
+        <Heading fontSize="2xl">Cross Trainer</Heading>
       </HStack>
 
       <ScrambleEditor scramble={scramble} setScramble={setScramble} />
@@ -98,14 +77,13 @@ export default function ZZTrainer() {
         scramble={scramble}
         solutions={solutions}
         mask={mask}
-        showEO
         hideSolution={isSolutionHidden}
         onRevealSolution={showSolution}
       >
         <HStack>
           {!isSolutionHidden && (
             <CopyButton
-              solverName={eoStep}
+              solverName="Cross"
               scramble={scramble}
               preRotation={["x2"]}
               solutions={solutions}
@@ -119,11 +97,9 @@ export default function ZZTrainer() {
       </SolutionsViewer>
 
       <SelectLevel
-        solverName={eoStep}
+        solverName="Cross"
         scrambleMode={scrambleMode}
         setScrambleMode={setScrambleMode}
-        nFlip={nFlip}
-        setNFlip={setNFlip}
         nMove={nMove}
         setNMove={setNMove}
       />

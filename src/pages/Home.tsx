@@ -14,6 +14,7 @@ import Balancer from "react-wrap-balancer";
 
 import MockupLight from "src/assets/mockup-light.webp";
 import MockupDark from "src/assets/mockup-dark.webp";
+import ZZTrainer from "src/components/Trainer/ZZTrainer";
 
 export default function Home() {
   const mockupImage = useColorModeValue(MockupLight, MockupDark);
