@@ -6,11 +6,14 @@ export default function CfopPage() {
     <Container>
       <Heading as="h1">cfop page</Heading>
       <Heading as="h2">cross</Heading>
-      <Link to="cross">
+      <Link to="/cfop/cross">
         <Button>cross trainer</Button>
       </Link>
       <Heading as="h2">F2L</Heading>
       <Heading as="h2">OLL</Heading>
+      <Link to="/cfop/2l-oll">
+        <Button>2 look oll</Button>
+      </Link>
       <Heading as="h2">PLL</Heading>
     </Container>
   );

@@ -11,6 +11,7 @@ import CfopPage from "./pages/cfop/CfopPage";
 import ZZPage from "./pages/zz/ZzPage";
 import ZZTrainer from "./components/Trainer/ZZTrainer";
 import CrossTrainer from "./components/Trainer/CrossTrainer";
+import TwoLookOllPage from "./pages/cfop/TwoLookOllPage";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
           {/* TODO */}
           <Route index element={<CrossTrainer />} />
         </Route>
+        <Route path="2l-oll" element={<TwoLookOllPage />} />
       </Route>
       <Route path="zz">
         <Route index element={<ZZPage />} />
