@@ -4,7 +4,8 @@ import { HTM_MOVESET_BIASED_RUF } from "./cube"
 const CENTERS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 49]
 const EO_FACELETS: Array<FaceletIndex> = [1, 3, 5, 7, 24, 26, 30, 32, 46, 48, 50, 52]
 const CROSS_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 37, 40, 43, 46, 48, 49, 50, 52]
-const ARROW_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 40, 43, 48, 49, 50, 52]
+const BACK_ARROW_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 40, 43, 48, 49, 50, 52]
+const LEFT_ARROW_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 37, 43, 46, 48, 49, 52]
 const LINE_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 37, 43, 46, 49, 52]
 
 export const EO_MASK: Mask = {
@@ -22,8 +23,13 @@ export const EOCROSS_MASK: Mask = {
   eoFaceletIndices: EO_FACELETS,
 }
 
-export const EOARROW_MASK: Mask = {
-  solvedFaceletIndices: ARROW_FACELETS,
+export const BACK_EOARROW_MASK: Mask = {
+  solvedFaceletIndices: BACK_ARROW_FACELETS,
+  eoFaceletIndices: EO_FACELETS,
+}
+
+export const LEFT_EOARROW_MASK: Mask = {
+  solvedFaceletIndices: LEFT_ARROW_FACELETS,
   eoFaceletIndices: EO_FACELETS,
 }
 
@@ -32,10 +38,10 @@ export const CROSS_MASK: Mask = {
 }
 
 // DEFINE SOLVERS HERE
-export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "EOArrow", "Cross"] as const
+export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "EOArrow (Back)", "EOArrow (Left)", "Cross"] as const
 
 export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
-  EO: {
+  "EO": {
     moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EO_MASK,
     pruningDepth: 4, // TODO: can we increase it to 5?
@@ -47,7 +53,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     },
     isEOStep: true,
   },
-  EOLine: {
+  "EOLine": {
     moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EOLINE_MASK,
     pruningDepth: 4,
@@ -59,7 +65,7 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     },
     isEOStep: true,
   },
-  EOCross: {
+  "EOCross": {
     moveSet: HTM_MOVESET_BIASED_RUF,
     mask: EOCROSS_MASK,
     pruningDepth: 4,
@@ -71,9 +77,9 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     },
     isEOStep: true,
   },
-  EOArrow: {
+  "EOArrow (Back)": {
     moveSet: HTM_MOVESET_BIASED_RUF,
-    mask: EOARROW_MASK,
+    mask: BACK_EOARROW_MASK,
     pruningDepth: 4,
     depthLimit: 10,
     nMoveScrambleConfig: {
@@ -83,7 +89,19 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     },
     isEOStep: true,
   },
-  Cross: {
+  "EOArrow (Left)": {
+    moveSet: HTM_MOVESET_BIASED_RUF,
+    mask: LEFT_EOARROW_MASK,
+    pruningDepth: 4,
+    depthLimit: 10,
+    nMoveScrambleConfig: {
+      min: 3,
+      max: 8,
+      iterationLimit: 200,
+    },
+    isEOStep: true,
+  },
+  "Cross": {
     moveSet: HTM_MOVESET_BIASED_RUF,
     mask: CROSS_MASK,
     pruningDepth: 4,
@@ -100,5 +118,5 @@ export const METHODS = ["CFOP", "ZZ"] as const
 
 export const METHOD_SOLVERS = {
   CFOP: ["Cross"],
-  ZZ: ["EO", "EOLine", "EOArrow", "EOCross"],
+  ZZ: ["EO", "EOLine", "EOArrow (Back)", "EOArrow (Left)", "EOCross"],
 } as const satisfies { [method in Method]: Readonly<Array<SolverConfigName>> }

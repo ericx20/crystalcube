@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Button, Heading, HStack, VStack, useClipboard, Tooltip } from "@chakra-ui/react"
 
 import type { MoveSeq, RotationMove, SolverConfigName, ZZConfigName } from "src/lib/types"
-import { SOLVER_CONFIGS } from "src/lib/constants"
+import { METHOD_SOLVERS, SOLVER_CONFIGS } from "src/lib/constants"
 import ScrambleEditor from "./ScrambleEditor"
 import SolutionsViewer from "./SolutionsViewer"
 import SelectLevel from "./select/SelectLevel"
@@ -55,6 +55,11 @@ export default function ZZTrainer() {
   const [nFlip, setNFlip] = useAtom(nFlipAtom)
   const [eoStep, setEOStep] = useAtom(eoStepAtom)
   const [nMove, setNMove] = useAtom(nMoveAtom)
+
+  // TODO: rewrite state stuff so this isn't needed
+  if (METHOD_SOLVERS.ZZ.find((step)=>{return step === eoStep}) === undefined) {
+    setEOStep("EOCross")
+  }
 
   const handleEOStepChange = (newEOStep: ZZConfigName) => {
     const { min, max } = SOLVER_CONFIGS[newEOStep].nMoveScrambleConfig
