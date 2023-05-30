@@ -1,4 +1,4 @@
-import { CheckIcon, CloseIcon, EditIcon } from "@chakra-ui/icons"
+import { CheckIcon, CloseIcon, EditIcon, CopyIcon } from "@chakra-ui/icons"
 import { FormControl, FormErrorMessage, Heading, HStack, IconButton, Input, Stack, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { isFaceMove, moveSeqToString, parseNotation, replaceBadApostrophes } from "src/lib"
@@ -41,6 +41,10 @@ export default function ScrambleEditor({ scramble, setScramble }: ScrambleViewer
     submitScramble()
   }
 
+  const copyScramble = () => {
+    navigator.clipboard.writeText(scramble.join(" "))
+  }
+
   return (
     <TrainerCard>
       <Stack
@@ -78,6 +82,12 @@ export default function ScrambleEditor({ scramble, setScramble }: ScrambleViewer
               size="sm"
               icon={<EditIcon />}
               aria-label="edit scramble"
+            />
+            <IconButton
+              onClick={() => copyScramble()}
+              size="sm"
+              icon={<CopyIcon />}
+              aria-label="copy scramble"
             />
           </HStack>
         )}
