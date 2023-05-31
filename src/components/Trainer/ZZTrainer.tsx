@@ -4,6 +4,7 @@ import { Button, Heading, HStack, VStack, useClipboard, Tooltip } from "@chakra-
 import type { MoveSeq, RotationMove, SolverConfigName, ZZConfigName } from "src/lib/types"
 import { METHOD_SOLVERS, SOLVER_CONFIGS } from "src/lib/constants"
 import ScrambleEditor from "./ScrambleEditor"
+import SolutionEditor from "./VirtualCube"
 import SolutionsViewer from "./SolutionsViewer"
 import SelectLevel from "./select/SelectLevel"
 import SelectEOStepDropdown from "./select/SelectEOStepDropdown"
@@ -15,6 +16,7 @@ import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { getEOSolutionAnnotation, moveSeqToString } from "src/lib"
+import VirtualCube from "./VirtualCube"
 
 
 const scrambleModeAtom = atomWithStorage<ScrambleMode>("zz-scramble-mode", "random")
@@ -71,6 +73,8 @@ export default function ZZTrainer() {
     setEOStep(newEOStep)
   }
 
+  const [solution, setSolution] =  useState<MoveSeq>([]);
+
   const {
     scramble,
     setScramble,
@@ -92,6 +96,7 @@ export default function ZZTrainer() {
       </HStack>
 
       <ScrambleEditor scramble={scramble} setScramble={setScramble} />
+      <VirtualCube scramble={scramble} solution={solution} setSolution={setSolution} mask={mask} showEO />
 
       <SolutionsViewer
         scramble={scramble}
