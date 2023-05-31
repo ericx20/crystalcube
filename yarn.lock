@@ -1907,10 +1907,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fontsource/inter@npm:^4.5.14":
-  version: 4.5.14
-  resolution: "@fontsource/inter@npm:4.5.14"
-  checksum: 4e2eb9e54f8de0025bca7ad8e0822549f1873c5d9a634b8f99630d7bba750b1c86263229bae99375fc82489daa38df41e0304c77c3efda2d9a2f78d0eba3ec56
+"@fontsource/inter@npm:^5.0.2":
+  version: 5.0.2
+  resolution: "@fontsource/inter@npm:5.0.2"
+  checksum: 7b04bb3596184fef56cc4585258d6cf22182e3d8527828d6a13f10936b759eadbdbe480cc0edc983fd68e33af0ed30c66fefad24d53e4e8cab88816bc92544a9
   languageName: node
   linkType: hard
 
@@ -3088,7 +3088,7 @@ __metadata:
     "@chakra-ui/react": ^2.4.7
     "@emotion/react": ^11
     "@emotion/styled": ^11
-    "@fontsource/inter": ^4.5.14
+    "@fontsource/inter": ^5.0.2
     "@react-three/drei": ^9.70.1
     "@react-three/fiber": ^8.13.0
     "@types/node": ^18.11.18
@@ -3111,7 +3111,7 @@ __metadata:
     react-router-dom: ^6.7.0
     react-wrap-balancer: ^0.4.0
     three: ^0.153.0
-    typescript: ^4.9.4
+    typescript: ^5.0.4
     vite: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6109,23 +6109,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.9.4":
-  version: 4.9.4
-  resolution: "typescript@npm:4.9.4"
+"typescript@npm:^5.0.4":
+  version: 5.0.4
+  resolution: "typescript@npm:5.0.4"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: e782fb9e0031cb258a80000f6c13530288c6d63f1177ed43f770533fdc15740d271554cdae86701c1dd2c83b082cea808b07e97fd68b38a172a83dbf9e0d0ef9
+  checksum: 82b94da3f4604a8946da585f7d6c3025fff8410779e5bde2855ab130d05e4fd08938b9e593b6ebed165bda6ad9292b230984f10952cf82f0a0ca07bbeaa08172
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.9.4#~builtin<compat/typescript>":
-  version: 4.9.4
-  resolution: "typescript@patch:typescript@npm%3A4.9.4#~builtin<compat/typescript>::version=4.9.4&hash=289587"
+"typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
+  version: 5.0.4
+  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 2160f7ad975c59b2f5816817d3916be1d156c5688a7517602b3b640c5015e740f4ba933996ac85371d68f7bbdd41602150fb8b68334122ac637fdb5418085e7a
+  checksum: d26b6ba97b6d163c55dbdffd9bbb4c211667ebebc743accfeb2c8c0154aace7afd097b51165a72a5bad2cf65a4612259344ff60f8e642362aa1695c760d303ac
   languageName: node
   linkType: hard
 
