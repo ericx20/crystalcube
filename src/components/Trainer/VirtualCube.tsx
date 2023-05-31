@@ -1,7 +1,9 @@
 import { CheckIcon, CloseIcon, EditIcon, CopyIcon, TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons"
-import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Stack, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Container } from "@chakra-ui/react"
-import { Suspense, useEffect, useState } from "react"
-import { isFaceMove, moveSeqToString, parseNotation, replaceBadApostrophes } from "src/lib"
+import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Stack, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Container, Switch } from "@chakra-ui/react"
+import { useAtom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
+import { Suspense, useEffect, useRef, useState } from "react"
+import { isFaceMove, moveSeqToString, parseNotation, parseVC, replaceBadApostrophes, simplifyMoves } from "src/lib"
 import type { Mask, Move, MoveSeq } from "src/lib/types"
 import Cube from "../Cube/Cube"
 import TrainerCard from "./common/TrainerCard"
@@ -13,6 +15,8 @@ interface VirtualCubeProps {
   mask?: Mask
   showEO?: boolean
 }
+
+const VCInputAtom = atomWithStorage<boolean>("vc-input", false)
 
 // TODO: show "Failed to generate solution" message if solution === null
 export default function VirtualCube({ scramble, solution, setSolution, mask, showEO }: VirtualCubeProps) {
@@ -26,19 +30,29 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
 
   const cubeBackground = useColorModeValue("gray.200", undefined)
 
+  const [VCInput, setVCInput] = useAtom(VCInputAtom)
+
   // reset the input whenever a new solution is set
   useEffect(() => {
     setInputSolution("")
   }, [solution])
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-    const filteredInputSolution = replaceBadApostrophes(e.target.value)
-    setInputSolution(filteredInputSolution)
+    if(VCInput){
+      const inputLength = e.target.value.length
+      const normalNotation = e.target.value.substring(0, inputLength-1)
+      const newChar = e.target.value.charAt(inputLength-1)
+      const newMove = parseVC(newChar) + ((parseVC(newChar))?" ":"")
+      setInputSolution(normalNotation + newMove)
+    } else {
+      const filteredInputSolution = replaceBadApostrophes(e.target.value)
+      setInputSolution(filteredInputSolution)
+    }
   }
 
   const submitSolution = () => {
     if (!inputIsInvalid) {
-      setSolution(parseNotation(inputSolution))
+      setSolution(simplifyMoves(parseNotation(inputSolution)))
       setEditing(false)
     }
   }
@@ -78,14 +92,7 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
             </form>
             <IconButton onClick={submitSolution} size="sm" icon={<CheckIcon />} aria-label="submit solution" />
             <IconButton onClick={() => setEditing(false)} size="sm" icon={<CloseIcon />} aria-label="cancel editing solution" />
-            <Spacer />
-            <Button
-              onClick={() => setShowCube(!showCube)}
-              size="sm"
-            >
-              {showCube ? "hide " : "show "} cube &nbsp;
-              {showCube ? <TriangleUpIcon /> : <TriangleDownIcon />}
-            </Button></>
+          </>
         ) : (
           <>
             <Box><Text>{moveSeqToString(solution)}</Text></Box>
@@ -101,18 +108,20 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
               icon={<CopyIcon />}
               aria-label="copy solution"
             />
-            <Spacer />
-            <Button
-              onClick={() => setShowCube(!showCube)}
-              size="sm"
-            >
-              {showCube ? "hide " : "show "} cube &nbsp;
-              {showCube ? <TriangleUpIcon /> : <TriangleDownIcon />}
-            </Button></>
+          </>
         )}
+        <Spacer />
+        <Text>VC Input</Text>
+        <Switch onChange={(e)=>{setVCInput(!VCInput)}}></Switch>
+        <Button
+          onClick={() => setShowCube(!showCube)}
+          size="sm"
+        >
+          {showCube ? "hide " : "show "} cube &nbsp;
+          {showCube ? <TriangleUpIcon /> : <TriangleDownIcon />}
+        </Button>
       </Flex>
-      {showCube ?
-        (
+      {showCube && 
           <Center
             h={[200, 250, 350]}
             borderWidth="1px"
@@ -128,7 +137,7 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
                 preRotation={["x2"]} />
             </Suspense>
           </Center>
-        ) : (<></>)}
+        }
     </TrainerCard>
   )
 }
