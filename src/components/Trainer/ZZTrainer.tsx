@@ -4,7 +4,7 @@ import { Button, Heading, HStack, VStack, useClipboard, Tooltip } from "@chakra-
 import type { MoveSeq, RotationMove, SolverConfigName, ZZConfigName } from "src/lib/types"
 import { METHOD_SOLVERS, SOLVER_CONFIGS } from "src/lib/constants"
 import ScrambleEditor from "./ScrambleEditor"
-import SolutionEditor from "./VirtualCube"
+import SolutionEditor from "./SolutionEditor"
 import SolutionsViewer from "./SolutionsViewer"
 import SelectLevel from "./select/SelectLevel"
 import SelectEOStepDropdown from "./select/SelectEOStepDropdown"
@@ -16,7 +16,7 @@ import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { getEOSolutionAnnotation, moveSeqToString } from "src/lib"
-import VirtualCube from "./VirtualCube"
+import VirtualCube from "./SolutionEditor"
 
 
 const scrambleModeAtom = atomWithStorage<ScrambleMode>("zz-scramble-mode", "random")

@@ -3,12 +3,12 @@ import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input,
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { Suspense, useEffect, useRef, useState } from "react"
-import { isFaceMove, moveSeqToString, parseNotation, parseVC, replaceBadApostrophes, simplifyMoves } from "src/lib"
+import { isFaceMove, moveSeqToString, parseNotation, replaceBadApostrophes, simplifyMoves } from "src/lib"
 import type { Mask, Move, MoveSeq } from "src/lib/types"
 import Cube from "../Cube/Cube"
 import TrainerCard from "./common/TrainerCard"
 
-interface VirtualCubeProps {
+interface SolutionEditorProps {
   scramble: MoveSeq
   solution: MoveSeq
   setSolution: (newSolution: MoveSeq) => void
@@ -19,7 +19,7 @@ interface VirtualCubeProps {
 const VCInputAtom = atomWithStorage<boolean>("vc-input", false)
 
 // TODO: show "Failed to generate solution" message if solution === null
-export default function VirtualCube({ scramble, solution, setSolution, mask, showEO }: VirtualCubeProps) {
+export default function SolutionEditor({ scramble, solution, setSolution, mask, showEO }: SolutionEditorProps) {
   const [isEditing, setEditing] = useState(false)
   const [inputSolution, setInputSolution] = useState("")
   const [showCube, setShowCube] = useState(false)
@@ -38,11 +38,11 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
   }, [solution])
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-    if(VCInput){
+    if(VCInput && inputSolution.length < e.target.value.length){
       const inputLength = e.target.value.length
       const normalNotation = e.target.value.substring(0, inputLength-1)
       const newChar = e.target.value.charAt(inputLength-1)
-      const newMove = parseVC(newChar) + ((parseVC(newChar))?" ":"")
+      const newMove = (parseVC(newChar)??"") + ((parseVC(newChar))?" ":"")
       setInputSolution(normalNotation + newMove)
     } else {
       const filteredInputSolution = replaceBadApostrophes(e.target.value)
@@ -69,7 +69,7 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
   return (
     <TrainerCard>
       <Flex minWidth='max-content' direction="row" alignItems='center' gap='2'>
-        <Heading size="md">virtual cube</Heading>
+        <Heading size="md">solution editor</Heading>
         <Text>x2</Text>
         {isEditing ? (
           <>
@@ -112,7 +112,7 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
         )}
         <Spacer />
         <Text>VC Input</Text>
-        <Switch onChange={(e)=>{setVCInput(!VCInput)}}></Switch>
+        <Switch onChange={(e)=>{setVCInput(!VCInput)}} isChecked={VCInput}></Switch>
         <Button
           onClick={() => setShowCube(!showCube)}
           size="sm"
@@ -142,3 +142,20 @@ export default function VirtualCube({ scramble, solution, setSolution, mask, sho
   )
 }
 
+function parseVC(vc: string): Move {
+  const moveTable: {[name: string]: Move} = {
+    "w": "B",
+    "e": "L'",
+    "i": "R",
+    "o": "B'",
+    "s": "D",
+    "d": "L",
+    "f": "U'",
+    "g": "F'",
+    "h": "F",
+    "j": "U",
+    "k": "R'",
+    "l": "D'"
+  }
+  return moveTable[vc]??null;
+}
