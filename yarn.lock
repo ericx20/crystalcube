@@ -257,7 +257,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.7, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.3":
+"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.17.8, @babel/runtime@npm:^7.18.3":
   version: 7.20.13
   resolution: "@babel/runtime@npm:7.20.13"
   dependencies:
@@ -2162,7 +2162,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spring/three@npm:^9.3.1":
+"@react-spring/three@npm:~9.6.1":
   version: 9.6.1
   resolution: "@react-spring/three@npm:9.6.1"
   dependencies:
@@ -2185,15 +2185,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-three/drei@npm:^9.56.8":
-  version: 9.56.8
-  resolution: "@react-three/drei@npm:9.56.8"
+"@react-three/drei@npm:^9.70.1":
+  version: 9.70.1
+  resolution: "@react-three/drei@npm:9.70.1"
   dependencies:
     "@babel/runtime": ^7.11.2
-    "@react-spring/three": ^9.3.1
+    "@react-spring/three": ~9.6.1
     "@use-gesture/react": ^10.2.24
-    camera-controls: ^2.0.0
-    detect-gpu: ^5.0.8
+    camera-controls: ^2.3.1
+    detect-gpu: ^5.0.14
     glsl-noise: ^0.0.0
     lodash.clamp: ^4.0.3
     lodash.omit: ^4.5.0
@@ -2204,8 +2204,8 @@ __metadata:
     react-merge-refs: ^1.1.0
     stats.js: ^0.17.0
     suspend-react: ^0.0.8
-    three-mesh-bvh: ^0.5.22
-    three-stdlib: ^2.21.6
+    three-mesh-bvh: ^0.5.23
+    three-stdlib: ^2.23.5
     troika-three-text: ^0.47.1
     utility-types: ^3.10.0
     zustand: ^3.5.13
@@ -2217,13 +2217,13 @@ __metadata:
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 38b2dcada18f421fda4162166a0e8e62ebb2fa6f70c65dfc64f63fd08f27d7513f41e331e9fa2afeee31d396eff3338eddbd70827c8991d78e487ab9b1fb15fe
+  checksum: 8cf289fef809f838602806e290ef321928f0fcdd0abd1525df5b8c175314dcf0cca1c2bfdd00beb7f2661718e113e64539f0d1cb11094f2082bfc479b2546acd
   languageName: node
   linkType: hard
 
-"@react-three/fiber@npm:^8.10.0":
-  version: 8.10.0
-  resolution: "@react-three/fiber@npm:8.10.0"
+"@react-three/fiber@npm:^8.13.0":
+  version: 8.13.0
+  resolution: "@react-three/fiber@npm:8.13.0"
   dependencies:
     "@babel/runtime": ^7.17.8
     "@types/react-reconciler": ^0.26.7
@@ -2252,7 +2252,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 6ab56a378adad052b95994dec7479329b29d2629f382440a8f2b51dfcba9bdcb4030d6ae1e7e9e50ec0c656b42b229243902d28b35cc4b55d1ca7595dc1c926e
+  checksum: 8cc64302926ffd03d9323207c2d1b09c393e5bf99521ed2d4215bf6a7a401faeadb7c44dc268453fe322f626d19980083373c5adc4200c0295a7cbf062f83c91
   languageName: node
   linkType: hard
 
@@ -2267,6 +2267,20 @@ __metadata:
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
   checksum: ad87447820dd3f24825d2d947ebc03072b20a42bfc96cbafec16bff8bbda6c1a81fcb0be56d5b21968560c5359a0af4038a68ba150c3e1694fe4c109a063bed8
+  languageName: node
+  linkType: hard
+
+"@tweenjs/tween.js@npm:~18.6.4":
+  version: 18.6.4
+  resolution: "@tweenjs/tween.js@npm:18.6.4"
+  checksum: 47208db3f6c32cde80284a852d0fca016284f90c4798eb4ebb2ebfc2e379504007bf0c031c2c33044df8a0878fd1942ebc4e0b7f5b8bcccf812b532ea1ee73eb
+  languageName: node
+  linkType: hard
+
+"@types/draco3d@npm:^1.4.0":
+  version: 1.4.2
+  resolution: "@types/draco3d@npm:1.4.2"
+  checksum: d8e60db5e7e51081b32700d8f0defa537b41249eac6fe39e4af4e3e002f131acfd2a5e993bcfde9b597b30413726fbe6189a7b3bd970a3d7e9da93ef2e098283
   languageName: node
   linkType: hard
 
@@ -2373,6 +2387,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/stats.js@npm:*":
+  version: 0.17.0
+  resolution: "@types/stats.js@npm:0.17.0"
+  checksum: ac8dc5e622fa3b7cc37b9e21663193a2f171a4f5896285e4dfc04f2874acbb75edc958f077bffbd85b0ae358daa5bf4ecbc71210386a4300bff05d09435e35f9
+  languageName: node
+  linkType: hard
+
 "@types/three@npm:^0.146.0":
   version: 0.146.0
   resolution: "@types/three@npm:0.146.0"
@@ -2382,12 +2403,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/three@npm:^0.147.0":
-  version: 0.147.0
-  resolution: "@types/three@npm:0.147.0"
+"@types/three@npm:^0.152.1":
+  version: 0.152.1
+  resolution: "@types/three@npm:0.152.1"
   dependencies:
+    "@tweenjs/tween.js": ~18.6.4
+    "@types/stats.js": "*"
     "@types/webxr": "*"
-  checksum: 34c1e2a7a46921c4b88248ebe846957934e7daf78d0c7eda74266e3274d65694324c7cab379a22d05f34dd2d9a314b84a87640952b776404725d49478c7030ec
+    fflate: ~0.6.9
+    lil-gui: ~0.17.0
+  checksum: 25388e5c65414d4dd586ff0ec1615418838ceba293918b66755c08e263975db7913fc75dbe26b3342ba00ea0bc09af7428668194612bbd6ef7dd6cef3e4d4758
   languageName: node
   linkType: hard
 
@@ -2402,6 +2427,13 @@ __metadata:
   version: 0.5.0
   resolution: "@types/webxr@npm:0.5.0"
   checksum: 891af0e96a229f45584d89daa3101232862da2ded14076aa631b2e12deb4e4b91fa35ff8d8d5ab4613aa8adce0870bd32cd61f070c1bc70d37303c515e1ae6ac
+  languageName: node
+  linkType: hard
+
+"@types/webxr@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@types/webxr@npm:0.5.2"
+  checksum: e3387c3d64c140557796a4bcececd82d912a88f73ff8e34bf51c04d44078390fbe4756b256b2844b1ae4664a883d46f96bb40913d21f12e9ab484d9d8dbc68c3
   languageName: node
   linkType: hard
 
@@ -2555,13 +2587,6 @@ __metadata:
   peerDependencies:
     vite: ^4.0.0
   checksum: fde9dd4d3a3387d3a93ea164f58b71a40786842d66b072e75b10ef3c1c1f30cbe545367c4adb980d15f310a70c3ca24f8bf36ea5e896d0fcae0adc926172ca58
-  languageName: node
-  linkType: hard
-
-"@webgpu/glslang@npm:^0.0.15":
-  version: 0.0.15
-  resolution: "@webgpu/glslang@npm:0.0.15"
-  checksum: 0bb8c2e8e4533f95deeff09a24fa2551cdf984159f25cd8c3fc21e0e8ecfea54b88363bdcd04412f43669e199dcc8f6ea80a6a7ddd098005527567ec009d6881
   languageName: node
   linkType: hard
 
@@ -2874,12 +2899,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"camera-controls@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "camera-controls@npm:2.0.1"
+"camera-controls@npm:^2.3.1":
+  version: 2.3.7
+  resolution: "camera-controls@npm:2.3.7"
   peerDependencies:
     three: ">=0.126.1"
-  checksum: 3d65359ea2df06cd816ea396305a7a349a62796c05bee8134ca772f01b1f5f3f73cf993381c273a4982ec1f3275582fd91c8a19167c9b649d3fc55bd091122ae
+  checksum: 34079975b95fd41f83b56ea9f87b3a36dcd9536b214dffadfd06322ccf4519b247e960753f2e53b19729eb9f103c4f5307f2c67de41d1e935a20c1ea687891fd
   languageName: node
   linkType: hard
 
@@ -3064,12 +3089,12 @@ __metadata:
     "@emotion/react": ^11
     "@emotion/styled": ^11
     "@fontsource/inter": ^4.5.14
-    "@react-three/drei": ^9.56.8
-    "@react-three/fiber": ^8.10.0
+    "@react-three/drei": ^9.70.1
+    "@react-three/fiber": ^8.13.0
     "@types/node": ^18.11.18
     "@types/react": ^18.0.26
     "@types/react-dom": ^18.0.9
-    "@types/three": ^0.147.0
+    "@types/three": ^0.152.1
     "@typescript-eslint/eslint-plugin": ^5.49.0
     "@typescript-eslint/parser": ^5.49.0
     "@vitejs/plugin-react": ^3.0.1
@@ -3085,7 +3110,7 @@ __metadata:
     react-icons: ^4.7.1
     react-router-dom: ^6.7.0
     react-wrap-balancer: ^0.4.0
-    three: ^0.148.0
+    three: ^0.153.0
     typescript: ^4.9.4
     vite: ^4.0.0
   languageName: unknown
@@ -3170,12 +3195,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"detect-gpu@npm:^5.0.8":
-  version: 5.0.9
-  resolution: "detect-gpu@npm:5.0.9"
+"detect-gpu@npm:^5.0.14":
+  version: 5.0.26
+  resolution: "detect-gpu@npm:5.0.26"
   dependencies:
     webgl-constants: ^1.1.1
-  checksum: cc67227030630590273b884274ce563c08079e9c9b7663c1f32baa4b5ba977b46a98f35aa3c75f0a4b26041ccc261e9ab947cd74e7b4413711ca81a4b454cfd2
+  checksum: d9c9ec7983a8b966eca5acee5caa38faaec7017b697d7b1fd7beb54e5763e43967079581fff08f7bd2a5e8f64c3888328ce3ba6ef3b2d39b20e792e74b10f096
   languageName: node
   linkType: hard
 
@@ -3648,7 +3673,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fflate@npm:^0.6.9":
+"fflate@npm:^0.6.9, fflate@npm:~0.6.9":
   version: 0.6.10
   resolution: "fflate@npm:0.6.10"
   checksum: 96384bc4090987fe565c0de8204e3830f538144ec950576fea50aee1b42adbe9fc3ed5e7905dfa7979faaa20979def330dbebce548f3dcafc3e118cc9838526d
@@ -4533,6 +4558,13 @@ __metadata:
     prelude-ls: ^1.2.1
     type-check: ~0.4.0
   checksum: 12c5021c859bd0f5248561bf139121f0358285ec545ebf48bb3d346820d5c61a4309535c7f387ed7d84361cf821e124ce346c6b7cef8ee09a67c1473b46d0fc4
+  languageName: node
+  linkType: hard
+
+"lil-gui@npm:~0.17.0":
+  version: 0.17.0
+  resolution: "lil-gui@npm:0.17.0"
+  checksum: a6f33e90748ea98477f1f7af6d6cbdc4a1b38ce9da86d674d73f7b0bbdc7f3e947d81edee04c32f33fb28c69a108ba04c24270a8398064ffcc56ffeabc0a916e
   languageName: node
   linkType: hard
 
@@ -5907,22 +5939,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"three-mesh-bvh@npm:^0.5.22":
-  version: 0.5.22
-  resolution: "three-mesh-bvh@npm:0.5.22"
+"three-mesh-bvh@npm:^0.5.23":
+  version: 0.5.24
+  resolution: "three-mesh-bvh@npm:0.5.24"
   peerDependencies:
     three: ">= 0.123.0"
-  checksum: be3bff91f2c366673e56d46e6b47bc930413224fac38600a718a5390f53d276afc1d48ecd26c98c1880f8ff59731fb76618a6d18308b45bd1d31673d575b2dcb
+  checksum: 5a5e356111756869cfd00870bca2d881d3019b55e71142b5eee544a2e6bcc3546a340b0defa29c3ebe7ed4cfe99e7ee6addd5671bb89852841107189c0f98157
   languageName: node
   linkType: hard
 
-"three-stdlib@npm:^2.21.6":
-  version: 2.21.6
-  resolution: "three-stdlib@npm:2.21.6"
+"three-stdlib@npm:^2.23.5":
+  version: 2.23.7
+  resolution: "three-stdlib@npm:2.23.7"
   dependencies:
-    "@babel/runtime": ^7.16.7
+    "@types/draco3d": ^1.4.0
     "@types/offscreencanvas": ^2019.6.4
-    "@webgpu/glslang": ^0.0.15
+    "@types/webxr": ^0.5.2
     chevrotain: ^10.1.2
     draco3d: ^1.4.1
     fflate: ^0.6.9
@@ -5932,8 +5964,8 @@ __metadata:
     potpack: ^1.0.1
     zstddec: ^0.0.2
   peerDependencies:
-    three: ">=0.122.0"
-  checksum: e074d475757813078e70d3568fc6deb6db6cee9d7c788155a6babd2e05c4488df11bdd44e76af73e144447c919292c5d67f65514fd6c524bf71c2808279871b4
+    three: ">=0.128.0"
+  checksum: 43fe585c7ddf70029f82703179bc979ca0c12a34ff868436817c58a3d3d7634145c0e79d362917c2b6d09c33fab037a5f8dfdddd8ca71efb7b559c833e83b504
   languageName: node
   linkType: hard
 
@@ -5944,10 +5976,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"three@npm:^0.148.0":
-  version: 0.148.0
-  resolution: "three@npm:0.148.0"
-  checksum: 3f6359585c006c6f78b2fc1adeb90559d9b7cd6daf5cf916e81494ff228f4a9beffe37136bd8d5b0afbf377ac070b70624245bec2e9ee557035e2c485ce05197
+"three@npm:^0.153.0":
+  version: 0.153.0
+  resolution: "three@npm:0.153.0"
+  checksum: 68899ca90e048967a83866a1d54a9d28bba3532d228ede9e4c2a3b9bec347c31d8bb633eeaf7828397d2419cded8f57cf32f2a9c037a3587d45122e793ddc0c4
   languageName: node
   linkType: hard
 

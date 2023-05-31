@@ -14,9 +14,9 @@
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@fontsource/inter": "^4.5.14",
-    "@react-three/drei": "^9.56.8",
-    "@react-three/fiber": "^8.10.0",
-    "@types/three": "^0.147.0",
+    "@react-three/drei": "^9.70.1",
+    "@react-three/fiber": "^8.13.0",
+    "@types/three": "^0.152.1",
     "cubing": "^0.35.6",
     "framer-motion": "^6",
     "jotai": "^1.13.0",
@@ -27,7 +27,7 @@
     "react-icons": "^4.7.1",
     "react-router-dom": "^6.7.0",
     "react-wrap-balancer": "^0.4.0",
-    "three": "^0.148.0"
+    "three": "^0.153.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.18",
