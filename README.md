@@ -35,6 +35,9 @@ yarn dev
 ```
 
 ## Acknowledgements
+**[Contributors](https://github.com/ericx20/crystalcube/graphs/contributors)**
+Thanks to all of you!
+
 **Zhouheng (Jeffrey) Sun**
 - Created [Onionhoney's Roux Trainers](https://onionhoney.github.io/roux-trainers/), which inspired the concept, UI and functionality of `crystalcube`'s trainer
 - Published a [interactive tutorial](https://observablehq.com/@onionhoney/how-to-model-a-rubiks-cube) for building a Rubik's Cube solver, which laid the foundation of `crystalcube`'s cube library

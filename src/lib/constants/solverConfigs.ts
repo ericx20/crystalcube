@@ -7,6 +7,7 @@ const CROSS_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 37, 40, 43, 
 const BACK_ARROW_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 40, 43, 48, 49, 50, 52]
 const LEFT_ARROW_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 34, 37, 43, 46, 48, 49, 52]
 const LINE_FACELETS: Array<FaceletIndex> = [4, 22, 25, 28, 31, 37, 43, 46, 49, 52]
+const PETRUS_BLOCK_FACELETS: Array<FaceletIndex> = [4, 21, 22, 25, 28, 31, 32, 33, 34, 43, 44, 48, 49, 51, 52]
 
 export const EO_MASK: Mask = {
   solvedFaceletIndices: CENTERS,
@@ -33,12 +34,17 @@ export const LEFT_EOARROW_MASK: Mask = {
   eoFaceletIndices: EO_FACELETS,
 }
 
+export const EO222_MASK: Mask = {
+  solvedFaceletIndices: PETRUS_BLOCK_FACELETS,
+  eoFaceletIndices: EO_FACELETS,
+}
+
 export const CROSS_MASK: Mask = {
   solvedFaceletIndices: CROSS_FACELETS,
 }
 
 // DEFINE SOLVERS HERE
-export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "EOArrow (Back)", "EOArrow (Left)", "Cross"] as const
+export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "EOArrow (Back)", "EOArrow (Left)", "EO222", "Cross"] as const
 
 export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
   "EO": {
@@ -101,6 +107,18 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
     },
     isEOStep: true,
   },
+  "EO222": {
+    moveSet: HTM_MOVESET_BIASED_RUF,
+    mask: EO222_MASK,
+    pruningDepth: 4,
+    depthLimit: 10, // TODO: what's God's number for EO222?
+    nMoveScrambleConfig: {
+      min: 3,
+      max: 9, // TODO: can we do 9?
+      iterationLimit: 200,
+    },
+    isEOStep: true,
+  },
   "Cross": {
     moveSet: HTM_MOVESET_BIASED_RUF,
     mask: CROSS_MASK,
@@ -118,5 +136,5 @@ export const METHODS = ["CFOP", "ZZ"] as const
 
 export const METHOD_SOLVERS = {
   CFOP: ["Cross"],
-  ZZ: ["EO", "EOLine", "EOArrow (Back)", "EOArrow (Left)", "EOCross"],
+  ZZ: ["EO", "EOLine", "EOArrow (Back)", "EOArrow (Left)", "EO222", "EOCross"],
 } as const satisfies { [method in Method]: Readonly<Array<SolverConfigName>> }
