@@ -2394,12 +2394,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/three@npm:^0.146.0":
-  version: 0.146.0
-  resolution: "@types/three@npm:0.146.0"
+"@types/three@npm:^0.149.0":
+  version: 0.149.0
+  resolution: "@types/three@npm:0.149.0"
   dependencies:
     "@types/webxr": "*"
-  checksum: f8ea5ba032f6aaa1cb5ad7dfbbd13851e8cba04365bc7fa9a5320ea7e9a2538ea5f2426391f690f0465347ade15cc145d5dc84b1730d8cceea89f746231f667c
+  checksum: 5def82bd5d4fb0eb6046e747eecced06d68fbf1747ab8f3e7657872e42e58ce7a92218d7c5e4ca26204257927638ad14da5d1cce7310aca15eb8a9bd484ea191
   languageName: node
   linkType: hard
 
@@ -3012,10 +3012,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"comlink@npm:^4.3.1":
-  version: 4.3.1
-  resolution: "comlink@npm:4.3.1"
-  checksum: 557360a6558708c55aff74a25f834bfb9bfca8a42444682c4d5aead57681534a0206202be2a2760b4de124c3ba6d485b08978b6d5469cb3d26bf1438ee28a4f1
+"comlink@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "comlink@npm:4.4.1"
+  checksum: 16d58a8f590087fc45432e31d6c138308dfd4b75b89aec0b7f7bb97ad33d810381bd2b1e608a1fb2cf05979af9cbfcdcaf1715996d5fcf77aeb013b6da3260af
   languageName: node
   linkType: hard
 
@@ -3098,7 +3098,7 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.49.0
     "@typescript-eslint/parser": ^5.49.0
     "@vitejs/plugin-react": ^3.0.1
-    cubing: ^0.35.6
+    cubing: ^0.36.3
     eslint: ^8.33.0
     eslint-plugin-react: ^7.32.2
     framer-motion: ^6
@@ -3132,16 +3132,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cubing@npm:^0.35.6":
-  version: 0.35.6
-  resolution: "cubing@npm:0.35.6"
+"cubing@npm:^0.36.3":
+  version: 0.36.3
+  resolution: "cubing@npm:0.36.3"
   dependencies:
-    "@types/three": ^0.146.0
+    "@types/three": ^0.149.0
     "@types/web-bluetooth": ^0.0.16
-    comlink: ^4.3.1
+    comlink: ^4.4.1
     random-uint-below: ^2.0.0
-    three: ^0.147.0
-  checksum: 01d4303ba2fd560742dff22e29aed77403e958febc31a3e9f31f7d80ad58babf77fb9dcd5ecde952500f4564f8656ea8989844801664b5ac2c23d2907f37f360
+    three: ^0.150.1
+  checksum: f0bf4f5b32feb318de213e4e6c35449efa8f5f19cd5e99f1603de9b1dcb1a5a7702cf68218bac7b53d8b69d90be26a3655cbe99dcc2b459b6395d6f9ce3a7f23
   languageName: node
   linkType: hard
 
@@ -5969,10 +5969,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"three@npm:^0.147.0":
-  version: 0.147.0
-  resolution: "three@npm:0.147.0"
-  checksum: 9d4abdf2125e8b20cd67200a826f23bc1e8f6fc2d325768f8233c24fab7d621968bbe2274a45acd6ca709c076dd271c92d3c9dc4fe2439e4a6b2fae0ba1e6828
+"three@npm:^0.150.1":
+  version: 0.150.1
+  resolution: "three@npm:0.150.1"
+  checksum: b12a92a681a30e62640d90bdf074d039c05d8294ad40f437e7e1807ce0e698ad6728878a1e72dad22bf05d7a359843ecea8739d05f2f13143bc3a4ecdfdbdd7b
   languageName: node
   linkType: hard
 
@@ -6121,11 +6121,11 @@ __metadata:
 
 "typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
   version: 5.0.4
-  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"
+  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=85af82"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: d26b6ba97b6d163c55dbdffd9bbb4c211667ebebc743accfeb2c8c0154aace7afd097b51165a72a5bad2cf65a4612259344ff60f8e642362aa1695c760d303ac
+  checksum: bb309d320c59a26565fb3793dba550576ab861018ff3fd1b7fccabbe46ae4a35546bc45f342c0a0b6f265c801ccdf64ffd68f548f117ceb7f0eac4b805cd52a9
   languageName: node
   linkType: hard
 
