@@ -1,8 +1,8 @@
 import { CheckIcon, CloseIcon, EditIcon, CopyIcon, TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons"
-import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Stack, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Container, Switch } from "@chakra-ui/react"
+import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Switch } from "@chakra-ui/react"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { isFaceMove, moveSeqToString, parseNotation, replaceBadApostrophes, simplifyMoves } from "src/lib"
 import type { Mask, Move, MoveSeq } from "src/lib/types"
 import Cube from "../Cube/Cube"
@@ -18,23 +18,18 @@ interface SolutionEditorProps {
 
 const VCInputAtom = atomWithStorage<boolean>("vc-input", false)
 
-// TODO: show "Failed to generate solution" message if solution === null
 export default function SolutionEditor({ scramble, solution, setSolution, mask, showEO }: SolutionEditorProps) {
   const [isEditing, setEditing] = useState(false)
   const [inputSolution, setInputSolution] = useState("")
   const [showCube, setShowCube] = useState(false)
-  // const inputIsInvalid = !isValidNotation(inputSolution)
-  // TODO: make solver handle solutions that change cube orientation
-  // for now, only HTM solutions are ok
   const inputIsInvalid = inputSolution !== "" && !inputSolution.trim().split(" ").every(token => isFaceMove(token as Move))
 
   const cubeBackground = useColorModeValue("gray.200", undefined)
 
   const [VCInput, setVCInput] = useAtom(VCInputAtom)
 
-  // reset the input whenever a new solution is set
   useEffect(() => {
-    setInputSolution("")
+    setInputSolution(solution.join(' ') + (solution.length > 0?' ':''))
   }, [solution])
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = e => {
