@@ -10,13 +10,12 @@ import SelectLevel from "./select/SelectLevel"
 import SelectEOStepDropdown from "./select/SelectEOStepDropdown"
 
 import { useHotkeys } from "react-hotkeys-hook"
-import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions"
-import type { ScrambleMode } from "src/hooks/useScrambleAndSolutions"
+import useScrambleAndSolutions from "src/hooks/useScrambleSolutionSolutions"
+import type { ScrambleMode } from "src/hooks/useScrambleSolutionSolutions"
 
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { getEOSolutionAnnotation, moveSeqToString } from "src/lib"
-import VirtualCube from "./SolutionEditor"
 
 
 const scrambleModeAtom = atomWithStorage<ScrambleMode>("zz-scramble-mode", "random")
@@ -73,11 +72,11 @@ export default function ZZTrainer() {
     setEOStep(newEOStep)
   }
 
-  const [solution, setSolution] =  useState<MoveSeq>([]);
-
   const {
     scramble,
     setScramble,
+    solution,
+    setSolution,
     solutions,
     isLoading,
     getNext
@@ -96,7 +95,7 @@ export default function ZZTrainer() {
       </HStack>
 
       <ScrambleEditor scramble={scramble} setScramble={setScramble} />
-      <VirtualCube scramble={scramble} solution={solution} setSolution={setSolution} mask={mask} showEO />
+      <SolutionEditor scramble={scramble} solution={solution} setSolution={setSolution} mask={mask} showEO />
 
       <SolutionsViewer
         scramble={scramble}
