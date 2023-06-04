@@ -63,8 +63,9 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
 
   return (
     <TrainerCard>
-      <Flex minWidth='max-content' direction="row" alignItems='center' gap='2'>
+      <Flex minWidth='max-content' direction={{ base: "column", md: "row" }} alignItems={{ base: "flex-start", md: "center" }} gap='2'>
         <Heading size="md">solution editor</Heading>
+        <Flex minWidth='max-content' direction='row' align='center' gap='2'>
         <Text>x2</Text>
         {isEditing ? (
           <>
@@ -104,8 +105,9 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
               aria-label="copy solution"
             />
           </>
-        )}
+        )}</Flex>
         <Spacer />
+        <Flex minWidth='max-content' direction='row' alignItems='center' gap='2'>
         <Text>VC Input</Text>
         <Switch onChange={(e)=>{setVCInput(!VCInput)}} isChecked={VCInput}></Switch>
         <Button
@@ -115,6 +117,7 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
           {showCube ? "hide " : "show "} cube &nbsp;
           {showCube ? <TriangleUpIcon /> : <TriangleDownIcon />}
         </Button>
+        </Flex>
       </Flex>
       {showCube && 
           <Center
