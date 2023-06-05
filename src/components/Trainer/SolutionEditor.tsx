@@ -1,5 +1,5 @@
 import { CheckIcon, CloseIcon, EditIcon, CopyIcon, TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons"
-import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Switch } from "@chakra-ui/react"
+import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Switch, HStack } from "@chakra-ui/react"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 import { Suspense, useEffect, useState } from "react"
@@ -29,15 +29,15 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
   const [VCInput, setVCInput] = useAtom(VCInputAtom)
 
   useEffect(() => {
-    setInputSolution(solution.join(' ') + (solution.length > 0?' ':''))
+    setInputSolution(solution.join(' ') + (solution.length > 0 ? ' ' : ''))
   }, [solution])
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-    if(VCInput && inputSolution.length < e.target.value.length){
+    if (VCInput && inputSolution.length < e.target.value.length) {
       const inputLength = e.target.value.length
-      const normalNotation = e.target.value.substring(0, inputLength-1)
-      const newChar = e.target.value.charAt(inputLength-1)
-      const newMove = (parseVC(newChar)??"") + ((parseVC(newChar))?" ":"")
+      const normalNotation = e.target.value.substring(0, inputLength - 1)
+      const newChar = e.target.value.charAt(inputLength - 1)
+      const newMove = (parseVC(newChar) ?? "") + ((parseVC(newChar)) ? " " : "")
       setInputSolution(normalNotation + newMove)
     } else {
       const filteredInputSolution = replaceBadApostrophes(e.target.value)
@@ -63,9 +63,8 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
 
   return (
     <TrainerCard>
-      <Flex minWidth='max-content' direction={{ base: "column", md: "row" }} alignItems={{ base: "flex-start", md: "center" }} gap='2'>
+      <Flex direction='row' alignItems='center' gap='2' wrap='wrap'>
         <Heading size="md">solution editor</Heading>
-        <Flex minWidth='max-content' direction='row' align='center' gap='2'>
         <Text>x2</Text>
         {isEditing ? (
           <>
@@ -105,11 +104,10 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
               aria-label="copy solution"
             />
           </>
-        )}</Flex>
-        <Spacer />
-        <Flex minWidth='max-content' direction='row' alignItems='center' gap='2'>
+        )}
+        <Spacer display={{base: 'none', md: 'block'}}/>
         <Text>VC Input</Text>
-        <Switch onChange={(e)=>{setVCInput(!VCInput)}} isChecked={VCInput}></Switch>
+        <Switch onChange={(e) => { setVCInput(!VCInput) }} isChecked={VCInput}></Switch>
         <Button
           onClick={() => setShowCube(!showCube)}
           size="sm"
@@ -117,31 +115,30 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
           {showCube ? "hide " : "show "} cube &nbsp;
           {showCube ? <TriangleUpIcon /> : <TriangleDownIcon />}
         </Button>
-        </Flex>
       </Flex>
-      {showCube && 
-          <Center
-            h={[200, 250, 350]}
-            borderWidth="1px"
-            borderRadius="lg"
-            cursor="move"
-            bg={cubeBackground}
-          >
-            <Suspense fallback={<Spinner />}>
-              <Cube
-                moves={scramble.concat("x2").concat(solution)}
-                mask={mask}
-                showEO={showEO}
-                preRotation={["x2"]} />
-            </Suspense>
-          </Center>
-        }
+      {showCube &&
+        <Center
+          h={[200, 250, 350]}
+          borderWidth="1px"
+          borderRadius="lg"
+          cursor="move"
+          bg={cubeBackground}
+        >
+          <Suspense fallback={<Spinner />}>
+            <Cube
+              moves={scramble.concat("x2").concat(solution)}
+              mask={mask}
+              showEO={showEO}
+              preRotation={["x2"]} />
+          </Suspense>
+        </Center>
+      }
     </TrainerCard>
   )
 }
 
 function parseVC(vc: string): Move {
-  const moveTable: {[name: string]: Move} = {
+  const moveTable: { [name: string]: Move } = {
     "w": "B",
     "e": "L'",
     "i": "R",
@@ -155,5 +152,5 @@ function parseVC(vc: string): Move {
     "k": "R'",
     "l": "D'"
   }
-  return moveTable[vc]??null;
+  return moveTable[vc] ?? null;
 }
