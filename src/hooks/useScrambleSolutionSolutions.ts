@@ -13,6 +13,7 @@ export default function useScrambleAndSolutions(
   nMove: number, onNewScramble?: () => void
 ) {
   const [scramble, setScramble] = useState<MoveSeq>([])
+  const [solution, setSolution] = useState<MoveSeq>([])
   const [solutions, setSolutions] = useState<Array<MoveSeq>>([])
   const [isLoading, setLoading] = useState(false)
 
@@ -31,6 +32,7 @@ export default function useScrambleAndSolutions(
     const suboptimality = (optimalSolutionLength < 5) ? (10 - optimalSolutionLength) : 3
     const simplifiedScramble = simplifyScramble(newScramble, solverName, ["x2"], suboptimality)
     setScramble(simplifiedScramble)
+    setSolution([])
     setSolutions(newSolutions)
     setLoading(false)
     onNewScramble && onNewScramble()
@@ -53,6 +55,8 @@ export default function useScrambleAndSolutions(
   return {
     scramble,
     setScramble: setCustomScrambleWithSolutions,
+    solution,
+    setSolution,
     solutions,
     isLoading,
     getNext,

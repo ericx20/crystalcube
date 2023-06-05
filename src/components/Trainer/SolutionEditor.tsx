@@ -1,8 +1,8 @@
 import { CheckIcon, CloseIcon, EditIcon, CopyIcon, TriangleUpIcon, TriangleDownIcon } from "@chakra-ui/icons"
-import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Stack, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Container, Switch } from "@chakra-ui/react"
+import { Box, Button, FormControl, FormErrorMessage, Heading, IconButton, Input, Spinner, Text, Center, useColorModeValue, Spacer, Flex, Switch, HStack } from "@chakra-ui/react"
 import { useAtom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
-import { Suspense, useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { isFaceMove, moveSeqToString, parseNotation, replaceBadApostrophes, simplifyMoves } from "src/lib"
 import type { Mask, Move, MoveSeq } from "src/lib/types"
 import Cube from "../Cube/Cube"
@@ -18,31 +18,26 @@ interface SolutionEditorProps {
 
 const VCInputAtom = atomWithStorage<boolean>("vc-input", false)
 
-// TODO: show "Failed to generate solution" message if solution === null
 export default function SolutionEditor({ scramble, solution, setSolution, mask, showEO }: SolutionEditorProps) {
   const [isEditing, setEditing] = useState(false)
   const [inputSolution, setInputSolution] = useState("")
   const [showCube, setShowCube] = useState(false)
-  // const inputIsInvalid = !isValidNotation(inputSolution)
-  // TODO: make solver handle solutions that change cube orientation
-  // for now, only HTM solutions are ok
   const inputIsInvalid = inputSolution !== "" && !inputSolution.trim().split(" ").every(token => isFaceMove(token as Move))
 
   const cubeBackground = useColorModeValue("gray.200", undefined)
 
   const [VCInput, setVCInput] = useAtom(VCInputAtom)
 
-  // reset the input whenever a new solution is set
   useEffect(() => {
-    setInputSolution("")
+    setInputSolution(solution.join(' ') + (solution.length > 0 ? ' ' : ''))
   }, [solution])
 
   const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = e => {
-    if(VCInput && inputSolution.length < e.target.value.length){
+    if (VCInput && inputSolution.length < e.target.value.length) {
       const inputLength = e.target.value.length
-      const normalNotation = e.target.value.substring(0, inputLength-1)
-      const newChar = e.target.value.charAt(inputLength-1)
-      const newMove = (parseVC(newChar)??"") + ((parseVC(newChar))?" ":"")
+      const normalNotation = e.target.value.substring(0, inputLength - 1)
+      const newChar = e.target.value.charAt(inputLength - 1)
+      const newMove = (parseVC(newChar) ?? "") + ((parseVC(newChar)) ? " " : "")
       setInputSolution(normalNotation + newMove)
     } else {
       const filteredInputSolution = replaceBadApostrophes(e.target.value)
@@ -68,7 +63,7 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
 
   return (
     <TrainerCard>
-      <Flex minWidth='max-content' direction="row" alignItems='center' gap='2'>
+      <Flex direction='row' alignItems='center' gap='2' wrap='wrap'>
         <Heading size="md">solution editor</Heading>
         <Text>x2</Text>
         {isEditing ? (
@@ -110,9 +105,9 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
             />
           </>
         )}
-        <Spacer />
+        <Spacer display={{base: 'none', md: 'block'}}/>
         <Text>VC Input</Text>
-        <Switch onChange={(e)=>{setVCInput(!VCInput)}} isChecked={VCInput}></Switch>
+        <Switch onChange={(e) => { setVCInput(!VCInput) }} isChecked={VCInput}></Switch>
         <Button
           onClick={() => setShowCube(!showCube)}
           size="sm"
@@ -121,29 +116,29 @@ export default function SolutionEditor({ scramble, solution, setSolution, mask, 
           {showCube ? <TriangleUpIcon /> : <TriangleDownIcon />}
         </Button>
       </Flex>
-      {showCube && 
-          <Center
-            h={[200, 250, 350]}
-            borderWidth="1px"
-            borderRadius="lg"
-            cursor="move"
-            bg={cubeBackground}
-          >
-            <Suspense fallback={<Spinner />}>
-              <Cube
-                moves={scramble.concat("x2").concat(solution)}
-                mask={mask}
-                showEO={showEO}
-                preRotation={["x2"]} />
-            </Suspense>
-          </Center>
-        }
+      {showCube &&
+        <Center
+          h={[200, 250, 350]}
+          borderWidth="1px"
+          borderRadius="lg"
+          cursor="move"
+          bg={cubeBackground}
+        >
+          <Suspense fallback={<Spinner />}>
+            <Cube
+              moves={scramble.concat("x2").concat(solution)}
+              mask={mask}
+              showEO={showEO}
+              preRotation={["x2"]} />
+          </Suspense>
+        </Center>
+      }
     </TrainerCard>
   )
 }
 
 function parseVC(vc: string): Move {
-  const moveTable: {[name: string]: Move} = {
+  const moveTable: { [name: string]: Move } = {
     "w": "B",
     "e": "L'",
     "i": "R",
@@ -157,5 +152,5 @@ function parseVC(vc: string): Move {
     "k": "R'",
     "l": "D'"
   }
-  return moveTable[vc]??null;
+  return moveTable[vc] ?? null;
 }
