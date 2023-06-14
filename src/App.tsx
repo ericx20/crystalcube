@@ -4,6 +4,10 @@ import NavBar from "./components/NavBar/NavBar"
 import Home from "./pages/Home"
 import Trainer from "./pages/Trainer"
 import Tools from "./pages/Tools"
+// TEMP
+import lib from "./libv2"
+
+lib;
 
 export default function App() {
   return (
