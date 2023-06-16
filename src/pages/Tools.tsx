@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom"
 import { Heading } from "@chakra-ui/react"
 import OHScramble from "./OHScramble"
+import TestPage from "./TestPage"
 
 export default function Tools() {
   return (
@@ -10,6 +11,7 @@ export default function Tools() {
       <Routes>
         <Route path="/" element={<Heading textAlign={"center"}>tools</Heading>} />
         <Route path="ohscramble" element={<OHScramble />} />
+        <Route path="testpage" element={<TestPage />} />
       </Routes>
     </>
   )
