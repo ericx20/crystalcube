@@ -107,7 +107,9 @@ const MOVE_PERMS = Object.fromEntries(
   ])
 ) as { [move in Move3x3]: Perm<FaceletIndex> };
 
-// first implement a regular 3x3, ported from crystalcube
+// TODO: is it better to make applyMove() return a brand new Cube3x3?
+// in most non-trivial usages of the Puzzles, things like solvers and pruners
+// will be cloning states to perform separate things with them
 export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
   private state: Facelet3x3;
   private solvedState: Facelet3x3;
@@ -217,42 +219,42 @@ const PETRUS_BLOCK_FACELETS: Array<FaceletIndex> = [
   4, 21, 22, 25, 28, 31, 32, 33, 34, 43, 44, 48, 49, 51, 52,
 ];
 
-const EO_MASK: Cube3x3Mask = {
+export const EO_MASK: Cube3x3Mask = {
   solvedFaceletIndices: CENTERS,
   eoFaceletIndices: EO_FACELETS,
 };
 
-const EOLINE_MASK: Cube3x3Mask = {
+export const EOLINE_MASK: Cube3x3Mask = {
   solvedFaceletIndices: LINE_FACELETS,
   eoFaceletIndices: EO_FACELETS,
 };
 
-const EOCROSS_MASK: Cube3x3Mask = {
+export const EOCROSS_MASK: Cube3x3Mask = {
   solvedFaceletIndices: CROSS_FACELETS,
   eoFaceletIndices: EO_FACELETS,
 };
 
-const BACK_EOARROW_MASK: Cube3x3Mask = {
+export const BACK_EOARROW_MASK: Cube3x3Mask = {
   solvedFaceletIndices: BACK_ARROW_FACELETS,
   eoFaceletIndices: EO_FACELETS,
 };
 
-const LEFT_EOARROW_MASK: Cube3x3Mask = {
+export const LEFT_EOARROW_MASK: Cube3x3Mask = {
   solvedFaceletIndices: LEFT_ARROW_FACELETS,
   eoFaceletIndices: EO_FACELETS,
 };
 
-const EO222_MASK: Cube3x3Mask = {
+export const EO222_MASK: Cube3x3Mask = {
   solvedFaceletIndices: PETRUS_BLOCK_FACELETS,
   eoFaceletIndices: EO_FACELETS,
 };
 
-const CROSS_MASK: Cube3x3Mask = {
+export const CROSS_MASK: Cube3x3Mask = {
   solvedFaceletIndices: CROSS_FACELETS,
 };
 
 // apply a mask to facelet cube
-function getMaskedFaceletCube(
+export function getMaskedFaceletCube(
   mask: Cube3x3Mask,
   stateData: Readonly<Facelet3x3> = SOLVED_FACELET_CUBE
 ): Facelet3x3 {
@@ -268,7 +270,7 @@ function getMaskedFaceletCube(
 }
 
 // prettier-ignore
-const HTM_MOVESET_BIASED_RUF = [
+export const HTM_MOVESET_BIASED_RUF = [
   "R", "R'", "R2",
   "U", "U'", "U2",
   "F", "F'", "F2",
