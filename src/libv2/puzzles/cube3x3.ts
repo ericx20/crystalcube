@@ -3,7 +3,7 @@ import { invert, double } from "./common";
 
 const SUFFIXES = ["", "2", "'"] as const;
 type Suffix = (typeof SUFFIXES)[number];
-type Move3x3 = `${Layer | Axis}${Suffix}`;
+export type Move3x3 = `${Layer | Axis}${Suffix}`;
 
 // prettier-ignore
 const SOLVED_FACELET_CUBE: Readonly<Facelet3x3> = [
@@ -63,7 +63,8 @@ type Face = (typeof FACES)[number];
 type Layer = (typeof LAYERS)[number];
 type Axis = (typeof AXES)[number];
 type Facelet = Face | "O" | "X"; // "O" is a facelet that identifies edge orientation, X is a wildcard facelet
-type Facelet3x3 = Array<Facelet>;
+// TODO: need to export?
+export type Facelet3x3 = Array<Facelet>;
 type FaceletIndex = number; // int from 0 to 53, represents a facelet's location
 
 // prettier-ignore
@@ -112,22 +113,31 @@ const MOVE_PERMS = Object.fromEntries(
 // will be cloning states to perform separate things with them
 export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
   private state: Facelet3x3;
-  private solvedState: Facelet3x3;
+  private solvedState: Readonly<Facelet3x3>;
   constructor(
-    initialState: Facelet3x3 = [...SOLVED_FACELET_CUBE],
-    private moveset: Readonly<Move[]> = MOVESET_3x3 as Move[]
+    private moveset: Readonly<Move[]> = MOVESET_3x3 as Move[],
+    initialState: Readonly<Facelet3x3> = [...SOLVED_FACELET_CUBE],
+    solvedState: Readonly<Facelet3x3> = initialState,
   ) {
-    this.state = initialState;
-    this.solvedState = initialState;
+    this.state = [...initialState];
+    this.solvedState = solvedState;
   }
 
-  isSolved() {
+  isSolved(): boolean {
     return this.state.join("") === this.solvedState.join("");
+  }
+
+  resetToSolved(): this {
+    this.state = [...this.solvedState];
+    return this;
   }
 
   // TODO: add turning restrictions
   // default turning restriction: after doing a move, you can't do another move of the same family
-  get nextMoves() {
+  // another turning restriction: suppose simul moves are always sorted in the order R L, F B, U D
+  // so if you do L, no R moves are allowed. after F, no B moves allowed
+  // that's because whenever we explore L R, then we know R L has been explored too
+  get nextMoves(): readonly Move[] {
     return this.moveset;
   }
 
@@ -135,11 +145,11 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return [...this.state];
   }
 
-  encode() {
+  encode(): string {
     return this.state.join("");
   }
 
-  applyMove(move: Move) {
+  applyMove(move: Move): this {
     const nextState = [...this.state];
     const perms = MOVE_PERMS[move];
     perms.forEach(([src, dst]) => {
@@ -149,49 +159,18 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return this;
   }
 
-  applyMoves(moves: Move[]) {
+  applyMoves(moves: Move[]): this {
     moves.forEach((move) => this.applyMove(move));
     return this;
   }
 
+  getInvertedMoves(moves: Move[]): Move[] {
+    return [...moves].reverse().map(move => invertMove(move));
+  }
+
   clone() {
-    return new Cube3x3<Move>(this.state, this.moveset);
+    return new Cube3x3<Move>(this.moveset, this.state, this.solvedState);
   }
-
-  print() {
-    printFacelet3x3(this.state);
-    return this;
-  }
-}
-
-function printFacelet3x3(cube: Facelet3x3): void {
-  const xxx = "➖➖➖";
-  const xxxxxx = "➖➖➖➖➖➖";
-  const xxxxxxxxxxxx = "➖➖➖➖➖➖➖➖➖➖➖➖";
-  const faceletToEmoji: { [f in Facelet]: string } = {
-    R: "🟥",
-    L: "🟧",
-    U: "⬜",
-    D: "🟨",
-    F: "🟩",
-    B: "🟦",
-    O: "🟪",
-    X: "⬛",
-  };
-  const emojiCube = cube.map((facelet) => faceletToEmoji[facelet]);
-  const slice = (start: number, end: number) =>
-    emojiCube.slice(start, end).join("");
-  console.log(xxxxxxxxxxxx);
-  console.log(xxx + slice(0, 3) + xxxxxx);
-  console.log(xxx + slice(3, 6) + xxxxxx);
-  console.log(xxx + slice(6, 9) + xxxxxx);
-  console.log(slice(9, 21));
-  console.log(slice(21, 33));
-  console.log(slice(33, 45));
-  console.log(xxx + slice(45, 48) + xxxxxx);
-  console.log(xxx + slice(48, 51) + xxxxxx);
-  console.log(xxx + slice(51, 54) + xxxxxx);
-  console.log(xxxxxxxxxxxx);
 }
 
 interface Cube3x3Mask {
@@ -278,3 +257,12 @@ export const HTM_MOVESET_BIASED_RUF = [
   "D", "D'", "D2",
   "B", "B'", "B2",
 ] as const satisfies MoveSet<Move3x3>
+
+export function invertMove<M extends Move3x3>(move: M): M {
+  // This is only safe as long as Move3x3 is conventional Singmaster notation
+  if (move.includes("2"))
+    return move;
+  if (move.includes("'"))
+    return move[0] as M;
+  return move[0] + "'" as M;
+}

@@ -2,41 +2,36 @@ import { Puzzle } from "../types";
 
 export type PruningTable = { [encodedState: string]: number };
 
-export function genPruningTable(solved: Puzzle): PruningTable {
-  let previousFrontier: Array<Puzzle> = [solved];
+export interface PrunerOptions {
+  name: string; // must be unique
+  pruningDepth: number;
+}
+
+// the puzzle passed in may be scrambled, that's okay
+// only the solved state will be used as the starting point for the pruner
+// make sure to set a reasonable depth in the options, or else the pruning will be slow and use up memory!
+export function genPruningTable(puzzle: Puzzle, prunerOptions: PrunerOptions): PruningTable {
+  const solved = puzzle.clone().resetToSolved();
+  let previousFrontier: Puzzle[] = [solved]
   const pruningTable: PruningTable = {
     [solved.encode()]: 0,
-  };
+  }
 
-  const STATE_LIMIT = 30000;
-
-  let counter = 1;
-  let depth = 1;
-  while (true) {
-    const frontier: Array<Puzzle> = [];
-    let addedState = false;
-    for (const puzzle of previousFrontier) {
+  for (let depth = 1; depth <= prunerOptions.pruningDepth; depth++) {
+    const frontier: Puzzle[] = []
+    for (const puzzleState of previousFrontier) {
       // for every previous state: try all possible moves on it
-      for (const move of puzzle.nextMoves) {
-        if (counter >= STATE_LIMIT) {
-          return pruningTable;
-        }
-        const newPuzzle = puzzle.clone().applyMove(move);
-        const key = newPuzzle.encode();
-
+      for (const move of puzzleState.nextMoves) {
+        const newPuzzleState = puzzleState.clone().applyMove(move);
+        const key = newPuzzleState.encode();
         if (pruningTable[key] === undefined) {
-          pruningTable[key] = depth; // add this state to pruning table
-          frontier.push(newPuzzle); // add this to frontier so it can then become previousFrontier
-          counter++;
-          addedState = true;
+          pruningTable[key] = depth // add this state to pruning table
+          frontier.push(newPuzzleState) // add this to frontier so it can then become previousFrontier
         }
       }
     }
-    if (!addedState) {
-      // if no states were added to pruning table, it means pruning table already contains all states
-      return pruningTable;
-    }
-    previousFrontier = [...frontier];
-    depth++;
+    previousFrontier = [...frontier]
   }
+
+  return pruningTable
 }

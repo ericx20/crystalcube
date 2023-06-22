@@ -1,10 +1,12 @@
-export interface Puzzle<Move = string> {
+export interface Puzzle<Move extends string = string> {
   isSolved(): boolean;
+  resetToSolved(): this;
   get nextMoves(): Readonly<Move[]>;
   encode(): string;
   applyMove(move: Move): this;
   applyMoves(moves: Move[]): this;
-  clone: () => Puzzle<Move>;
+  getInvertedMoves(moves: Move[]): Move[];
+  clone(): Puzzle<Move>;
 }
 
 export type Perm<T = number> = [src: T, dst: T][];
