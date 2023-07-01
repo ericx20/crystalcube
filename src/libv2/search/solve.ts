@@ -3,14 +3,14 @@ import { genPruningTable } from "./prune";
 
 export interface SolverOptions {
   name: string; // must be unique
-  depthLimit: number;
   pruningDepth: number;
+  depthLimit: number;
   maxSolutionCount?: number;
 }
 
 export function solve<Move extends string>(
   puzzle: Puzzle<Move>, // a scrambled puzzle
-  { name, depthLimit, pruningDepth, maxSolutionCount = 5 }: SolverOptions
+  { name, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
 ): Move[][] {
   const pruningTable = genPruningTable(puzzle, { name, pruningDepth });
 

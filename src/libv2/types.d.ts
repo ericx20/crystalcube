@@ -5,7 +5,6 @@ export interface Puzzle<Move extends string = string> {
   encode(): string;
   applyMove(move: Move): this;
   applyMoves(moves: Move[]): this;
-  getInvertedMoves(moves: Move[]): Move[];
   clone(): Puzzle<Move>;
 }
 
