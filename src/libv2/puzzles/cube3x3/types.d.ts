@@ -3,7 +3,7 @@ import { FACES, LAYERS, AXES, SUFFIXES } from ".";
 export type Face = (typeof FACES)[number];
 export type Layer = (typeof LAYERS)[number];
 export type Axis = (typeof AXES)[number];
-export type Facelet = Face | "O" | "X"; // "O" is a facelet that identifies edge orientation, X is a wildcard facelet
+export type Facelet = Face | "O" | "X"; // "O" is a facelet that identifies edge/corner orientation, X is a wildcard facelet
 export type Facelet3x3 = Array<Facelet>;
 export type FaceletIndex = number; // int from 0 to 53, represents a facelet's location
 

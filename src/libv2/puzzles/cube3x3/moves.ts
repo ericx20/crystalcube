@@ -106,3 +106,8 @@ export function invertMove<M extends Move3x3>(move: M): M {
 export function invertMoves<M extends Move3x3>(moves: M[]): M[] {
   return moves.map(invertMove);
 }
+
+export function sameLayerOrAxis<M extends Move3x3>(a: M, b: M) {
+  // This is only safe as long as Move3x3 is conventional Singmaster notation
+  return a[0] === b[0];
+}
