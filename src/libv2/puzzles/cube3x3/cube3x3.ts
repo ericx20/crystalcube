@@ -32,12 +32,6 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return this;
   }
 
-  resetToSolved2(): this {
-    this.state = [...this.solvedState];
-    this.history = [];
-    return this;
-  }
-
   private isMoveAvailable(move: Move): boolean {
     const lastMove = this.history.at(-1);
     if (lastMove && sameLayerOrAxis(move, lastMove)) {
