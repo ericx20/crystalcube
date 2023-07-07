@@ -11,6 +11,10 @@ import { applyMoves } from "../moves"
 // The edges are indexed in the order [UB, UL, UR, UF, BL, FL, FR, BR, DF, DL, DR, DB]
 const EDGE_PURPLE_FACELET_INDICES: Readonly<Array<FaceletIndex>> = [1, 3, 5, 7, 32, 24, 26, 30, 46, 48, 50, 52]
 const EDGE_BLACK_FACELET_INDICES: Readonly<Array<FaceletIndex>> = [19, 10, 16, 13, 21, 23, 27, 29, 37, 34, 40, 43]
+
+/**
+ * @deprecated
+ */
 export function getFaceletCubeEO(cube: FaceletCube): EO {
   const uCenterFacelet = cube[4]
   const dCenterFacelet = cube[49]
@@ -26,12 +30,18 @@ export function getFaceletCubeEO(cube: FaceletCube): EO {
   })
 }
 
+/**
+ * @deprecated
+ */
 function countBadEdges(cube: FaceletCube): number {
   return getFaceletCubeEO(cube).reduce((n, x) => n + (x === false ? 1 : 0), 0)
 }
 
 // TODO: REMOVE HARDCODED X2, support premoves
 const EO_CHANGING_MOVES: Array<Move> = ["F", "F'", "B", "B'"]
+/**
+ * @deprecated
+ */
 export function getEOSolutionAnnotation(scramble: MoveSeq, solution: MoveSeq): Array<string | null> {
   const scrambledCube = applyMoves([...SOLVED_FACELET_CUBE], scramble)
   const badEdgeArray = [...Array(solution.length + 1).keys()].map(index => {
@@ -56,7 +66,9 @@ export function getEOSolutionAnnotation(scramble: MoveSeq, solution: MoveSeq): A
   })
 }
 
-
+/**
+ * @deprecated
+ */
 export function isValidNFlip(n: number) {
   return Number.isInteger(n) && n % 2 === 0
 }

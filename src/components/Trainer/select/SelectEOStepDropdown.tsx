@@ -8,6 +8,9 @@ interface SelectEOStepProps {
   setEOStep: (step: ZZConfigName) => void
 }
 
+/**
+ * @deprecated
+ */
 export default function SelectEOStepDropdown({ eoStep, setEOStep }: SelectEOStepProps) {
   return (
     <Select

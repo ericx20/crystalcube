@@ -11,6 +11,9 @@ interface ScrambleViewerProps {
 }
 
 // TODO: show "Failed to generate scramble" message if scramble === null
+/**
+ * @deprecated
+ */
 export default function ScrambleEditor({ scramble, setScramble }: ScrambleViewerProps) {
   const [isEditing, setEditing] = useState(false)
   const [inputScramble, setInputScramble] = useState("")

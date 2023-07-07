@@ -15,6 +15,9 @@ interface SolutionsViewerProps {
   children?: React.ReactNode
 }
 
+/**
+ * @deprecated
+ */
 export default function SolutionsViewer({
   scramble,
   solutions,

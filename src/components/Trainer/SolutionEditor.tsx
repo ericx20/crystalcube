@@ -18,6 +18,9 @@ interface SolutionEditorProps {
 
 const VCInputAtom = atomWithStorage<boolean>("vc-input", false)
 
+/**
+ * @deprecated
+ */
 export default function SolutionEditor({ scramble, solution, setSolution, mask, showEO }: SolutionEditorProps) {
   const [isEditing, setEditing] = useState(false)
   const [inputSolution, setInputSolution] = useState("")

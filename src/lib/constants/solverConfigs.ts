@@ -44,8 +44,14 @@ export const CROSS_MASK: Mask = {
 }
 
 // DEFINE SOLVERS HERE
+/**
+ * @deprecated
+ */
 export const SOLVER_CONFIG_NAMES = ["EO", "EOLine", "EOCross", "EOArrow (Back)", "EOArrow (Left)", "EO222", "Cross"] as const
 
+/**
+ * @deprecated
+ */
 export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
   "EO": {
     moveSet: HTM_MOVESET_BIASED_RUF,
@@ -132,8 +138,14 @@ export const SOLVER_CONFIGS: { [name in SolverConfigName]: SolverConfig } = {
   }
 } as const
 
+/**
+ * @deprecated
+ */
 export const METHODS = ["CFOP", "ZZ"] as const
 
+/**
+ * @deprecated
+ */
 export const METHOD_SOLVERS = {
   CFOP: ["Cross"],
   ZZ: ["EO", "EOLine", "EOArrow (Back)", "EOArrow (Left)", "EO222", "EOCross"],

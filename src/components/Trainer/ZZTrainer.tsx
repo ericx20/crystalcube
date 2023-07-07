@@ -24,6 +24,9 @@ const eoStepAtom = atomWithStorage<ZZConfigName>("zz-eostep", "EOCross")
 const nMoveAtom = atomWithStorage<number>("zz-nmove", 3)
 
 // TODO: generalize this for CFOP too, and make the method a prop
+/**
+ * @deprecated
+ */
 export default function ZZTrainer() {
   const headerRef = useRef<HTMLDivElement>(null)
   const scrollToTop = () => {

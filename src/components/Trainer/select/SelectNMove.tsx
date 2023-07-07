@@ -17,6 +17,9 @@ interface SelectNMoveProps {
   nMoveScrambleConfig: NMoveScrambleConfig
 }
 
+/**
+ * @deprecated
+ */
 export default function SelectNMove({
   nMove,
   onSelectNMove,

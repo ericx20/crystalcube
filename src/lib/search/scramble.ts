@@ -11,7 +11,9 @@ import { KState } from "cubing/kpuzzle"
 import { experimentalSolve3x3x3IgnoringCenters, random333State } from "cubing/search";
 import shuffle from "lodash/shuffle"
 
-
+/**
+ * @deprecated
+ */
 export async function nFlipScramble(n: number): Promise<MoveSeq> {
   const { kpuzzle, stateData } = await random333State()
   const newStateData = {
@@ -26,6 +28,9 @@ export async function nFlipScramble(n: number): Promise<MoveSeq> {
   return invertMoves(parseNotation(solution.toString()))
 }
 
+/**
+ * @deprecated
+ */
 function nFlipEOArray(n: number): Array<number> {
   if (!isValidNFlip(n)) {
     console.error("nFlipEOArray(): must be an even integer from 0 to 12 inclusive")

@@ -16,6 +16,9 @@ interface SelectLevelProps {
   setNMove: (n: number) => void
 }
 
+/**
+ * @deprecated
+ */
 export default function SelectLevel({ solverName, scrambleMode, setScrambleMode, nFlip, setNFlip, nMove, setNMove }: SelectLevelProps) {
   const isNFlipMode = scrambleMode === "nFlip"
   const isNMoveMode = scrambleMode === "nMove"

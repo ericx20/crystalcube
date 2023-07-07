@@ -1,21 +1,32 @@
 import type { Facelet, FaceletCube, IndexedFaceletCube, Mask } from "./types";
 import { SOLVED_INDEXED_FACELET_CUBE } from "./constants";
 
-
+/**
+ * @deprecated
+ */
 export function colorOfIndexedFacelet(index: number): Facelet {
   const table: Array<Facelet> = ["U", "U", "U", "L", "F", "R", "B", "L", "F", "R", "B", "L", "F", "R", "B", "D", "D", "D"];
   return table[Math.floor(index / 3)];
 }
 
+/**
+ * @deprecated
+ */
 export function faceletCubeToString(cube: FaceletCube): string {
   return cube.join("");
 }
 
+/**
+ * @deprecated
+ */
 export function indexedFaceletCubeToFaceletCube(indexedFaceletCube: IndexedFaceletCube): FaceletCube {
   return indexedFaceletCube.map(indexedFacelet => colorOfIndexedFacelet(indexedFacelet));
 }
 
 // apply mask to a regular facelet cube on its current state
+/**
+ * @deprecated
+ */
 export function applyMask(cube: FaceletCube, mask: Mask): FaceletCube {
   return SOLVED_INDEXED_FACELET_CUBE.map(faceletIdx => {
     if (mask.solvedFaceletIndices.includes(faceletIdx)) {
@@ -29,6 +40,9 @@ export function applyMask(cube: FaceletCube, mask: Mask): FaceletCube {
 }
 
 // Puts a mask on an IndexedFaceletCube
+/**
+ * @deprecated
+ */
 export function getMaskedFaceletCube(cube: IndexedFaceletCube, mask: Mask): FaceletCube {
   return cube.map(faceletIdx => {
     if (mask.solvedFaceletIndices.includes(faceletIdx)) {
@@ -44,6 +58,9 @@ export function getMaskedFaceletCube(cube: IndexedFaceletCube, mask: Mask): Face
 const xxx = "➖➖➖"
 const xxxxxx = "➖➖➖➖➖➖"
 const xxxxxxxxxxxx = "➖➖➖➖➖➖➖➖➖➖➖➖"
+/**
+ * @deprecated
+ */
 export function printFaceletCube(cube: FaceletCube): void {
   const emojiCube = faceletCubeToEmojiCube(cube)
   const slice = (start: number, end: number) => emojiCube.slice(start, end).join("")
@@ -70,6 +87,10 @@ const faceletToEmoji: { [f in Facelet]: string } = {
   O: "🟪",
   X: "⬛",
 }
+
+/**
+ * @deprecated
+ */
 function faceletCubeToEmojiCube(cube: FaceletCube): Array<string> {
   return cube.map(facelet => faceletToEmoji[facelet])
 }

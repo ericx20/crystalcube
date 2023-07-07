@@ -111,6 +111,9 @@ const massCubeTrans = (sequenceString: string, movesToReplace: boolean[], lowerc
     return sequence.join(" ");
 };
 
+/**
+ * @deprecated
+ */
 export const translateToOH = (alg: Alg, isLefty: boolean, lowercaseWide: boolean) => {
     if (!alg.toString()) return new Alg("")
     const movesToReplace = isLefty ? leftyMovesToReplace : rightyMovesToReplace

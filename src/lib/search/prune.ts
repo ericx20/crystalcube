@@ -3,7 +3,9 @@ import { SOLVED_FACELET_CUBE, SOLVER_CONFIGS } from "../constants"
 import { faceletCubeToString, applyMask } from "../cubeState"
 import { applyMove } from "../moves"
 
-
+/**
+ * @deprecated
+ */
 export function genPruningTable(config: SolverConfig): PruningTable {
   const solvedState = applyMask([...SOLVED_FACELET_CUBE], config.mask)
   const pruningTable: PruningTable = {}
@@ -35,6 +37,9 @@ export function genPruningTable(config: SolverConfig): PruningTable {
 
 const pruningTables = new Map<SolverConfigName, PruningTable>()
 
+/**
+ * @deprecated
+ */
 export function getPruningTable(name: SolverConfigName): PruningTable {
   const cachedResult = pruningTables.get(name)
   if (!cachedResult) {

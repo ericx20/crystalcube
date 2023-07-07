@@ -2,6 +2,9 @@ import type { Axis, Cube, RotationMove, LayerMove, Layer, Move, MoveSeq, FaceMov
 import { AXES, FACE_MOVES, HTM_MOVESET, LAYERS_ALONG_AXES, MOVE_PERMS, ROTATIONS } from "./constants";
 import sample from "lodash/sample"
 
+/**
+ * @deprecated
+ */
 export function applyMove<C extends Cube>(cube: C, move: Move): C {
   const newCube = [...cube] as C;
   const perms = MOVE_PERMS[move];
@@ -9,10 +12,16 @@ export function applyMove<C extends Cube>(cube: C, move: Move): C {
   return newCube;
 }
 
+/**
+ * @deprecated
+ */
 export function applyMoves<C extends Cube>(cube: C, moves: MoveSeq): C {
   return moves.reduce(applyMove, cube);
 }
 
+/**
+ * @deprecated
+ */
 export function invertMove<M extends Move>(move: M): M {
   if (move.includes("2"))
     return move;
@@ -25,6 +34,9 @@ export function invertMove<M extends Move>(move: M): M {
 // TODO: move to types.d.ts
 type MovePower = 1 | 2 | 3
 
+/**
+ * @deprecated
+ */
 export function powerOfMove(move: Move): MovePower {
   const suffix = move[1]
   if (suffix === "'") {
@@ -42,11 +54,16 @@ const SUFFIXES = {
   3: "'",
 } as const
 
+/**
+ * @deprecated
+ */
 export function movePowerToSuffix(power: MovePower): string {
   return SUFFIXES[power]
 }
 
-
+/**
+ * @deprecated
+ */
 export function invertMoves<M extends Move>(moves: Array<M>): Array<M> {
   return [...moves].reverse().map(move => invertMove(move));
 }
@@ -68,6 +85,9 @@ function cancelTwoMoves<M extends Move>(a: M, b: M): boolean | M {
   return newMove
 }
 
+/**
+ * @deprecated
+ */
 export function simplifyMoves<M extends Move>(movesToSimplify: Array<M>): Array<M> {
   const moves = [...movesToSimplify]
   let i = 0;
@@ -127,19 +147,31 @@ export function simplifyMoves<M extends Move>(movesToSimplify: Array<M>): Array<
 }
 
 // This does not include rotations
+/**
+ * @deprecated
+ */
 export function layerOfLayerMove(faceTurn: LayerMove): Layer {
   // This is not type-safe, TODO: find a better way
   return faceTurn[0] as Layer
 }
 
+/**
+ * @deprecated
+ */
 export function axisOfRotation(rotation: RotationMove): Axis {
   return rotation[0] as Axis
 }
 
+/**
+ * @deprecated
+ */
 export function moveSeqToString(moveSeq: MoveSeq) {
   return moveSeq.join(" ")
 }
 
+/**
+ * @deprecated
+ */
 export function movesAreSameLayer(a: Move, b: Move): boolean {
   if (isRotation(a) || isRotation(b)) {
     return false
@@ -147,6 +179,9 @@ export function movesAreSameLayer(a: Move, b: Move): boolean {
   return layerOfLayerMove(a) === layerOfLayerMove(b)
 }
 
+/**
+ * @deprecated
+ */
 export function moveSeqsAreIdentical(a: MoveSeq, b: MoveSeq): boolean {
   if (a.length !== b.length) {
     return false
@@ -154,6 +189,9 @@ export function moveSeqsAreIdentical(a: MoveSeq, b: MoveSeq): boolean {
   return a.every((move, index) => move === b[index])
 }
 
+/**
+ * @deprecated
+ */
 export function layerMovesAreParallel(a: LayerMove, b: LayerMove): boolean {
   const layerA = layerOfLayerMove(a)
   const layerB = layerOfLayerMove(b)
@@ -163,6 +201,9 @@ export function layerMovesAreParallel(a: LayerMove, b: LayerMove): boolean {
   })
 }
 
+/**
+ * @deprecated
+ */
 export function isFaceMove(move: Move): move is FaceMove {
   return FACE_MOVES.includes(move as FaceMove)
 }
@@ -171,15 +212,24 @@ export function isFaceMove(move: Move): move is FaceMove {
 //   return SLICE_MOVES.includes(move as SliceMove)
 // }
 
+/**
+ * @deprecated
+ */
 export function isLayerMove(move: Move): move is LayerMove {
   // TODO: add slice move support
   return isFaceMove(move) // || isSliceMove(move)
 }
 
+/**
+ * @deprecated
+ */
 export function isRotation(move: Move): move is RotationMove {
   return ROTATIONS.includes(move as RotationMove)
 }
 
+/**
+ * @deprecated
+ */
 export function endsWithRedundantParallelMoves(solution: MoveSeq): boolean {
   if (solution.length < 3) {
     return false
@@ -191,6 +241,9 @@ export function endsWithRedundantParallelMoves(solution: MoveSeq): boolean {
   return movesAreSameLayer(thirdLast, last) && layerMovesAreParallel(thirdLast, secondLast)
 }
 
+/**
+ * @deprecated
+ */
 export function randomMoves(length: number, moveSet = HTM_MOVESET): MoveSeq {
   const moves: MoveSeq = []
   for (let i = 0; i < length; i++) {
@@ -200,6 +253,9 @@ export function randomMoves(length: number, moveSet = HTM_MOVESET): MoveSeq {
 }
 
 // NOTE: mutates the `moves` array!
+/**
+ * @deprecated
+ */
 export function appendRandomMove(moves: MoveSeq, moveSet = HTM_MOVESET): void {
   const lastMove = moves.at(moves.length - 1)
   const secondLastMove = moves.at(moves.length - 2)
@@ -216,9 +272,13 @@ export function appendRandomMove(moves: MoveSeq, moveSet = HTM_MOVESET): void {
 }
 
 // TODO: update OH scrambler
+/**
+ * @deprecated
+ */
 export function translateMoves(moves: MoveSeq, rotations: Array<RotationMove>): MoveSeq {
   return moves.map(move => translateMove(move, rotations))
 }
+
 
 function translateMove(move: Move, rotations: Array<RotationMove>): Move {
   let newMove = move

@@ -14,6 +14,9 @@ interface SolutionPlayerProps {
   hideSolution?: boolean
 }
 
+/**
+ * @deprecated
+ */
 export default function SolutionPlayer({ scramble, solution, mask, showEO, hideSolution }: SolutionPlayerProps) {
   const [selectedMoveIndex, setSelectedMoveIndex] = useState(-1) // -1 means the at the start before any moves
   const [hoveredMoveIndex, setHoveredMoveIndex] = useState<number | null>(null)

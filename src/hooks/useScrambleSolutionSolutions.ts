@@ -6,6 +6,9 @@ import { randomScramble } from "src/utils/randomScramble"
 
 export type ScrambleMode = "random" | "nFlip" | "nMove"
 
+/**
+ * @deprecated
+ */
 export default function useScrambleAndSolutions(
   solverName: SolverConfigName,
   mode: ScrambleMode,
