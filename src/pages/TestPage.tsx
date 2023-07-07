@@ -1,20 +1,33 @@
-import { solve } from "src/lib";
-import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
+// import { solve } from "src/lib";
+// import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
+import { Button } from "@chakra-ui/react";
+import { useState, useMemo } from "react";
+import { solveCube3x3 } from "src/libv2";
+import { Move3x3 } from "src/libv2/puzzles/cube3x3/types";
+
+const scramble = "R' F U' L' D L2 B' F D' F2 L'".split(" ") as any;
 
 export default function TestPage() {
-  const scramble = "R' F U' L' D L2 B' F D' F2 L'".split(" ") as any;
+  const [solutions, setSolutions] = useState([] as Move3x3[][]);
 
-  // OLD LIB:
-  console.time("old");
-  const oldSolutions = solve([...scramble], "EOCross", [], 5);
-  console.log(oldSolutions);
-  console.timeEnd("old");
+  async function handleClick() {
+    console.time("test");
+    const solutions = await solveCube3x3(scramble, "EOCross");
+    // const [solutions, _] = await Promise.all([
+    //   solveCube3x3(scramble, "EOCross"),
+    //   solveCube3x3(scramble, "EOCross"),
+    // ])
+    console.timeEnd("test")
+    setSolutions(solutions.map(({ solution }) => solution));
+  }
 
-  // NEW LIB:
-  console.time("new");
-  const solutions = solveCube3x3(scramble, 'EOCross')
-
-  console.log(solutions.map((solution) => solution.preRotation.join(" ") + " " + solution.solution.join(" ")));
-  console.timeEnd("new");
-  return <p>hello it's test page</p>;
+  return (
+    <>
+      <p>hello it's test page</p>
+      {solutions.map(solution => (
+        <p key={solution.join("")}>{solution.join(" ")}</p>
+      ))}
+      <Button onClick={handleClick}>click me!</Button>
+    </>
+  );
 }

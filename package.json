@@ -17,6 +17,7 @@
     "@react-three/drei": "^9.70.1",
     "@react-three/fiber": "^8.13.0",
     "@types/three": "^0.152.1",
+    "comlink": "^4.4.1",
     "cubing": "^0.35.6",
     "framer-motion": "^10.12.16",
     "jotai": "^1.13.0",
