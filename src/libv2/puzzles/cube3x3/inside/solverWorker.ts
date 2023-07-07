@@ -16,7 +16,7 @@ export type Cube3x3SolverResult = {
   movecountHTM: number;
 }[];
 
-export class Cube3x3Solver {
+export const Cube3x3Solver = {
   solve(
     scramble: Move3x3[],
     configName: PuzzleConfigName,
@@ -47,6 +47,6 @@ export class Cube3x3Solver {
       movecountHTM: solution.length,
     }));
   }
-}
+};
 
-Comlink.expose(new Cube3x3Solver());
+Comlink.expose(Cube3x3Solver);
