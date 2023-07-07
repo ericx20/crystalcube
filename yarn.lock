@@ -3052,7 +3052,7 @@ __metadata:
     react-wrap-balancer: ^0.4.0
     three: ^0.153.0
     typescript: ^5.0.4
-    vite: ^4.4.1
+    vite: ^4.4.2
   languageName: unknown
   linkType: soft
 
@@ -6030,11 +6030,11 @@ __metadata:
 
 "typescript@patch:typescript@^5.0.4#~builtin<compat/typescript>":
   version: 5.0.4
-  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=b5f058"
+  resolution: "typescript@patch:typescript@npm%3A5.0.4#~builtin<compat/typescript>::version=5.0.4&hash=85af82"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: d26b6ba97b6d163c55dbdffd9bbb4c211667ebebc743accfeb2c8c0154aace7afd097b51165a72a5bad2cf65a4612259344ff60f8e642362aa1695c760d303ac
+  checksum: bb309d320c59a26565fb3793dba550576ab861018ff3fd1b7fccabbe46ae4a35546bc45f342c0a0b6f265c801ccdf64ffd68f548f117ceb7f0eac4b805cd52a9
   languageName: node
   linkType: hard
 
@@ -6136,9 +6136,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^4.4.1":
-  version: 4.4.1
-  resolution: "vite@npm:4.4.1"
+"vite@npm:^4.4.2":
+  version: 4.4.2
+  resolution: "vite@npm:4.4.2"
   dependencies:
     esbuild: ^0.18.10
     fsevents: ~2.3.2
@@ -6172,7 +6172,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: c91d5228cd0b2410e95ea4b17279640a414f1a2d5290a01baec77351af2dda7d5901c240ed6a62de2b465567e328168d386da2aaa262d3a138fde827b289592d
+  checksum: 37a1c3a0ccc4b80c0a696203d3608d6bf7dc98219ddc178e528b972e3305af9ab8f92dea455421024e98c59372f6a97b1b4cc409a05f757a64bff830610053c6
   languageName: node
   linkType: hard
 
