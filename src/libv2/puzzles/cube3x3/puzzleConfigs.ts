@@ -11,6 +11,7 @@ export const PUZZLE_CONFIG_NAMES = [
   "EOArrowLeft",
   "EO222",
   "Cross",
+  "FB",
 ] as const;
 
 export type PuzzleConfigName = (typeof PUZZLE_CONFIG_NAMES)[number];
@@ -126,6 +127,20 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       pruningDepth: 4,
       depthLimit: 8,
     },
+    nMoveScrambleConfig: {
+      min: 3,
+      max: 7,
+      iterationLimit: 500,
+    },
+  },
+  FB: {
+    solverConfig: {
+      moveSet: MOVESETS.RrUMDFB, // TODO
+      mask: MASKS.FB,
+      pruningDepth: 4,
+      depthLimit: 10,
+    },
+    // TODO: what's God's number for FB?
     nMoveScrambleConfig: {
       min: 3,
       max: 7,

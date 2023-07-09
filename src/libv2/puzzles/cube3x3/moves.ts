@@ -52,6 +52,7 @@ export const MOVESETS = (() => {
     ],
     MU: [...M, ...U],
     RrUM: [...R, ...r, ...U, ...M],
+    RrUMDFB: [...R, ...r, ...U, ...M, ...D, ...F, ...B],
   } as const satisfies { [name: string]: MoveSet<Move3x3> };
   return movesets;
 })();

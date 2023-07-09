@@ -12,6 +12,6 @@ export type Move3x3 = `${Layer | Axis}${Suffix}`;
 export type CubeRotation = `${Axis}${Suffix}`;
 
 export interface Cube3x3Mask {
-  solvedFaceletIndices: Readonly<Array<FaceletIndex>>;
-  eoFaceletIndices?: Readonly<Array<FaceletIndex>>;
+  solvedFaceletIndices: readonly FaceletIndex[];
+  eoFaceletIndices?: readonly FaceletIndex[];
 }
