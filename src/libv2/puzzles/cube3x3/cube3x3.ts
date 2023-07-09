@@ -1,6 +1,6 @@
 import { Puzzle } from "../../types";
 import { Move3x3, Facelet3x3, Cube3x3Mask } from "./types";
-import { MOVESETS, SOLVED_FACELET_CUBE, MOVE_PERMS, invertMove, sameLayerOrAxis } from ".";
+import { MOVESETS, SOLVED_FACELET_CUBE, MOVE_PERMS, sameLayerOrAxis } from ".";
 
 // TODO: is it better to make applyMove() return a brand new Cube3x3?
 // in most non-trivial usages of the Puzzles, things like solvers and pruners
@@ -8,6 +8,7 @@ import { MOVESETS, SOLVED_FACELET_CUBE, MOVE_PERMS, invertMove, sameLayerOrAxis 
 export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
   private state: Facelet3x3;
   private solvedState: Readonly<Facelet3x3>;
+  private history: Move[];
   // TODO: refactor to accept an "options" object, there are too many parameters now
   constructor(
     private moveset: Readonly<Move[]> = MOVESETS.Full as unknown as Readonly<
@@ -15,11 +16,13 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     >,
     initialState: Readonly<Facelet3x3> = [...SOLVED_FACELET_CUBE],
     solvedState: Readonly<Facelet3x3> = initialState,
-    private history: Move[] = [],
+    // TODO: only store the last move, that's all we need rn
+    history: Move[] = [],
     // TODO: allow passing in history-based turning restrictions
   ) {
     this.state = [...initialState];
     this.solvedState = solvedState;
+    this.history = [...history];
   }
 
   isSolved(): boolean {
