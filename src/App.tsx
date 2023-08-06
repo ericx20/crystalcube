@@ -4,6 +4,7 @@ import NavBar from "./components/NavBar/NavBar"
 import Home from "./pages/Home"
 import Trainer from "./pages/Trainer"
 import Tools from "./pages/Tools"
+import EOStepTrainer from "./components/trainerv2/EOStepTrainer"
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="trainer/*" element={<Trainer />} />
+          <Route path="trainer2/*" element={<EOStepTrainer />} />
           <Route path="tools/*" element={<Tools />} />
         </Routes>
       </Container>

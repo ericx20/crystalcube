@@ -1,5 +1,5 @@
 import { invertPerm, doublePerm } from "src/libv2/puzzles/common";
-import { FaceletIndex, Move3x3 } from "./types";
+import { FaceletIndex, Move3x3, Axis, Layer, LayerMove, CubeRotation } from "./types";
 import { Perm, MoveSet } from "src/libv2/types";
 
 // Represents the 6 faces and their colors
@@ -15,6 +15,12 @@ export const LAYERS = [
 
 // Represents the axes when rotating the entire cube
 export const AXES = ["x", "y", "z"] as const;
+
+export const LAYERS_ALONG_AXES: Readonly<{ [layer in Axis]: readonly Layer[] }> = {
+  x: ["R", "M", "L"],
+  y: ["U", "E", "D"],
+  z: ["F", "S", "B"],
+}
 
 // The suffixes of Singmaster notation
 export const SUFFIXES = ["", "2", "'"] as const;
@@ -97,6 +103,7 @@ export const MOVE_PERMS = (() => {
   ) as { [move in Move3x3]: Perm<FaceletIndex> };
 })();
 
+// TODO: can we make these static methods of Cube3x3 class?
 export function invertMove<M extends Move3x3>(move: M): M {
   // This is only safe as long as Move3x3 is conventional Singmaster notation
   if (move.includes("2")) return move;
@@ -105,10 +112,34 @@ export function invertMove<M extends Move3x3>(move: M): M {
 }
 
 export function invertMoves<M extends Move3x3>(moves: M[]): M[] {
-  return moves.map(invertMove);
+  return moves.map(invertMove).reverse();
 }
 
 export function sameLayerOrAxis<M extends Move3x3>(a: M, b: M) {
   // This is only safe as long as Move3x3 is conventional Singmaster notation
   return a[0] === b[0];
+}
+
+export function isLayerMove(move: Move3x3): move is LayerMove {
+  return !isCubeRotation(move);
+}
+
+export function isCubeRotation(move: Move3x3): move is CubeRotation {
+  return AXES.includes(move[0] as Axis);
+}
+
+export function layerOfLayerMove(move: LayerMove): Layer {
+  return move[0] as Layer;
+}
+
+export function movesAreParallel(a: Move3x3, b: Move3x3) {
+  if (!isLayerMove(a) || !isLayerMove(b)) {
+    return false;
+  }
+  const layerA = layerOfLayerMove(a)
+  const layerB = layerOfLayerMove(b)
+  return AXES.some(axis => {
+    const parallelLayers = LAYERS_ALONG_AXES[axis]
+    return parallelLayers.includes(layerA) && parallelLayers.includes(layerB)
+  })
 }

@@ -5,7 +5,6 @@ import * as Comlink from "comlink";
 
 import type { Cube3x3Solver } from "./inside/solverWorker";
 
-type Params = [Move3x3[], PuzzleConfigName, CubeRotation[]?, number?];
 export async function solveCube3x3(
   scramble: Move3x3[],
   configName: PuzzleConfigName,

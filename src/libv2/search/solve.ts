@@ -1,25 +1,42 @@
 import { Puzzle } from "../types";
-import { genPruningTable } from "./prune";
+import { PruningTable, genPruningTable } from "./prune";
+
+// TODO: rename `maxSolutionCount` to numSolutions
+// and make it accept either number, or the string value "all-optimal"
+// that would be very useful for e.g. EO+cross where find all optimal EO
+// and then solve cross continuation, pick top 5
 
 export interface SolverOptions {
   name: string; // must be unique
   pruningDepth: number;
   depthLimit: number;
   maxSolutionCount?: number;
+  // TEMP: remove
+  pruningTable?: PruningTable;
 }
 
 export function solve<Move extends string>(
-  puzzle: Puzzle<Move>, // a scrambled puzzle
-  { name, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
+  puzzleToSolve: Puzzle<Move>, // a scrambled puzzle
+  { name, pruningTable: t, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
 ): Move[][] {
-  const pruningTable = genPruningTable(puzzle, { name, pruningDepth });
+  const puzzle = puzzleToSolve.clone().resetHistory();
+  const pruningTable = t ?? genPruningTable(puzzle, { name, pruningDepth });
 
   const solutionsList: Move[][] = [];
   const isSolutionsListFull = () => solutionsList.length >= maxSolutionCount;
+  // const isSolutionsListFull = () => {
+  //   if (solutionsList.length === 0) return false;
+  //   const bestSolution = solutionsList[0];
+  //   const worstSolution = solutionsList.at(-1);
+  //   if (!worstSolution) return false;
+  //   return bestSolution.length !== worstSolution.length;
+    
+  // }
+
   const addSolution = (solutionToAdd: Move[]) => {
-    if (solutionsList.some((s) => solutionsAreTooSimilar(s, solutionToAdd))) {
-      return;
-    }
+    // if (solutionsList.some((s) => solutionsAreTooSimilar(s, solutionToAdd))) {
+    //   return;
+    // }
     solutionsList.push(solutionToAdd);
   };
 
@@ -88,7 +105,7 @@ function solutionsAreTooSimilar<Move>(solA: Move[], solB: Move[]): boolean {
 // the list of solutions must be sorted in increasing order of length
 function trimBadSolutions<Move>(solutionsList: Move[][]): Move[][] {
   if (!solutionsList.length) return [];
-  const MAX_SUBOPTIMALITY = 2;
+  const MAX_SUBOPTIMALITY = 0;
   const optimalMovecount = solutionsList[0].length;
   const maxAcceptableMovecount = optimalMovecount + MAX_SUBOPTIMALITY;
   return solutionsList.filter(

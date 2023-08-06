@@ -1,7 +1,9 @@
 export interface Puzzle<Move extends string = string> {
   isSolved(): boolean;
   resetToSolved(): this;
-  get nextMoves(): Readonly<Move[]>;
+  resetHistory(): this;
+  get nextMoves(): readonly Move[];
+  get history(): Move[]; // TODO: keep??
   encode(): string;
   applyMove(move: Move): this;
   applyMoves(moves: Move[]): this;
@@ -10,4 +12,4 @@ export interface Puzzle<Move extends string = string> {
 
 export type Perm<T = number> = [src: T, dst: T][];
 
-export type MoveSet<Move> = Readonly<Move[]>;
+export type MoveSet<Move> = readonly Move[];

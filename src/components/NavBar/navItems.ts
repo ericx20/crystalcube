@@ -11,6 +11,10 @@ const NAV_ITEMS: Array<NavItem> = [
     href: "trainer/",
   },
   {
+    label: "trainer2",
+    href: "trainer2/",
+  },
+  {
     label: "tools",
     children: [
       {

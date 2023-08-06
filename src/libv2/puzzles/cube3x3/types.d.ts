@@ -8,8 +8,11 @@ export type Facelet3x3 = Array<Facelet>;
 export type FaceletIndex = number; // int from 0 to 53, represents a facelet's location
 
 export type Suffix = (typeof SUFFIXES)[number];
-export type Move3x3 = `${Layer | Axis}${Suffix}`;
+
+export type LayerMove = `${Layer}${Suffix}`; // include slices and wide moves
 export type CubeRotation = `${Axis}${Suffix}`;
+// TODO: rename Move3x3 to Move, and update generics to be like <M extends Move> not <Move extends Move3x3>
+export type Move3x3 = `${Layer | Axis}${Suffix}`;
 
 export interface Cube3x3Mask {
   solvedFaceletIndices: readonly FaceletIndex[];
