@@ -59,6 +59,7 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
       // - after M', R not allowed. after M, R' not allowed. after M2, R2 not allowed
       // - after M moves, r moves are not allowed
       // - after R/r moves, r/R moves are not allowed
+      // TODO: this does not work sometimes for RrUM, also make this configurable
       if (lastMoveLayer === "R" && thisMoveLayer === "M") return false;
       if (lastMove === "M'" && move === "R"
         || lastMove === "M" && move === "R'"

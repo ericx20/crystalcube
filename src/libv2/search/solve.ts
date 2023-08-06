@@ -6,21 +6,24 @@ import { PruningTable, genPruningTable } from "./prune";
 // that would be very useful for e.g. EO+cross where find all optimal EO
 // and then solve cross continuation, pick top 5
 
+// TODO: allow passing in a pre-computed pruning table
+// make it possible to access pruning table from outside the worker
+// if the default behaviour is to copy the pruning table into the worker thread,
+// then instead take in a proxy function that will get you the depth for you given a cube state hash
+
 export interface SolverOptions {
   name: string; // must be unique
   pruningDepth: number;
   depthLimit: number;
   maxSolutionCount?: number;
-  // TEMP: remove
-  pruningTable?: PruningTable;
 }
 
 export function solve<Move extends string>(
   puzzleToSolve: Puzzle<Move>, // a scrambled puzzle
-  { name, pruningTable: t, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
+  { name, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
 ): Move[][] {
   const puzzle = puzzleToSolve.clone().resetHistory();
-  const pruningTable = t ?? genPruningTable(puzzle, { name, pruningDepth });
+  const pruningTable = genPruningTable(puzzle, { name, pruningDepth });
 
   const solutionsList: Move[][] = [];
   const isSolutionsListFull = () => solutionsList.length >= maxSolutionCount;

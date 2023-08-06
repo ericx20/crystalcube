@@ -1,26 +1,57 @@
-import { Heading, HStack, Select, VStack } from "@chakra-ui/react";
-import { useRef } from "react"
+import { Button, Heading, HStack, Select, Text, VStack } from "@chakra-ui/react";
+import { randomScrambleForEvent } from "cubing/scramble"
+import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
+import { Move3x3 } from "src/libv2/puzzles/cube3x3/types";
+import { useState } from "react";
 
-type EOStep =   "EO" | "EOLine" | "EOCross" | "EOArrowBack" | "EOArrowLeft" | "EO222";
+import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
+
+type EOStep = "EO" | "EOLine" | "EOCross" | "EOArrowBack" | "EOArrowLeft" | "EO222";
+
+interface Options {
+  eoStep: EOStep,
+}
+
+async function scrambler(_options: Options) {
+  // TODO: shorten the scramble based on the option
+  const scram = (await randomScrambleForEvent("333")).toString().split(" ") as Move3x3[];
+  return scram;
+  // const solutions = await solveCube3x3(scram, "EOCross", ["x2"], 5);
+  // solutions.forEach(({ solution }) => console.log(solution.join(" ")))
+}
+
+async function solver(scramble: Move3x3[], options: Options) {
+  const solutions = await solveCube3x3(scramble, options.eoStep, [], 5);
+  return solutions;
+}
 
 export default function EOStepTrainer() {
-  const headerRef = useRef<HTMLDivElement>(null)
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: headerRef.current?.offsetTop ?? 0,
-      behavior: "smooth",
-    });
-  }
+  const [options, setOptions] = useState<Options>({
+    eoStep: "EOCross",
+  })
+
+  const {
+    scramble,
+    solutions,
+    isLoading,
+    getNext,
+  } = useScrambleAndSolutions(scrambler, solver, options)
 
   return (
     <VStack spacing={4} my={4}>
-      <HStack spacing={4} ref={headerRef}>
+      <HStack spacing={4}>
         <Heading fontSize="xl">EO Trainer</Heading>
         <EOStepSelect
-          eoStep={'EOCross'}
-          setEOStep={() => {}}
+          eoStep={options.eoStep}
+          setEOStep={(eoStep) => setOptions({ ...options, eoStep })}
         />
       </HStack>
+      <Text>Scramble: {scramble.join(" ")}</Text>
+      <Text>Solutions: </Text>
+      {solutions.map(solution => {
+        return <Text key={solution.join()}>{solution.join(" ")}</Text>
+      })}
+      <Button onClick={getNext} isLoading={isLoading}>get next</Button>
     </VStack>
   )
 }
