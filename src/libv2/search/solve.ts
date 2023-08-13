@@ -18,6 +18,8 @@ export interface SolverOptions {
   maxSolutionCount?: number;
 }
 
+// this is an iterative deepening depth-first search
+// the strat is to try doing DFS on depth 0, then depth 1, and so on
 export function solve<Move extends string>(
   puzzleToSolve: Puzzle<Move>, // a scrambled puzzle
   { name, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
@@ -37,9 +39,9 @@ export function solve<Move extends string>(
   // }
 
   const addSolution = (solutionToAdd: Move[]) => {
-    // if (solutionsList.some((s) => solutionsAreTooSimilar(s, solutionToAdd))) {
-    //   return;
-    // }
+    if (solutionsList.some((s) => solutionsAreTooSimilar(s, solutionToAdd))) {
+      return;
+    }
     solutionsList.push(solutionToAdd);
   };
 
@@ -93,13 +95,17 @@ export function solve<Move extends string>(
 
 // heuristic that eliminates a lot of solutions that are functionally the same
 // counts the number of moves that are the same
+// also important to filter out duplicate solutions: the algorithm uses IDDFS
+// so it may solve the same depth multiple times and find the same solution multiple times
 function solutionsAreTooSimilar<Move>(solA: Move[], solB: Move[]): boolean {
-  const length = Math.min(solA.length, solB.length);
-  const MAX_SIMILAR_COUNT = 3;
+  if (!solA.length && !solB.length) return true;
+
+  const commonLength = Math.min(solA.length, solB.length);
+  const maxSimilarMoves = Math.min(commonLength, 3);
   let numOfSimilarMoves = 0;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < commonLength; i++) {
     if (solA[i] === solB[i]) numOfSimilarMoves++;
-    if (numOfSimilarMoves >= MAX_SIMILAR_COUNT) return true;
+    if (numOfSimilarMoves >= maxSimilarMoves) return true;
   }
   return false;
 }
@@ -107,8 +113,7 @@ function solutionsAreTooSimilar<Move>(solA: Move[], solB: Move[]): boolean {
 // removes solutions that are much worse than the best one
 // the list of solutions must be sorted in increasing order of length
 function trimBadSolutions<Move>(solutionsList: Move[][]): Move[][] {
-  if (!solutionsList.length) return [];
-  const MAX_SUBOPTIMALITY = 0;
+  const MAX_SUBOPTIMALITY = 3;
   const optimalMovecount = solutionsList[0].length;
   const maxAcceptableMovecount = optimalMovecount + MAX_SUBOPTIMALITY;
   return solutionsList.filter(
