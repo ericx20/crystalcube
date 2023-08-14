@@ -183,7 +183,7 @@ export function getMaskedPyra(
 
 // TODO MOVE OUT
 export function invertMove<M extends Move>(move: M): M {
-  // This is only safe as long as Move3x3 is conventional Singmaster notation
+  // This is only safe as long as Move is conventional Singmaster notation
   if (move.includes("'")) return move.replace("'", "") as M;
   return (move + "'") as M;
 }

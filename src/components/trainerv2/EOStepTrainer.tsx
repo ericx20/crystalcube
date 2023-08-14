@@ -1,20 +1,37 @@
-import { Button, Heading, HStack, Select, Text, VStack } from "@chakra-ui/react";
-import { randomScrambleForEvent } from "cubing/scramble"
+import {
+  Button,
+  Heading,
+  HStack,
+  Select,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { randomScrambleForEvent } from "cubing/scramble";
 import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
 import { Move3x3 } from "src/libv2/puzzles/cube3x3/types";
 import { useState } from "react";
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
+import ScrambleEditor from "./ScrambleEditor";
+import { Cube3x3 } from "src/libv2";
 
-type EOStep = "EO" | "EOLine" | "EOCross" | "EOArrowBack" | "EOArrowLeft" | "EO222";
+type EOStep =
+  | "EO"
+  | "EOLine"
+  | "EOCross"
+  | "EOArrowBack"
+  | "EOArrowLeft"
+  | "EO222";
 
 interface Options {
-  eoStep: EOStep,
+  eoStep: EOStep;
 }
 
 async function scrambler(_options: Options) {
   // TODO: shorten the scramble based on the option
-  const scram = (await randomScrambleForEvent("333")).toString().split(" ") as Move3x3[];
+  const scram = (await randomScrambleForEvent("333"))
+    .toString()
+    .split(" ") as Move3x3[];
   return scram;
   // const solutions = await solveCube3x3(scram, "EOCross", ["x2"], 5);
   // solutions.forEach(({ solution }) => console.log(solution.join(" ")))
@@ -28,14 +45,10 @@ async function solver(scramble: Move3x3[], options: Options) {
 export default function EOStepTrainer() {
   const [options, setOptions] = useState<Options>({
     eoStep: "EOCross",
-  })
+  });
 
-  const {
-    scramble,
-    solutions,
-    isLoading,
-    getNext,
-  } = useScrambleAndSolutions(scrambler, solver, options)
+  const { scramble, setScramble, solutions, isLoading, getNext } =
+    useScrambleAndSolutions(scrambler, solver, options);
 
   return (
     <VStack spacing={4} my={4}>
@@ -46,26 +59,32 @@ export default function EOStepTrainer() {
           setEOStep={(eoStep) => setOptions({ ...options, eoStep })}
         />
       </HStack>
-      <Text>Scramble: {scramble.join(" ")}</Text>
+      <ScrambleEditor
+        scramble={scramble}
+        setScramble={setScramble}
+        notationParser={Cube3x3.parseNotation}
+      />
       <Text>Solutions: </Text>
-      {solutions.map(solution => {
-        return <Text key={solution.join()}>{solution.join(" ")}</Text>
+      {solutions.map((solution) => {
+        return <Text key={solution.join()}>{solution.join(" ")}</Text>;
       })}
-      <Button onClick={getNext} isLoading={isLoading}>get next</Button>
+      <Button onClick={getNext} isLoading={isLoading}>
+        get next
+      </Button>
     </VStack>
-  )
+  );
 }
 
 interface EOStepSelectProps {
-  eoStep: EOStep
-  setEOStep: (step: EOStep) => void
+  eoStep: EOStep;
+  setEOStep: (step: EOStep) => void;
 }
 
 function EOStepSelect({ eoStep, setEOStep }: EOStepSelectProps) {
   return (
     <Select
       value={eoStep}
-      onChange={e => setEOStep(e.target.value as EOStep)}
+      onChange={(e) => setEOStep(e.target.value as EOStep)}
       variant="filled"
       width="10rem"
     >
@@ -76,5 +95,5 @@ function EOStepSelect({ eoStep, setEOStep }: EOStepSelectProps) {
       <option value="EOArrowLeft">EOArrow (Left)</option>
       <option value="EO222">EO222</option>
     </Select>
-  )
+  );
 }

@@ -1,5 +1,13 @@
 import { invertPerm, doublePerm } from "src/libv2/puzzles/common";
-import { FaceletIndex, Move3x3, Axis, Layer, LayerMove, CubeRotation } from "./types";
+import {
+  FaceletIndex,
+  Move3x3,
+  Axis,
+  Layer,
+  LayerMove,
+  CubeRotation,
+  Suffix,
+} from "./types";
 import { Perm, MoveSet } from "src/libv2/types";
 
 // Represents the 6 faces and their colors
@@ -16,11 +24,13 @@ export const LAYERS = [
 // Represents the axes when rotating the entire cube
 export const AXES = ["x", "y", "z"] as const;
 
-export const LAYERS_ALONG_AXES: Readonly<{ [layer in Axis]: readonly Layer[] }> = {
+export const LAYERS_ALONG_AXES: Readonly<{
+  [layer in Axis]: readonly Layer[];
+}> = {
   x: ["R", "M", "L"],
   y: ["U", "E", "D"],
   z: ["F", "S", "B"],
-}
+};
 
 // The suffixes of Singmaster notation
 export const SUFFIXES = ["", "2", "'"] as const;
@@ -136,10 +146,19 @@ export function movesAreParallel(a: Move3x3, b: Move3x3) {
   if (!isLayerMove(a) || !isLayerMove(b)) {
     return false;
   }
-  const layerA = layerOfLayerMove(a)
-  const layerB = layerOfLayerMove(b)
-  return AXES.some(axis => {
-    const parallelLayers = LAYERS_ALONG_AXES[axis]
-    return parallelLayers.includes(layerA) && parallelLayers.includes(layerB)
-  })
+  const layerA = layerOfLayerMove(a);
+  const layerB = layerOfLayerMove(b);
+  return AXES.some((axis) => {
+    const parallelLayers = LAYERS_ALONG_AXES[axis];
+    return parallelLayers.includes(layerA) && parallelLayers.includes(layerB);
+  });
+}
+
+export function isValidMove(move: string): move is Move3x3 {
+  const base = move[0];
+  const suffix = move[1] ?? "";
+  return (
+    (LAYERS.includes(base as Layer) || AXES.includes(base as Axis)) &&
+    SUFFIXES.includes(suffix as Suffix)
+  );
 }

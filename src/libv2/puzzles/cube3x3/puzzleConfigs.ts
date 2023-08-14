@@ -3,6 +3,9 @@ import { MOVESETS } from "./moves";
 import { MoveSet } from "src/libv2/types";
 import { Move3x3, Cube3x3Mask } from "./types";
 
+// TODO: refactor/rename/move to 3x3
+// this is now 3x3-specific, not for all puzzles in general
+
 export const PUZZLE_CONFIG_NAMES = [
   "EO",
   "EOLine",
