@@ -155,6 +155,7 @@ export function movesAreParallel(a: Move3x3, b: Move3x3) {
 }
 
 export function isValidMove(move: string): move is Move3x3 {
+  if (move.length < 1 || move.length > 2) return false;
   const base = move[0];
   const suffix = move[1] ?? "";
   return (
