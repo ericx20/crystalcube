@@ -13,23 +13,19 @@ function useScrambleAndSolutions<MoveType, Options>(
 ) {
   const [scramble, setScramble] = useState<MoveType[]>([]);
   const [solutions, setSolutions] = useState<MoveType[][]>([]);
-  const [isScrambleLoading, setScrambleLoading] = useState(false);
-  const [isSolutionLoading, setSolutionLoading] = useState(false);
-  const isLoading = isScrambleLoading || isSolutionLoading;
+  const [isLoading, setLoading] = useState(false);
 
   const generateScramble = useCallback(async () => {
-    setScrambleLoading(true);
+    setLoading(true);
     const newScramble = await scrambler(options);
     setScramble(newScramble);
-    setScrambleLoading(false);
     onNewScramble && onNewScramble();
   }, [scrambler, options, onNewScramble]);
 
   const generateSolutions = useCallback(async () => {
-    setSolutionLoading(true);
     const newSolutions = await solver(scramble, options);
     setSolutions(newSolutions);
-    setSolutionLoading(false);
+    setLoading(false);
   }, [scramble, solver, options]);
 
   // generate a new scramble when options change (including upon page load)
