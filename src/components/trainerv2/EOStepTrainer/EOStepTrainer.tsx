@@ -5,7 +5,7 @@ import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
 import { Move3x3 } from "src/libv2/puzzles/cube3x3/types";
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
-import ScrambleEditor from "../ScrambleEditor";
+import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/libv2";
 
 import { useOptions, useActions } from "./eoStepOptions";
@@ -15,6 +15,7 @@ import scrambler from "./scrambler";
 
 import SolutionsViewer from "../common/SolutionsViewer";
 import { MoveSeq } from "src/lib/types";
+import EOStepOptionsSelect from "./EOStepOptionsSelect";
 
 async function solver(scramble: Move3x3[], options: EOStepOptions) {
   const solutions = await solveCube3x3(scramble, options.eoStep, [], 5);
@@ -22,17 +23,17 @@ async function solver(scramble: Move3x3[], options: EOStepOptions) {
 }
 
 export default function EOStepTrainer() {
-  const [isSolutionHidden, setSolutionHidden] = useState(true);
-  const hideSolution = () => setSolutionHidden(true);
-  const showSolution = () => setSolutionHidden(false);
+  const [areSolutionsHidden, setSolutionsHidden] = useState(true);
+  const hideSolutions = () => setSolutionsHidden(true);
+  const showSolutions = () => setSolutionsHidden(false);
 
   const options = useOptions();
   const actions = useActions();
 
   const { scramble, setScramble, solutions, isLoading, getNext } =
-    useScrambleAndSolutions(scrambler, solver, options, hideSolution);
+    useScrambleAndSolutions(scrambler, solver, options, hideSolutions);
 
-  const mainAction = isSolutionHidden ? showSolution : getNext;
+  const mainAction = areSolutionsHidden ? showSolutions : getNext;
   
   // TODO: add scroll to top and hotkeys
 
@@ -55,17 +56,18 @@ export default function EOStepTrainer() {
         scramble={scramble as MoveSeq} // TODO
         solutions={solutions as MoveSeq[]}
         showEO
-        hideSolution={isSolutionHidden}
-        onRevealSolution={showSolution}
+        areSolutionsHidden={areSolutionsHidden}
+        onRevealSolutions={showSolutions}
       >
         <HStack>
           {/* TODO: button for copying */}
           <Button onClick={mainAction} isLoading={isLoading} w="100%">
-            {isSolutionHidden ? "reveal" : "next"}
+            {areSolutionsHidden ? "reveal" : "next"}
           </Button>
-          {!isSolutionHidden && <Button onClick={hideSolution}>hide</Button>}
+          {!areSolutionsHidden && <Button onClick={hideSolutions}>hide</Button>}
         </HStack>
       </SolutionsViewer>
+      <EOStepOptionsSelect />
     </VStack>
   );
 }
@@ -86,8 +88,8 @@ function EOStepSelect({ eoStep, setEOStep }: EOStepSelectProps) {
       <option value="EO">EO</option>
       <option value="EOLine">EOLine</option>
       <option value="EOCross">EOCross</option>
-      <option value="EOArrowBack">EOArrow (Back)</option>
-      <option value="EOArrowLeft">EOArrow (Left)</option>
+      <option value="EOArrowBack">EOArrow (B)</option>
+      <option value="EOArrowLeft">EOArrow (L)</option>
       <option value="EO222">EO222</option>
     </Select>
   );

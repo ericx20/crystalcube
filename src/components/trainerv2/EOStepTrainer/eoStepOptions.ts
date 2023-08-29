@@ -14,6 +14,8 @@ interface State {
   actions: Actions;
 }
 
+// TODO: make a selector that takes the EOStepOptions and turns it into
+// the solver config that's needed? or is that the scrambler's job?
 // TODO: wrap this so it can be reused easily and with minimal boilerplate
 
 const useStore = create(

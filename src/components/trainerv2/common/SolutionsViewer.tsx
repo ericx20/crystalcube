@@ -20,8 +20,8 @@ interface SolutionsViewerProps {
   solutions: Array<MoveSeq>;
   mask?: Mask;
   showEO?: boolean;
-  hideSolution?: boolean;
-  onRevealSolution?: () => void;
+  areSolutionsHidden?: boolean;
+  onRevealSolutions?: () => void;
   children?: React.ReactNode;
 }
 
@@ -32,8 +32,8 @@ export default function SolutionsViewer({
   // then make cubeviewer a prop as well
   mask,
   showEO,
-  hideSolution = false,
-  onRevealSolution = () => {},
+  areSolutionsHidden: hideSolution = false,
+  onRevealSolutions: onRevealSolution = () => {},
   children,
 }: SolutionsViewerProps) {
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState(0);

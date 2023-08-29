@@ -10,7 +10,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import TrainerCard from "./common/TrainerCard";
+import TrainerCard from "./TrainerCard";
 
 interface ScrambleViewerProps<Move> {
   scramble: Move[];

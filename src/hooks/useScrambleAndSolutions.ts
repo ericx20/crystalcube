@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 // For example, for ZZ trainer you could pass in "EOCross" or "EOLine"
 // depending on the mode the user has selected
 function useScrambleAndSolutions<MoveType, Options>(
-  scrambler: (options: Options) => Promise<MoveType[]>,
+  scrambler: (options: Options) => Promise<MoveType[]>, // TODO: Promise<MoveType[] | null> for failure
   solver: (scramble: MoveType[], options: Options) => Promise<MoveType[][]>,
   options: Options,
   onNewScramble?: () => void
