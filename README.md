@@ -62,6 +62,6 @@ This software is released under MPL-2.0
 The `crystalcube` logo is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
 
 ---
-Made with ❤️ by err0r
+Made with ❤️ by err0rcuber
 
-If you need help or have suggestions, DM me on Discord: `err0r#8462`
+If you need help or have suggestions, DM me on Discord: `err0rcuber`

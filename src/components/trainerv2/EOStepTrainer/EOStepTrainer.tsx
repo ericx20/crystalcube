@@ -9,13 +9,13 @@ import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/libv2";
 
 import { useOptions, useActions } from "./eoStepOptions";
-import type { EOStep, EOStepOptions } from "./eoStepTypes"
+import type { EOStep, EOStepOptions } from "./eoStepTypes";
 
 import scrambler from "./scrambler";
 
 import SolutionsViewer from "../common/SolutionsViewer";
 import { MoveSeq } from "src/lib/types";
-import EOStepOptionsSelect from "./EOStepOptionsSelect";
+import EOStepLevelSelect from "./EOStepLevelSelect";
 
 async function solver(scramble: Move3x3[], options: EOStepOptions) {
   const solutions = await solveCube3x3(scramble, options.eoStep, [], 5);
@@ -34,17 +34,14 @@ export default function EOStepTrainer() {
     useScrambleAndSolutions(scrambler, solver, options, hideSolutions);
 
   const mainAction = areSolutionsHidden ? showSolutions : getNext;
-  
+
   // TODO: add scroll to top and hotkeys
 
   return (
     <VStack spacing={4} my={4}>
       <HStack spacing={4}>
         <Heading fontSize="xl">EO Trainer</Heading>
-        <EOStepSelect
-          eoStep={options.eoStep}
-          setEOStep={actions.changeEOStep}
-        />
+        <EOStepSelect eoStep={options.eoStep} setEOStep={actions.setEOStep} />
       </HStack>
       <ScrambleEditor
         scramble={scramble}
@@ -64,10 +61,20 @@ export default function EOStepTrainer() {
           <Button onClick={mainAction} isLoading={isLoading} w="100%">
             {areSolutionsHidden ? "reveal" : "next"}
           </Button>
-          {!areSolutionsHidden && <Button onClick={hideSolutions}>hide</Button>}
+          {!areSolutionsHidden && !isLoading && (
+            <Button onClick={hideSolutions}>hide</Button>
+          )}
         </HStack>
       </SolutionsViewer>
-      <EOStepOptionsSelect />
+      <EOStepLevelSelect
+        levelMode={options.levelMode}
+        setLevelMode={actions.setLevelMode}
+        numOfBadEdges={options.numOfBadEdges}
+        setNumOfBadEdges={actions.setLevelNumOfBadEdges}
+        numOfMoves={options.numOfMoves}
+        setNumOfMoves={actions.setLevelNumOfMoves}
+        numOfMovesConfig={actions.getNumOfMovesConfig()}
+      />
     </VStack>
   );
 }

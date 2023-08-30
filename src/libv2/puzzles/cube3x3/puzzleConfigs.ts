@@ -3,9 +3,6 @@ import { MOVESETS } from "./moves";
 import { MoveSet } from "src/libv2/types";
 import { Move3x3, Cube3x3Mask } from "./types";
 
-// TODO: refactor/rename/move to 3x3
-// this is now 3x3-specific, not for all puzzles in general
-
 export const PUZZLE_CONFIG_NAMES = [
   "EO",
   "EOLine",
@@ -22,7 +19,7 @@ export type PuzzleConfigName = (typeof PUZZLE_CONFIG_NAMES)[number];
 
 export interface PuzzleConfig {
   solverConfig: SolverConfig;
-  nMoveScrambleConfig: NMoveScrambleConfig;
+  /** @deprecated */
   isEOStep?: boolean;
 }
 
@@ -33,12 +30,6 @@ export interface SolverConfig {
   depthLimit: number;
 }
 
-export interface NMoveScrambleConfig {
-  min: number;
-  max: number; // cannot exceed `depthLimit` from the solver config
-  iterationLimit: number;
-}
-
 export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
   EO: {
     solverConfig: {
@@ -46,11 +37,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       mask: MASKS.EO,
       pruningDepth: 4,
       depthLimit: 7,
-    },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 7,
-      iterationLimit: 2000,
     },
     isEOStep: true,
   },
@@ -61,11 +47,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       pruningDepth: 4,
       depthLimit: 9,
     },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 8,
-      iterationLimit: 1000,
-    },
     isEOStep: true,
   },
   EOCross: {
@@ -74,11 +55,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       mask: MASKS.EOCross,
       pruningDepth: 4,
       depthLimit: 10,
-    },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 9,
-      iterationLimit: 200,
     },
     isEOStep: true,
   },
@@ -89,11 +65,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       pruningDepth: 4,
       depthLimit: 10,
     },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 8,
-      iterationLimit: 200,
-    },
     isEOStep: true,
   },
   EOArrowLeft: {
@@ -102,11 +73,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       mask: MASKS.EOArrowLeft,
       pruningDepth: 4,
       depthLimit: 10,
-    },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 8,
-      iterationLimit: 200,
     },
     isEOStep: true,
   },
@@ -117,11 +83,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       pruningDepth: 4,
       depthLimit: 10, // TODO: what's God's number for EO222?
     },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 9,
-      iterationLimit: 200,
-    },
     isEOStep: true,
   },
   Cross: {
@@ -131,11 +92,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       pruningDepth: 4,
       depthLimit: 8,
     },
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 7,
-      iterationLimit: 500,
-    },
   },
   FB: {
     solverConfig: {
@@ -144,12 +100,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       pruningDepth: 4,
       depthLimit: 10,
     },
-    // TODO: what's God's number for FB?
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 7,
-      iterationLimit: 500,
-    },
   },
   SB: {
     solverConfig: {
@@ -157,12 +107,6 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       mask: MASKS.F2B,
       pruningDepth: 5,
       depthLimit: 18,
-    },
-    // TODO: what's God's number for SB?
-    nMoveScrambleConfig: {
-      min: 3,
-      max: 7,
-      iterationLimit: 500,
     },
   },
 } as const;
