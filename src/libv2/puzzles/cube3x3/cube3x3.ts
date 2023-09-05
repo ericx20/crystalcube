@@ -82,9 +82,6 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
       if (lastMoveLayer === "R" && thisMoveLayer === "r") return false;
       if (lastMoveLayer === "r" && thisMoveLayer === "R") return false;
     }
-
-    // TODO: after L moves, disallow R moves. Same for B and F, D and U moves.
-    // ensures simul moves are always sorted in the order R L, F B, U D
     return true;
   }
 

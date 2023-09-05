@@ -1,4 +1,4 @@
-import TrainerCard from "../common/TrainerCard";
+import TrainerCard from "../../common/TrainerCard";
 import {
   Box,
   Heading,
@@ -12,7 +12,7 @@ import {
   useColorModeValue,
   HStack,
 } from "@chakra-ui/react";
-import type { LevelMode, NumOfMovesConfig } from "./eoStepTypes";
+import type { LevelMode, NumOfMovesConfig } from "../eoStepTypes";
 import range from "lodash/range";
 
 export interface EOStepLevelSelectProps {
@@ -75,7 +75,7 @@ function SelectNumOfBadEdges({
   numOfBadEdges,
   setNumOfBadEdges,
 }: SelectNumOfBadEdgesProps) {
-  const N_FLIPS = [0, 2, 4, 6, 8, 10, 12] as const;
+  const BAD_EDGE_OPTIONS = [0, 2, 4, 6, 8, 10, 12] as const;
 
   // generated with https://cssgradient.io/ and https://meyerweb.com/eric/tools/color-blend/#:::hex
   const sliderGradient =
@@ -90,7 +90,7 @@ function SelectNumOfBadEdges({
         max={12}
         step={2}
       >
-        {N_FLIPS.map((n) => (
+        {BAD_EDGE_OPTIONS.map((n) => (
           <SliderMark key={n} value={n} w={6} ml={-3} mt={2}>
             <Text align="center" fontSize={["md", "lg"]}>
               {n}

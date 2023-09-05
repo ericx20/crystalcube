@@ -15,7 +15,7 @@ import scrambler from "./scrambler";
 
 import SolutionsViewer from "../common/SolutionsViewer";
 import { MoveSeq } from "src/lib/types";
-import EOStepLevelSelect from "./EOStepLevelSelect";
+import EOStepLevelSelect from "./cards/EOStepLevelSelect";
 
 async function solver(scramble: Move3x3[], options: EOStepOptions) {
   const solutions = await solveCube3x3(scramble, options.eoStep, [], 5);
