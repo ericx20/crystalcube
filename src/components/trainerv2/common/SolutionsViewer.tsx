@@ -32,8 +32,10 @@ export default function SolutionsViewer({
   // then make cubeviewer a prop as well
   mask,
   showEO,
-  areSolutionsHidden: hideSolution = false,
-  onRevealSolutions: onRevealSolution = () => {},
+  areSolutionsHidden = false,
+  onRevealSolutions = () => {
+    /* noop */
+  },
   children,
 }: SolutionsViewerProps) {
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState(0);
@@ -54,8 +56,8 @@ export default function SolutionsViewer({
       </Heading>
       <Stack direction={{ base: "column", md: "row" }}>
         <Spoiler
-          hide={solutions.length ? hideSolution : false}
-          onReveal={onRevealSolution}
+          hide={solutions.length ? areSolutionsHidden : false}
+          onReveal={onRevealSolutions}
         >
           <Box minW="17rem">
             <SelectSolution
@@ -72,7 +74,7 @@ export default function SolutionsViewer({
             solution={selectedSolution ?? []}
             mask={mask}
             showEO={showEO}
-            hideSolution={hideSolution}
+            hideSolution={areSolutionsHidden}
           />
         </Box>
       </Stack>
