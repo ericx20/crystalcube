@@ -1,7 +1,7 @@
 import { MASKS } from "./masks";
 import { MOVESETS } from "./moves";
 import { MoveSet } from "src/libv2/types";
-import { Move3x3, Cube3x3Mask } from "./types";
+import { Move3x3, Cube3x3Mask } from ".";
 
 export const PUZZLE_CONFIG_NAMES = [
   "EO",

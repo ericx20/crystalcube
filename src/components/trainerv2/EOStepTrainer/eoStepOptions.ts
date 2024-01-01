@@ -3,12 +3,16 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import { mergeDeepLeft } from "ramda";
 
-import type {
-  EOStep,
-  EOStepOptions,
-  LevelMode,
-  NumOfMovesConfig,
-} from "./eoStepTypes";
+import type { EOStep, LevelMode, NumOfMovesConfig } from "./eoStepTypes";
+import type { CubeOrientation } from "src/libv2/puzzles/cube3x3";
+
+export interface EOStepOptions {
+  eoStep: EOStep;
+  levelMode: LevelMode;
+  numOfBadEdges: number;
+  numOfMoves: number;
+  solutionOrientation: CubeOrientation;
+}
 
 interface Actions {
   // getters: calculate something from state
@@ -18,6 +22,7 @@ interface Actions {
   setLevelMode: (mode: LevelMode) => void;
   setLevelNumOfBadEdges: (num: number) => void;
   setLevelNumOfMoves: (num: number) => void;
+  setSolutionOrientation: (orientation: CubeOrientation) => void;
 }
 
 interface State {
@@ -33,6 +38,7 @@ const useStore = create(
         levelMode: "random",
         numOfBadEdges: 4,
         numOfMoves: 3,
+        solutionOrientation: "YB",
       },
       actions: {
         // TODO: getter for solverConfig
@@ -60,11 +66,15 @@ const useStore = create(
           set((state) => {
             state.options.numOfMoves = numOfMoves;
           }),
+        setSolutionOrientation: (orientation) =>
+          set((state) => {
+            state.options.solutionOrientation = orientation;
+          }),
       },
     })),
     {
       name: "eo-step",
-      version: 0,
+      version: 0.1,
       // TODO: move this function out
       merge: (persistedState, currentState) =>
         mergeDeepLeft(persistedState ?? {}, currentState),

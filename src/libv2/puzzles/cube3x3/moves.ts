@@ -1,17 +1,10 @@
 import { invertPerm, doublePerm } from "src/libv2/puzzles/common";
-import {
-  FaceletIndex,
-  Move3x3,
-  Axis,
-  Layer,
-  LayerMove,
-  CubeRotation,
-  Suffix,
-} from "./types";
 import { Perm, MoveSet } from "src/libv2/types";
+import { FaceletIndex } from "./state";
 
 // Represents the 6 faces and their colors
 export const FACES = ["R", "L", "U", "D", "F", "B"] as const;
+export type Face = (typeof FACES)[number];
 
 // prettier-ignore
 // Represents the layers that can be twisted on the cube
@@ -20,9 +13,11 @@ export const LAYERS = [
   "r", "l", "u", "d", "f", "b",
   "M", "E", "S"
 ] as const;
+export type Layer = (typeof LAYERS)[number];
 
 // Represents the axes when rotating the entire cube
 export const AXES = ["x", "y", "z"] as const;
+export type Axis = (typeof AXES)[number];
 
 export const LAYERS_ALONG_AXES: Readonly<{
   [layer in Axis]: readonly Layer[];
@@ -34,6 +29,12 @@ export const LAYERS_ALONG_AXES: Readonly<{
 
 // The suffixes of Singmaster notation
 export const SUFFIXES = ["", "2", "'"] as const;
+export type Suffix = (typeof SUFFIXES)[number];
+
+export type LayerMove = `${Layer}${Suffix}`; // include slices and wide moves
+export type CubeRotation = `${Axis}${Suffix}`;
+// TODO: rename Move3x3 to Move, and update generics to be like <M extends Move> not <Move extends Move3x3>
+export type Move3x3 = `${Layer | Axis}${Suffix}`;
 
 export const MOVESETS = (() => {
   const R = ["R", "R'", "R2"] as const;

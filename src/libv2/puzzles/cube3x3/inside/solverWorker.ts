@@ -1,5 +1,5 @@
 import { solve } from "src/libv2/search";
-import { Move3x3, CubeRotation } from "../types";
+import { Move3x3, CubeRotation } from "..";
 import {
   PUZZLE_CONFIGS,
   PuzzleConfigName,

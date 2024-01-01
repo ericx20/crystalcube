@@ -1,4 +1,8 @@
-import { Facelet3x3 } from "./types";
+import { Face } from ".";
+
+export type Facelet = Face | "O" | "X"; // "O" is a facelet that identifies edge/corner orientation, X is a wildcard facelet
+export type Facelet3x3 = Array<Facelet>;
+export type FaceletIndex = number; // int from 0 to 53, represents a facelet's location
 
 // The facelets are indexed like this:
 //                +----+----+----+

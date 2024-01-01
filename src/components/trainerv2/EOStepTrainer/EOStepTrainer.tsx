@@ -2,20 +2,21 @@ import React, { useState } from "react";
 
 import { Button, Heading, HStack, Select, VStack } from "@chakra-ui/react";
 import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
-import { Move3x3 } from "src/libv2/puzzles/cube3x3/types";
+import { Move3x3 } from "src/libv2/puzzles/cube3x3";
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
-import { Cube3x3 } from "src/libv2";
+import { Cube3x3 } from "src/libv2/puzzles/cube3x3";
 
-import { useOptions, useActions } from "./eoStepOptions";
-import type { EOStep, EOStepOptions } from "./eoStepTypes";
+import { useOptions, useActions, EOStepOptions } from "./eoStepOptions";
+import type { EOStep } from "./eoStepTypes";
 
 import scrambler from "./scrambler";
 
 import SolutionsViewer from "../common/SolutionsViewer";
 import { MoveSeq } from "src/lib/types";
 import EOStepLevelSelect from "./cards/EOStepLevelSelect";
+import PreferenceSelect from "./cards/PreferenceSelect";
 
 async function solver(scramble: Move3x3[], options: EOStepOptions) {
   const solutions = await solveCube3x3(scramble, options.eoStep, [], 5);
@@ -27,6 +28,8 @@ export default function EOStepTrainer() {
   const hideSolutions = () => setSolutionsHidden(true);
   const showSolutions = () => setSolutionsHidden(false);
 
+  // if any of the options change, this component will re-render
+  // that's what we want for now, but if not then make selectors for the parts of the state we care about
   const options = useOptions();
   const actions = useActions();
 
@@ -74,6 +77,10 @@ export default function EOStepTrainer() {
         numOfMoves={options.numOfMoves}
         setNumOfMoves={actions.setLevelNumOfMoves}
         numOfMovesConfig={actions.getNumOfMovesConfig()}
+      />
+      <PreferenceSelect
+        orientation={options.solutionOrientation}
+        setOrientation={actions.setSolutionOrientation}
       />
     </VStack>
   );

@@ -1,4 +1,10 @@
-import { FaceletIndex, Cube3x3Mask } from "./types";
+import { FaceletIndex } from ".";
+
+export interface Cube3x3Mask {
+  solvedFaceletIndices: readonly FaceletIndex[];
+  eoFaceletIndices?: readonly FaceletIndex[];
+}
+
 
 const CENTERS: FaceletIndex[] = [4, 22, 25, 28, 31, 49];
 const EO_FACELETS: FaceletIndex[] = [

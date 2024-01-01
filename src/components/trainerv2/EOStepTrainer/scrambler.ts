@@ -1,5 +1,5 @@
 import { randomScrambleForEvent } from "cubing/scramble";
-import { Move3x3 } from "src/libv2/puzzles/cube3x3/types";
+import { Move3x3 } from "src/libv2/puzzles/cube3x3";
 
 export default async function scrambler(/* _options: Options */) {
   // TODO: shorten the scramble based on the option

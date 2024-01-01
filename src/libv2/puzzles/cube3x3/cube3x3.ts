@@ -1,5 +1,5 @@
 import { Puzzle } from "../../types";
-import { Move3x3, Facelet3x3, Cube3x3Mask, Facelet } from "./types";
+import { Move3x3, Facelet3x3, Cube3x3Mask, Facelet } from ".";
 import {
   MOVESETS,
   SOLVED_FACELET_CUBE,
@@ -10,14 +10,15 @@ import {
   isValidMove,
 } from ".";
 
-// TODO: is it better to make applyMove() return a brand new Cube3x3?
+// TODO: make applyMove() return a brand new Cube3x3
 // in most non-trivial usages of the Puzzles, things like solvers and pruners
 // will be cloning states to perform separate things with them
+// TODO: refactor to accept an optional TurningRestriction object that manages
+// move history and what turns are/aren't allowed, and which can also be cloned
 export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
   private state: Facelet3x3;
   private solvedState: Readonly<Facelet3x3>;
   private moveHistory: Move[];
-  // TODO: refactor to accept an "options" object, there are too many parameters now
   constructor(
     private moveset: Readonly<Move[]> = MOVESETS.Full as unknown as Readonly<
       Move[]
@@ -183,17 +184,18 @@ export function printFaceletCube(cube: Facelet3x3): void {
   console.log(xxxxxxxxxxxx);
 }
 
-const faceletToEmoji: { [f in Facelet]: string } = {
-  R: "🟥",
-  L: "🟧",
-  U: "⬜",
-  D: "🟨",
-  F: "🟩",
-  B: "🟦",
-  O: "🟪",
-  X: "⬛",
-};
+const faceletToEmoji = (f: Facelet): string =>
+  ({
+    R: "🟥",
+    L: "🟧",
+    U: "⬜",
+    D: "🟨",
+    F: "🟩",
+    B: "🟦",
+    O: "🟪",
+    X: "⬛",
+  }[f]);
 
 function faceletCubeToEmojiCube(cube: Facelet3x3): Array<string> {
-  return cube.map((facelet) => faceletToEmoji[facelet]);
+  return cube.map(faceletToEmoji);
 }
