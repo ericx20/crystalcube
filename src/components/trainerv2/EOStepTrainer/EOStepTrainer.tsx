@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Button, Heading, HStack, Select, VStack } from "@chakra-ui/react";
 import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
-import { Move3x3 } from "src/libv2/puzzles/cube3x3";
+import { cubeOrientationToRotations, Move3x3 } from "src/libv2/puzzles/cube3x3";
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
@@ -19,7 +19,12 @@ import EOStepLevelSelect from "./cards/EOStepLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
 
 async function solver(scramble: Move3x3[], options: EOStepOptions) {
-  const solutions = await solveCube3x3(scramble, options.eoStep, [], 5);
+  const solutions = await solveCube3x3(
+    scramble,
+    options.eoStep,
+    cubeOrientationToRotations(options.solutionOrientation),
+    5
+  );
   return solutions;
 }
 
@@ -51,7 +56,7 @@ export default function EOStepTrainer() {
         setScramble={setScramble}
         notationParser={Cube3x3.parseNotation}
       />
-      {/* TODO: REMOVE X2 hardcode from everything */}
+      {/* TODO: make new verison of getEOSolutionAnnotation that supports different cube orientations */}
       <SolutionsViewer
         scramble={scramble as MoveSeq} // TODO
         solutions={solutions as MoveSeq[]}

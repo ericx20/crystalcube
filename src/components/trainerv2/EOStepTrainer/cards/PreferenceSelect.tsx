@@ -12,12 +12,14 @@ export default function PreferenceSelect({
   orientation,
   setOrientation,
 }: PreferenceSelectProps) {
-
   return (
     <TrainerCard>
       <HStack spacing={4}>
-        <Heading>solution orientation</Heading>
-        <OrientationSelect orientation={orientation} setOrientation={setOrientation} />
+        <Heading size="md">solution orientation</Heading>
+        <OrientationSelect
+          orientation={orientation}
+          setOrientation={setOrientation}
+        />
       </HStack>
     </TrainerCard>
   );

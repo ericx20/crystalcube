@@ -120,8 +120,7 @@ function SelectSolution({
               >
                 {movecount} HTM
               </Badge>
-              {/* TODO: REMOVE HARDCODE */}
-              <Text fontWeight={500}>x2 {solutionString}</Text>
+              <Text fontWeight={500}>{solutionString}</Text>
             </HStack>
           </Button>
         );
