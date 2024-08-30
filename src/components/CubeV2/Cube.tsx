@@ -5,6 +5,7 @@ import type { RotationMove, Face, Mask, MoveSeq, Piece } from "src/lib/types";
 import { applyMoves, getFaceletCubeEO, applyMask, invertMoves } from "src/lib";
 import { SOLVED_FACELET_CUBE } from "src/lib/constants";
 import Cubie, { CubieFacelets } from "./Cubie";
+import { Cube3x3, Facelet3x3 } from "src/libv2/puzzles/cube3x3";
 
 interface CubieData {
   name: Piece;
@@ -15,29 +16,15 @@ interface CubieData {
 }
 
 interface CubeProps {
-  moves?: MoveSeq;
-  mask?: Mask;
+  cube: Cube3x3;
   showEO?: boolean;
-  preRotation?: Array<RotationMove>;
 }
 
-/** @deprecated Use CubeV2 instead */
-export default function Cube({
-  moves = [],
-  mask,
-  showEO,
-  preRotation = [],
-}: CubeProps) {
-  const solvedFaceletState = mask
-    ? applyMoves(
-        applyMask(applyMoves([...SOLVED_FACELET_CUBE], preRotation), mask),
-        invertMoves(preRotation)
-      )
-    : [...SOLVED_FACELET_CUBE];
-  const facelets = applyMoves(solvedFaceletState, moves);
-  const eo = showEO
-    ? getFaceletCubeEO(facelets)
-    : Array<boolean>(12).fill(true);
+const SOLVED_EO = Array<boolean>(12).fill(true);
+
+export default function Cube({ cube, showEO }: CubeProps) {
+  const eo = showEO ? cube.EO : SOLVED_EO;
+  const facelets = cube.stateData;
   // prettier-ignore
   const cubies: Array<CubieData> = [
     { name: "DBL",                   position: [-1, -1, -1], cubieFacelets: { D: facelets[51], B: facelets[44], L: facelets[33] } },

@@ -10,15 +10,15 @@ import {
   SimpleGrid,
   Stack,
 } from "@chakra-ui/react";
-import type { MoveSeq, Mask } from "src/lib/types";
 import SolutionPlayer from "./SolutionPlayer";
-import { moveSeqToString } from "src/lib";
 import TrainerCard from "./TrainerCard";
+import { CubeRotation, Move3x3, Cube3x3Mask } from "src/libv2/puzzles/cube3x3";
 
 interface SolutionsViewerProps {
-  scramble: MoveSeq;
-  solutions: Array<MoveSeq>;
-  mask?: Mask;
+  scramble: Move3x3[];
+  preRotation: CubeRotation[];
+  solutions: Move3x3[][];
+  mask?: Cube3x3Mask;
   showEO?: boolean;
   areSolutionsHidden?: boolean;
   onRevealSolutions?: () => void;
@@ -27,6 +27,7 @@ interface SolutionsViewerProps {
 
 export default function SolutionsViewer({
   scramble,
+  preRotation,
   solutions,
   // make mask and showEO part of a PuzzleDisplayOptions type
   // then make cubeviewer a prop as well
@@ -61,6 +62,7 @@ export default function SolutionsViewer({
         >
           <Box minW="17rem">
             <SelectSolution
+              preRotation={preRotation}
               solutions={solutions}
               selectedSolutionIndex={selectedSolutionIndex}
               onSelectSolution={setSelectedSolutionIndex}
@@ -71,6 +73,7 @@ export default function SolutionsViewer({
         <Box w="100%" minW={0}>
           <SolutionPlayer
             scramble={scramble}
+            preRotation={preRotation}
             solution={selectedSolution ?? []}
             mask={mask}
             showEO={showEO}
@@ -84,12 +87,14 @@ export default function SolutionsViewer({
 }
 
 interface SelectSolutionProps {
-  solutions: Array<MoveSeq>;
+  preRotation: CubeRotation[];
+  solutions: Move3x3[][];
   selectedSolutionIndex: number;
   onSelectSolution: (index: number) => void;
 }
 
 function SelectSolution({
+  preRotation,
   solutions,
   selectedSolutionIndex,
   onSelectSolution,
@@ -99,12 +104,12 @@ function SelectSolution({
   return (
     <SimpleGrid spacing={2} minChildWidth="17rem">
       {solutions.map((solution, index) => {
-        const solutionString = moveSeqToString(solution);
+        const solutionDisplayString = [...preRotation, ...solution].join(" ");
         const movecount = solution.length;
         const isSelected = selectedSolutionIndex === index;
         return (
           <Button
-            key={solutionString}
+            key={solutionDisplayString}
             size={["sm", "md"]}
             onClick={() => onSelectSolution(index)}
             w="100%"
@@ -120,7 +125,7 @@ function SelectSolution({
               >
                 {movecount} HTM
               </Badge>
-              <Text fontWeight={500}>{solutionString}</Text>
+              <Text fontWeight={500}>{solutionDisplayString}</Text>
             </HStack>
           </Button>
         );

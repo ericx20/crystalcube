@@ -1,4 +1,11 @@
-import { lazy, MouseEventHandler, Suspense, useEffect, useState } from "react";
+import {
+  lazy,
+  MouseEventHandler,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Box,
   Button,
@@ -15,109 +22,98 @@ import {
   VStack,
   Wrap,
 } from "@chakra-ui/react";
-import type { Move, MoveSeq, Mask } from "src/lib/types";
 import { VscCircleFilled } from "react-icons/vsc";
 import { IoCube, IoCubeOutline } from "react-icons/io5";
-import { getEOSolutionAnnotation } from "src/lib";
-const Cube = lazy(() => import("src/components/Cube/Cube"));
+import {
+  Cube3x3,
+  Cube3x3Mask,
+  CubeRotation,
+  Move3x3,
+  invertMoves,
+} from "src/libv2/puzzles/cube3x3";
+const CubeV2 = lazy(() => import("src/components/CubeV2/Cube"));
 
 interface SolutionPlayerProps {
-  scramble: MoveSeq;
-  solution: MoveSeq | null;
-  mask?: Mask;
+  scramble: Move3x3[];
+  preRotation: CubeRotation[];
+  solution: Move3x3[];
+  mask?: Cube3x3Mask;
   showEO?: boolean;
   hideSolution?: boolean;
 }
 
 export default function SolutionPlayer({
   scramble,
+  preRotation,
   solution,
   mask,
   showEO,
   hideSolution,
 }: SolutionPlayerProps) {
-  const [selectedMoveIndex, setSelectedMoveIndex] = useState(0);
-  const [hoveredMoveIndex, setHoveredMoveIndex] = useState<number | null>(null);
-  const currentIndex = hoveredMoveIndex ?? selectedMoveIndex;
-  const atSolutionEnd = !solution || selectedMoveIndex === solution.length - 1;
+  // The full solution is `preRotation` then `solution`
 
-  // Cache the scramble and solution, so they update at the same time as selectedMoveIndex
-  // which prevents stateToShow from flickering
-  // TODO: replace this workaround with proper React hook stuff
-  const [delayedScramble, setDelayedScramble] = useState([] as MoveSeq);
-  const [delayedSolution, setDelayedSolution] = useState([] as MoveSeq);
-  const [stateToShow, setStateToShow] = useState([] as MoveSeq);
+  // null means no move is selected
+  const [currentMoveIndex, setCurrentMoveIndex] = useState<number | null>(null);
 
+  // Reset the slider to the beginning when the user looks at a different solution
   useEffect(() => {
-    setSelectedMoveIndex(0);
-    setDelayedScramble(scramble);
-    setDelayedSolution(solution ?? []);
-  }, [scramble, solution]);
+    setCurrentMoveIndex(null);
+  }, [solution]);
 
-  useEffect(() => {
-    const solutionToShow = [...delayedSolution].splice(0, currentIndex + 1);
-    setStateToShow(delayedScramble.concat(solutionToShow));
-  }, [currentIndex, delayedScramble, delayedSolution]);
+  const atSolutionEnd = currentMoveIndex === solution.length - 1;
 
-  const onSelect = (i: number) => setSelectedMoveIndex(i);
-  const onHover = (i: number | null) => {
-    if (!hideSolution) setHoveredMoveIndex(i);
-  };
+  // The part of the solution up to and including the currently selected move
+  const partialSolution =
+    currentMoveIndex === null ? [] : solution.slice(0, currentMoveIndex + 1);
 
-  if (solution === null) {
-    return (
-      <SolutionMoveButton move={null} moveAnnotation={null} isSelected={true} />
-    );
-  }
+  // TODO: why couldn't we cache this with useMemo? weird issue where first render is wrong, was my dependency array incorrect?
+  const cubeToShow = useMemo(() => {
+    const cube = new Cube3x3();
+    if (mask) {
+      cube.applyMoves(preRotation);
+      cube.applyMask(mask);
+      cube.applyMoves(invertMoves(preRotation));
+    }
+    cube
+      .applyMoves(scramble)
+      .applyMoves(preRotation)
+      .applyMoves(partialSolution);
+    return cube;
+  }, [mask, preRotation, scramble, partialSolution]);
 
-  const eoAnnotation = getEOSolutionAnnotation(scramble, solution);
+  // TODO: cache this with useMemo??
+  const eoAnnotation = useMemo(
+    () => getEOSolutionAnnotation(scramble, preRotation, solution),
+    [scramble, preRotation, solution]
+  );
 
   const cubeBackground = useColorModeValue("gray.200", undefined);
 
-  const desktopScrubber = (
-    <Wrap
-      spacingX="0rem"
-      display={{ base: "none", md: "flex" }}
-      mx="-0.25rem !important"
-      overflow="visible"
-    >
-      {solution.map((move, index) => {
-        const isSelected = selectedMoveIndex === index;
-        const isPreviousMove = selectedMoveIndex > index;
-        const hideMove = hideSolution && !isSelected && !isPreviousMove;
-        return (
-          <SolutionMoveButton
-            key={index}
-            move={move}
-            moveAnnotation={eoAnnotation[index]}
-            onClick={() => onSelect(index)}
-            onMouseEnter={() => onHover(index)}
-            onMouseLeave={() => onHover(null)}
-            isSelected={isSelected}
-            isPreviousMove={isPreviousMove}
-            hide={hideMove}
-          />
-        );
-      })}
-    </Wrap>
-  );
-
-  const mobileScrubber = (
-    <Box pt={8} px={2} display={{ md: "none" }}>
+  const scrubber = (
+    <Box pt={8} px={2}>
       <Slider
-        value={selectedMoveIndex}
-        min={0}
+        value={currentMoveIndex ?? -1}
+        min={-1}
         max={solution.length - 1}
-        onChange={onSelect}
+        onChange={(e) => setCurrentMoveIndex(e)}
       >
+        {/* TODO: dummy slider mark for the cube orientation, if no orientation then its just a dot */}
+        <SliderMark key={-1} value={-1} ml="-0.75rem" mt="-3.3rem">
+          <SolutionMoveLabel
+            label={preRotation.length ? preRotation.join(" ") : null}
+            isSelected={currentMoveIndex === null}
+            isPreviousMove={currentMoveIndex !== null}
+          />
+        </SliderMark>
         {solution.map((move, index) => {
-          const isSelected = selectedMoveIndex === index;
-          const isPreviousMove = selectedMoveIndex > index;
+          const isSelected = currentMoveIndex === index;
+          const isPreviousMove =
+            currentMoveIndex !== null && currentMoveIndex > index;
           const hideMove = hideSolution && !isSelected && !isPreviousMove;
           return (
             <SliderMark key={index} value={index} ml="-0.75rem" mt="-3.3rem">
               <SolutionMoveLabel
-                move={move}
+                label={move}
                 moveAnnotation={eoAnnotation[index]}
                 isSelected={isSelected}
                 isPreviousMove={isPreviousMove}
@@ -142,10 +138,7 @@ export default function SolutionPlayer({
 
   return (
     <VStack align="left">
-      {/* Desktop version */}
-      {desktopScrubber}
-      {/* Mobile version */}
-      {mobileScrubber}
+      {scrubber}
       <Center
         h={[200, 250, 350]}
         borderWidth="1px"
@@ -154,12 +147,7 @@ export default function SolutionPlayer({
         bg={cubeBackground}
       >
         <Suspense fallback={<Spinner />}>
-          <Cube
-            moves={stateToShow}
-            mask={mask}
-            showEO={showEO}
-            preRotation={["x2"]}
-          />
+          <CubeV2 cube={cubeToShow} showEO={showEO} />
         </Suspense>
       </Center>
     </VStack>
@@ -167,21 +155,21 @@ export default function SolutionPlayer({
 }
 
 interface SolutionMoveLabelProps {
-  move: Move | null; // null signals this move is the start
-  moveAnnotation: string | null;
+  label: string | null; // null signals this move is the start
+  moveAnnotation?: string;
   isSelected?: boolean;
   isPreviousMove?: boolean;
   hide?: boolean;
 }
 
 function SolutionMoveLabel({
-  move,
+  label,
   moveAnnotation,
   isSelected,
   isPreviousMove,
   hide = false,
 }: SolutionMoveLabelProps) {
-  const showMoveAnnotation = moveAnnotation !== null && !hide;
+  const showMoveAnnotation = !!moveAnnotation && !hide;
   return (
     <Box w={6} h={6}>
       <Center
@@ -198,74 +186,53 @@ function SolutionMoveLabel({
         colorScheme={isSelected ? "blue" : "gray"}
         fontSize="md"
         textAlign="center"
+        whiteSpace="nowrap"
         fontWeight={isSelected ? "bold" : "normal"}
         opacity={isSelected || isPreviousMove ? 1 : 0.7}
       >
-        {hide ? "?" : move ?? <Icon as={VscCircleFilled} />}
+        {hide ? "?" : label ?? <Icon as={VscCircleFilled} />}
       </Text>
     </Box>
   );
 }
 
-interface SolutionMoveButtonProps {
-  move: Move | null; // null signals this move is the start
-  moveAnnotation: string | null;
-  isSelected?: boolean;
-  isPreviousMove?: boolean;
-  hide?: boolean;
-  onClick?: () => void;
-  onMouseEnter?: MouseEventHandler<HTMLDivElement>;
-  onMouseLeave?: MouseEventHandler<HTMLDivElement>;
+function countBadEdges(cube: Cube3x3): number {
+  return cube.EO.filter((eo) => eo === false).length;
 }
 
-// For desktop
-function SolutionMoveButton({
-  move,
-  moveAnnotation,
-  isSelected,
-  isPreviousMove,
-  hide = false,
-  onClick,
-  onMouseEnter,
-  onMouseLeave,
-}: SolutionMoveButtonProps) {
-  const showMoveAnnotation = moveAnnotation !== null && !hide;
-  return (
-    <Box
-      as="div"
-      onClick={onClick}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      px="0.25rem"
-      cursor="pointer"
-    >
-      <VStack spacing={0} position="relative">
-        {showMoveAnnotation && (
-          <Button
-            position="absolute"
-            transform="auto"
-            translateY="-1.2rem"
-            bg="#9b23eb !important"
-            color="whiteAlpha.900"
-            size={["xs", "xs", "sm", "md"]}
-            width="1rem"
-            height="1.2rem !important"
-            fontSize="0.9rem !important"
-            borderBottomRadius={showMoveAnnotation ? 0 : undefined}
-          >
-            {moveAnnotation}
-          </Button>
-        )}
-        <Button
-          colorScheme={isSelected ? "blue" : "gray"}
-          isActive={isPreviousMove}
-          size={["xs", "xs", "sm", "md"]}
-          width="1rem"
-          borderTopRadius={showMoveAnnotation ? 0 : undefined}
-        >
-          {hide ? "?" : move ?? <Icon as={VscCircleFilled} />}
-        </Button>
-      </VStack>
-    </Box>
-  );
+const EO_CHANGING_MOVES: Array<Move3x3> = ["F", "F'", "B", "B'"];
+
+/**
+ * Generates an "EO Solution Annotation": a list of labels for each move in a given EO solution
+ * We're only interested in seeing how the EO changes for F/F' and B/B' moves
+ * Note: we assume the EO solution only contains outer layer moves. No slices, wide moves or rotations.
+ */
+function getEOSolutionAnnotation(
+  scramble: Move3x3[],
+  preRotation: CubeRotation[],
+  solution: Move3x3[]
+): Array<string> {
+  const cube = new Cube3x3().applyMoves(scramble).applyMoves(preRotation);
+  const annotation = [];
+
+  for (const move of solution) {
+    const prevBadEdgeCount = countBadEdges(cube);
+    cube.applyMove(move);
+    const newBadEdgeCount = countBadEdges(cube);
+    const change = newBadEdgeCount - prevBadEdgeCount;
+
+    if (!EO_CHANGING_MOVES.includes(move)) {
+      annotation.push("");
+    } else if (change < 0) {
+      // There are fewer bad edges now
+      annotation.push(`${change}`);
+    } else if (change === 0) {
+      // -0 is our convention to indicate an "edge exchange": the EO has changed but the number of bad edges is the same, none were reduced in total.
+    } else {
+      // There are more bad edges now. + sign is our convention
+      annotation.push(`+${change}`);
+    }
+  }
+
+  return annotation;
 }

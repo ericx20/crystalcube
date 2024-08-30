@@ -39,6 +39,12 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     );
   }
 
+  setSolved(): this {
+    this.solvedState = [...this.state];
+    this.resetHistory();
+    return this;
+  }
+
   resetToSolved(): this {
     this.state = [...this.solvedState];
     this.resetHistory();
@@ -98,6 +104,10 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return [...this.state];
   }
 
+  get EO(): boolean[] {
+    return getEO(this.state);
+  }
+
   encode(): string {
     return this.state.join("");
   }
@@ -115,6 +125,12 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
 
   applyMoves(moves: Move[]): this {
     moves.forEach((move) => this.applyMove(move));
+    return this;
+  }
+
+  applyMask(mask: Cube3x3Mask): this {
+    this.state = getMaskedFaceletCube(mask, this.state);
+    this.solvedState = getMaskedFaceletCube(mask, this.solvedState);
     return this;
   }
 
@@ -148,7 +164,7 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
 }
 
 // apply a mask to facelet cube
-export function getMaskedFaceletCube(
+function getMaskedFaceletCube(
   mask: Cube3x3Mask,
   stateData: Readonly<Facelet3x3> = SOLVED_FACELET_CUBE
 ): Facelet3x3 {
@@ -160,6 +176,48 @@ export function getMaskedFaceletCube(
       return "O";
     }
     return "X";
+  });
+}
+
+// To recognize edge orientation, we need to look at two "orbits" (sets of facelet locations) for edges.
+// We call one of them the "primary orbit" and the other the "secondary orbit".
+// Each edge has two facelets, one of them will always be in the primary orbit and the other in the secondary orbit.
+// The edge facelets are indexed in the order [UB, UL, UR, UF, BL, FL, FR, BR, DF, DL, DR, DB] for these constants.
+const PRIMARY_ORBIT: Readonly<number[]> = [
+  1, 3, 5, 7, 32, 24, 26, 30, 46, 48, 50, 52,
+];
+const SECONDARY_ORBIT: Readonly<number[]> = [
+  19, 10, 16, 13, 21, 23, 27, 29, 37, 34, 40, 43,
+];
+
+/**
+ * Recognizes Edge Orientation (EO) with respect to the F/B axis. In other words, which edges may be solved using R, L, U, D moves.
+ * @param stateData The state of a facelet cube
+ * @param preRotation Rotations to apply before recognizing EO.
+ * @returns whether each edge is good or bad, in the order [UB, UL, UR, UF, BL, FL, FR, BR, DF, DL, DR, DB]
+ */
+function getEO(facelets: Readonly<Facelet3x3>): boolean[] {
+  const uCenterFacelet = facelets[4];
+  const dCenterFacelet = facelets[49];
+  const lCenterFacelet = facelets[22];
+  const rCenterFacelet = facelets[28];
+  const colorsBelongingInPrimaryOrbit: Array<Facelet> = [
+    uCenterFacelet,
+    dCenterFacelet,
+    "O",
+  ];
+  const colorsBelongingInSecondaryOrbit: Array<Facelet> = [
+    lCenterFacelet,
+    rCenterFacelet,
+  ];
+
+  return [...Array(12).keys()].map((index) => {
+    const faceletOnPrimaryOrbit = facelets[PRIMARY_ORBIT[index]];
+    const faceletOnSecondaryOrbit = facelets[SECONDARY_ORBIT[index]];
+    return (
+      colorsBelongingInPrimaryOrbit.includes(faceletOnPrimaryOrbit) ||
+      colorsBelongingInSecondaryOrbit.includes(faceletOnSecondaryOrbit)
+    );
   });
 }
 

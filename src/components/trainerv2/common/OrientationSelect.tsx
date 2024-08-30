@@ -4,10 +4,6 @@ import { Color, CubeOrientation } from "src/libv2/puzzles/cube3x3";
 import { COLOR_NAMES } from "./constants";
 import { COLORS } from "src/libv2/puzzles/cube3x3";
 
-const colorOptions = COLORS.map((color) => (
-  <option value={color}>{COLOR_NAMES[color]}</option>
-));
-
 export interface OrientationSelectProps {
   orientation: CubeOrientation;
   setOrientation: (orientation: CubeOrientation) => void;
@@ -43,10 +39,18 @@ export default function OrientationSelect({
   return (
     <>
       <Select value={topColor} onChange={handleTopColor}>
-        {colorOptions}
+        {COLORS.map((color) => (
+          <option value={color} key={color}>
+            {COLOR_NAMES[color]} top
+          </option>
+        ))}
       </Select>
       <Select value={frontColor} onChange={handleFrontColor}>
-        {colorOptions}
+        {COLORS.map((color) => (
+          <option value={color} key={color}>
+            {COLOR_NAMES[color]} front
+          </option>
+        ))}
       </Select>
     </>
   );

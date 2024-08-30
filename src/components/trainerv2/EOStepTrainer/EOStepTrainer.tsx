@@ -2,7 +2,11 @@ import React, { useState } from "react";
 
 import { Button, Heading, HStack, Select, VStack } from "@chakra-ui/react";
 import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
-import { cubeOrientationToRotations, Move3x3 } from "src/libv2/puzzles/cube3x3";
+import {
+  cubeOrientationToRotations,
+  MASKS,
+  Move3x3,
+} from "src/libv2/puzzles/cube3x3";
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
@@ -14,7 +18,6 @@ import type { EOStep } from "./eoStepTypes";
 import scrambler from "./scrambler";
 
 import SolutionsViewer from "../common/SolutionsViewer";
-import { MoveSeq } from "src/lib/types";
 import EOStepLevelSelect from "./cards/EOStepLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
 
@@ -58,8 +61,10 @@ export default function EOStepTrainer() {
       />
       {/* TODO: make new verison of getEOSolutionAnnotation that supports different cube orientations */}
       <SolutionsViewer
-        scramble={scramble as MoveSeq} // TODO
-        solutions={solutions as MoveSeq[]}
+        mask={MASKS[options.eoStep]}
+        scramble={scramble}
+        preRotation={cubeOrientationToRotations(options.solutionOrientation)}
+        solutions={solutions}
         showEO
         areSolutionsHidden={areSolutionsHidden}
         onRevealSolutions={showSolutions}
