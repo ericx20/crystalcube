@@ -1,11 +1,32 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { Button, Heading, HStack, Select, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  Text,
+  Tooltip,
+  useClipboard,
+  useDisclosure,
+  VStack,
+} from "@chakra-ui/react";
 import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
 import {
   cubeOrientationToRotations,
+  isFaceMove,
   MASKS,
   Move3x3,
+  PuzzleConfigName,
+  RotationMove,
 } from "src/libv2/puzzles/cube3x3";
 
 import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
@@ -20,6 +41,7 @@ import scrambler from "./scrambler";
 import SolutionsViewer from "../common/SolutionsViewer";
 import EOStepLevelSelect from "./cards/EOStepLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
+import { getEOSolutionAnnotation } from "./utils";
 
 async function solver(scramble: Move3x3[], options: EOStepOptions) {
   const solutions = await solveCube3x3(
@@ -44,9 +66,18 @@ export default function EOStepTrainer() {
   const { scramble, setScramble, solutions, isLoading, getNext } =
     useScrambleAndSolutions(scrambler, solver, options, hideSolutions);
 
+  const preRotation = cubeOrientationToRotations(options.solutionOrientation);
+
   const mainAction = areSolutionsHidden ? showSolutions : getNext;
 
   // TODO: add scroll to top and hotkeys
+
+  const copyText = generateCopyText({
+    solverName: options.eoStep,
+    scramble,
+    preRotation,
+    solutions,
+  });
 
   return (
     <VStack spacing={4} my={4}>
@@ -57,20 +88,19 @@ export default function EOStepTrainer() {
       <ScrambleEditor
         scramble={scramble}
         setScramble={setScramble}
-        notationParser={Cube3x3.parseNotation}
+        notationParser={scrambleParser}
       />
-      {/* TODO: make new verison of getEOSolutionAnnotation that supports different cube orientations */}
       <SolutionsViewer
         mask={MASKS[options.eoStep]}
         scramble={scramble}
-        preRotation={cubeOrientationToRotations(options.solutionOrientation)}
+        preRotation={preRotation}
         solutions={solutions}
         showEO
         areSolutionsHidden={areSolutionsHidden}
         onRevealSolutions={showSolutions}
       >
         <HStack>
-          {/* TODO: button for copying */}
+          <ShareButton text={copyText} />
           <Button onClick={mainAction} isLoading={isLoading} w="100%">
             {areSolutionsHidden ? "reveal" : "next"}
           </Button>
@@ -117,4 +147,88 @@ function EOStepSelect({ eoStep, setEOStep }: EOStepSelectProps) {
       <option value="EO222">EO222</option>
     </Select>
   );
+}
+
+const scrambleParser = (input: string) => {
+  const parsed = Cube3x3.parseNotation(input);
+  return parsed?.every(isFaceMove) ? parsed : null;
+};
+
+function ShareButton({ text }: { text: string }) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { onCopy, hasCopied, setValue } = useClipboard(text);
+  useEffect(() => {
+    setValue(text);
+  }, [text]);
+  return (
+    <>
+      <Button onClick={onOpen}>share</Button>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>share solutions</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Box
+              whiteSpace="pre-line"
+              backgroundColor="gray.100"
+              borderRadius="lg"
+              padding="4"
+            >
+              {text}
+            </Box>
+          </ModalBody>
+
+          <ModalFooter>
+            <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
+              <Button onClick={onCopy} colorScheme="blue" mr={3}>
+                copy
+              </Button>
+            </Tooltip>
+            <Button variant="ghost" onClick={onClose}>
+              close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
+
+function generateCopyText({
+  solverName,
+  scramble,
+  preRotation,
+  solutions,
+}: {
+  solverName: PuzzleConfigName;
+  scramble: Move3x3[];
+  preRotation: RotationMove[];
+  solutions: Move3x3[][];
+}): string {
+  const scrambleText = `scramble: ${scramble.join(" ")}`;
+
+  const solutionText = [
+    `${solverName} solutions:`,
+    ...solutions.map((solution, index) => {
+      const prefixText = `${index + 1}.`;
+      const movecountText = `(${solution.length} HTM)`; // TODO: compute HTM instead of checking length
+      const solutionText = [...preRotation, ...solution].join(" ");
+      const eoAnnotationText = `[${getEOSolutionAnnotation(
+        scramble,
+        preRotation,
+        solution
+      )
+        .filter(Boolean)
+        .join(" ")}]`;
+      return [prefixText, movecountText, solutionText, eoAnnotationText]
+        .join(" ")
+        .trimEnd();
+    }),
+  ].join("\n");
+
+  const linkText = "generated by https://crystalcube.app";
+
+  return [scrambleText, solutionText, linkText].join("\n\n");
 }

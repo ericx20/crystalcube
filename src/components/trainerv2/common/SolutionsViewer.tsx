@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Badge,
@@ -9,14 +9,19 @@ import {
   Text,
   SimpleGrid,
   Stack,
+  IconButton,
+  Tooltip,
+  useClipboard,
 } from "@chakra-ui/react";
 import SolutionPlayer from "./SolutionPlayer";
 import TrainerCard from "./TrainerCard";
-import { CubeRotation, Move3x3, Cube3x3Mask } from "src/libv2/puzzles/cube3x3";
+import { RotationMove, Move3x3, Cube3x3Mask } from "src/libv2/puzzles/cube3x3";
+import { getEOSolutionAnnotation } from "../EOStepTrainer/utils";
+import { CopyIcon } from "@chakra-ui/icons";
 
 interface SolutionsViewerProps {
   scramble: Move3x3[];
-  preRotation: CubeRotation[];
+  preRotation: RotationMove[];
   solutions: Move3x3[][];
   mask?: Cube3x3Mask;
   showEO?: boolean;
@@ -28,6 +33,7 @@ interface SolutionsViewerProps {
 export default function SolutionsViewer({
   scramble,
   preRotation,
+  /** The list of solutions, should be sorted by length starting with shortest */
   solutions,
   // make mask and showEO part of a PuzzleDisplayOptions type
   // then make cubeviewer a prop as well
@@ -47,6 +53,14 @@ export default function SolutionsViewer({
   // TODO: add functions that calculate metrics, since we shouldn't assume the length of a solution is its HTM metric (slice moves, rotations etc.)
   // make metrics a prop of the form { name: string, calculateMetric: (moves: MoveType[]) => number }
   const badgeText = solutions.length ? `best: ${solutions[0].length} HTM` : "";
+
+  const eoSolutionAnnotation = useMemo(
+    () =>
+      selectedSolution
+        ? getEOSolutionAnnotation(scramble, preRotation, selectedSolution)
+        : undefined,
+    [scramble, preRotation, selectedSolution]
+  );
   return (
     <TrainerCard>
       <Heading size="md">
@@ -60,7 +74,7 @@ export default function SolutionsViewer({
           hide={solutions.length ? areSolutionsHidden : false}
           onReveal={onRevealSolutions}
         >
-          <Box minW="17rem">
+          <Box minW={["14rem", "20rem"]}>
             <SelectSolution
               preRotation={preRotation}
               solutions={solutions}
@@ -75,6 +89,7 @@ export default function SolutionsViewer({
             scramble={scramble}
             preRotation={preRotation}
             solution={selectedSolution ?? []}
+            solutionAnnotation={eoSolutionAnnotation}
             mask={mask}
             showEO={showEO}
             hideSolution={areSolutionsHidden}
@@ -87,7 +102,7 @@ export default function SolutionsViewer({
 }
 
 interface SelectSolutionProps {
-  preRotation: CubeRotation[];
+  preRotation: RotationMove[];
   solutions: Move3x3[][];
   selectedSolutionIndex: number;
   onSelectSolution: (index: number) => void;
@@ -107,27 +122,32 @@ function SelectSolution({
         const solutionDisplayString = [...preRotation, ...solution].join(" ");
         const movecount = solution.length;
         const isSelected = selectedSolutionIndex === index;
+
         return (
-          <Button
-            key={solutionDisplayString}
-            size={["sm", "md"]}
-            onClick={() => onSelectSolution(index)}
-            w="100%"
-            justifyContent="left"
-            colorScheme={isSelected ? "blue" : undefined}
-          >
-            <HStack>
-              <Badge
-                colorScheme={
-                  isSelected ? badgeSelectedColorScheme : badgeColorScheme
-                }
-                variant="solid"
-              >
-                {movecount} HTM
-              </Badge>
-              <Text fontWeight={500}>{solutionDisplayString}</Text>
-            </HStack>
-          </Button>
+          <HStack key={solutionDisplayString}>
+            <Button
+              size={["sm", "md"]}
+              onClick={() => onSelectSolution(index)}
+              w="100%"
+              justifyContent="left"
+              colorScheme={isSelected ? "blue" : undefined}
+            >
+              <HStack>
+                <Badge
+                  colorScheme={
+                    isSelected ? badgeSelectedColorScheme : badgeColorScheme
+                  }
+                  variant="solid"
+                >
+                  {movecount} HTM
+                </Badge>
+                <Text fontWeight={500}>{solutionDisplayString}</Text>
+              </HStack>
+            </Button>
+            {isSelected && (
+              <CopySolutionButton solutionText={solutionDisplayString} />
+            )}
+          </HStack>
         );
       })}
     </SimpleGrid>
@@ -171,5 +191,24 @@ function Spoiler({ hide, onReveal, children }: SpoilerProps) {
       )}
       <Box sx={styles}>{children}</Box>
     </Box>
+  );
+}
+
+function CopySolutionButton({ solutionText }: { solutionText: string }) {
+  const { onCopy, hasCopied, setValue } = useClipboard(solutionText);
+  useEffect(() => {
+    setValue(solutionText);
+  }, [solutionText]);
+
+  return (
+    <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
+      <IconButton
+        onClick={onCopy}
+        icon={<CopyIcon />}
+        aria-label="copy solution"
+        size={["sm", "md"]}
+        colorScheme="blue"
+      />
+    </Tooltip>
   );
 }

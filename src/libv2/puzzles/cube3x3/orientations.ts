@@ -1,4 +1,4 @@
-import { CubeRotation } from "./moves";
+import { RotationMove } from "./moves";
 
 export const COLORS = ["W", "O", "G", "R", "B", "Y"] as const;
 
@@ -21,7 +21,7 @@ export type CubeOrientation = (typeof CUBE_ORIENTATIONS)[number];
 // converts cube orientations to cube rotations relative to WG
 // so it gives the cube rotations needed to bring the cube from white top green front to any other orientation
 const CUBE_ORIENTATIONS_TO_ROTATIONS: {
-  [k in CubeOrientation]: CubeRotation[];
+  [k in CubeOrientation]: RotationMove[];
 } = {
   WO: ["y'"],
   WG: [],
@@ -51,7 +51,7 @@ const CUBE_ORIENTATIONS_TO_ROTATIONS: {
 
 export function cubeOrientationToRotations(
   orientation: CubeOrientation
-): CubeRotation[] {
+): RotationMove[] {
   return CUBE_ORIENTATIONS_TO_ROTATIONS[orientation];
 }
 

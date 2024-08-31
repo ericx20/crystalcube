@@ -15,6 +15,13 @@ export const LAYERS = [
 ] as const;
 export type Layer = (typeof LAYERS)[number];
 
+// prettier-ignore
+export const FACE_LAYERS = ["R", "L", "U", "D", "F", "B"] as const satisfies Layer[];
+export type FaceLayer = (typeof FACE_LAYERS)[number];
+
+export const SLICE_LAYERS = ["M", "E", "S"] as const satisfies Layer[];
+export type SliceLayer = (typeof SLICE_LAYERS)[number];
+
 // Represents the axes when rotating the entire cube
 export const AXES = ["x", "y", "z"] as const;
 export type Axis = (typeof AXES)[number];
@@ -32,7 +39,9 @@ export const SUFFIXES = ["", "2", "'"] as const;
 export type Suffix = (typeof SUFFIXES)[number];
 
 export type LayerMove = `${Layer}${Suffix}`; // include slices and wide moves
-export type CubeRotation = `${Axis}${Suffix}`;
+export type FaceMove = `${FaceLayer}${Suffix}`;
+export type SliceMove = `${SliceLayer}${Suffix}`;
+export type RotationMove = `${Axis}${Suffix}`;
 // TODO: rename Move3x3 to Move, and update generics to be like <M extends Move> not <Move extends Move3x3>
 export type Move3x3 = `${Layer | Axis}${Suffix}`;
 
@@ -135,12 +144,23 @@ export function isLayerMove(move: Move3x3): move is LayerMove {
   return !isCubeRotation(move);
 }
 
-export function isCubeRotation(move: Move3x3): move is CubeRotation {
-  return AXES.includes(move[0] as Axis);
+export function isCubeRotation(move: Move3x3): move is RotationMove {
+  return (AXES as Readonly<string[]>).includes(move[0]);
+}
+
+export function isFaceMove(move: Move3x3): move is FaceMove {
+  return (
+    !isCubeRotation(move) &&
+    (FACE_LAYERS as Layer[]).includes(layerOfLayerMove(move))
+  );
 }
 
 export function layerOfLayerMove(move: LayerMove): Layer {
   return move[0] as Layer;
+}
+
+export function axisOfRotation(move: RotationMove): Axis {
+  return move[0] as Axis;
 }
 
 export function movesAreParallel(a: Move3x3, b: Move3x3) {

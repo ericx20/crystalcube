@@ -15,6 +15,7 @@ import TrainerCard from "./TrainerCard";
 interface ScrambleViewerProps<Move> {
   scramble: Move[];
   setScramble: (newScramble: Move[]) => void;
+  /** A function that parses a string into move notation, or if invalid, returns null */
   notationParser: (input: string) => Move[] | null;
 }
 
