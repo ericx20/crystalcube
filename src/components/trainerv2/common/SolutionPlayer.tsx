@@ -32,6 +32,7 @@ interface SolutionPlayerProps {
   mask?: Cube3x3Mask;
   showEO?: boolean;
   hideSolution?: boolean;
+  isLoading?: boolean;
 }
 
 export default function SolutionPlayer({
@@ -42,6 +43,7 @@ export default function SolutionPlayer({
   mask,
   showEO,
   hideSolution,
+  isLoading,
 }: SolutionPlayerProps) {
   // The full solution is `preRotation` then `solution`
 
@@ -104,25 +106,31 @@ export default function SolutionPlayer({
               isPreviousMove={currentMoveIndex !== null}
             />
           </SliderMark>
-          {solution.map((move, index) => {
-            const isSelected = currentMoveIndex === index;
-            const isPreviousMove =
-              currentMoveIndex !== null && currentMoveIndex > index;
-            const hideMove = hideSolution && !isSelected && !isPreviousMove;
-            return (
-              <SliderMark key={index} value={index} ml="-0.75rem" mt="-3.3rem">
-                <SolutionMoveLabel
-                  label={move}
-                  moveAnnotation={
-                    solutionAnnotation && solutionAnnotation[index]
-                  }
-                  isSelected={isSelected}
-                  isPreviousMove={isPreviousMove}
-                  hide={hideMove}
-                />
-              </SliderMark>
-            );
-          })}
+          {!isLoading &&
+            solution.map((move, index) => {
+              const isSelected = currentMoveIndex === index;
+              const isPreviousMove =
+                currentMoveIndex !== null && currentMoveIndex > index;
+              const hideMove = hideSolution && !isSelected && !isPreviousMove;
+              return (
+                <SliderMark
+                  key={index}
+                  value={index}
+                  ml="-0.75rem"
+                  mt="-3.3rem"
+                >
+                  <SolutionMoveLabel
+                    label={move}
+                    moveAnnotation={
+                      solutionAnnotation && solutionAnnotation[index]
+                    }
+                    isSelected={isSelected}
+                    isPreviousMove={isPreviousMove}
+                    hide={hideMove}
+                  />
+                </SliderMark>
+              );
+            })}
           <SliderTrack>
             <SliderFilledTrack />
           </SliderTrack>

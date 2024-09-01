@@ -11,9 +11,11 @@ import {
   Text,
   useColorModeValue,
   HStack,
+  Icon,
 } from "@chakra-ui/react";
 import type { LevelMode, NumOfMovesConfig } from "../eoStepTypes";
 import range from "lodash/range";
+import { VscCircleFilled } from "react-icons/vsc";
 
 export interface EOStepLevelSelectProps {
   levelMode: LevelMode;
@@ -100,7 +102,9 @@ function SelectNumOfBadEdges({
         <SliderTrack bgGradient={sliderGradient}>
           <SliderFilledTrack bg={useColorModeValue("blue.500", "blue.200")} />
         </SliderTrack>
-        <SliderThumb />
+        <SliderThumb boxSize={5}>
+          <Icon as={VscCircleFilled} boxSize={4} color="blue.500" />
+        </SliderThumb>
       </Slider>
     </Box>
   );
@@ -136,7 +140,9 @@ function SelectNumOfMoves({
         <SliderTrack>
           <SliderFilledTrack bg={useColorModeValue("blue.500", "blue.200")} />
         </SliderTrack>
-        <SliderThumb />
+        <SliderThumb boxSize={5}>
+          <Icon as={VscCircleFilled} boxSize={4} color="blue.500" />
+        </SliderThumb>
       </Slider>
     </Box>
   );

@@ -97,6 +97,7 @@ export default function SolutionsViewer({
             mask={mask}
             showEO={showEO}
             hideSolution={hideSolutions}
+            isLoading={isLoading}
           />
         </Box>
       </Stack>
@@ -188,7 +189,6 @@ function Spoiler({
     >
       <Box
         pointerEvents={hide ? "none" : undefined}
-        transition="opacity 0.12s linear"
         filter={hide ? "blur(8px)" : undefined}
         tabIndex={-1}
       >

@@ -1,15 +1,14 @@
-import { CheckIcon, CloseIcon, EditIcon, CopyIcon } from "@chakra-ui/icons";
+import { CopyIcon } from "@chakra-ui/icons";
 import {
   Editable,
+  EditableInput,
   EditablePreview,
-  EditableTextarea,
   FormControl,
   FormErrorMessage,
   Heading,
   HStack,
   IconButton,
   Skeleton,
-  Spacer,
   Stack,
   Tooltip,
   useClipboard,
@@ -42,9 +41,7 @@ export default function ScrambleEditor<Move extends string>({
     setInputScramble(scramble.join(" "));
   }, [scramble]);
 
-  const handleInputChange: React.ChangeEventHandler<HTMLTextAreaElement> = (
-    e
-  ) => {
+  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     setInputScramble(e.target.value);
   };
 
@@ -90,11 +87,11 @@ export default function ScrambleEditor<Move extends string>({
       >
         <Heading size="md">scramble</Heading>
         <HStack width="100%">
-          <Skeleton isLoaded={!debouncedLoading} minWidth="10rem">
+          <Skeleton isLoaded={!debouncedLoading} minWidth="10rem" width="100%">
             <FormControl isInvalid={inputIsInvalid}>
               <Editable value={inputScramble}>
                 <EditablePreview />
-                <EditableTextarea
+                <EditableInput
                   value={inputScramble}
                   onChange={handleInputChange}
                   onBlur={submitScramble}
@@ -107,7 +104,6 @@ export default function ScrambleEditor<Move extends string>({
               )}
             </FormControl>
           </Skeleton>
-          <Spacer />
           <Tooltip label="copied scramble!" isOpen={hasCopied} hasArrow>
             <IconButton
               onClick={onCopy}

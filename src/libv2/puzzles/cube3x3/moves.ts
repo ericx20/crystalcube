@@ -1,6 +1,7 @@
 import { invertPerm, doublePerm } from "src/libv2/puzzles/common";
 import { Perm, MoveSet } from "src/libv2/types";
 import { FaceletIndex } from "./state";
+import sample from "lodash/sample";
 
 // Represents the 6 faces and their colors
 export const FACES = ["R", "L", "U", "D", "F", "B"] as const;
@@ -29,9 +30,9 @@ export type Axis = (typeof AXES)[number];
 export const LAYERS_ALONG_AXES: Readonly<{
   [layer in Axis]: readonly Layer[];
 }> = {
-  x: ["R", "M", "L"],
-  y: ["U", "E", "D"],
-  z: ["F", "S", "B"],
+  x: ["R", "M", "L", "r", "l"],
+  y: ["U", "E", "D", "u", "d"],
+  z: ["F", "S", "B", "f", "b"],
 };
 
 // The suffixes of Singmaster notation
@@ -40,7 +41,6 @@ export type Suffix = (typeof SUFFIXES)[number];
 
 export type LayerMove = `${Layer}${Suffix}`; // include slices and wide moves
 export type FaceMove = `${FaceLayer}${Suffix}`;
-export type SliceMove = `${SliceLayer}${Suffix}`;
 export type RotationMove = `${Axis}${Suffix}`;
 // TODO: rename Move3x3 to Move, and update generics to be like <M extends Move> not <Move extends Move3x3>
 export type Move3x3 = `${Layer | Axis}${Suffix}`;
@@ -183,4 +183,180 @@ export function isValidMove(move: string): move is Move3x3 {
     (LAYERS.includes(base as Layer) || AXES.includes(base as Axis)) &&
     SUFFIXES.includes(suffix as Suffix)
   );
+}
+
+export function randomMoves(
+  length: number,
+  moveSet: readonly Move3x3[] = MOVESETS.RUFLDB
+) {
+  const moves: Move3x3[] = [];
+  for (let i = 0; i < length; i++) {
+    appendRandomMove(moves, moveSet);
+  }
+  return moves;
+}
+
+/**
+ * Note: mutates `moves`!
+ */
+export function appendRandomMove(
+  moves: Move3x3[],
+  moveSet: readonly Move3x3[] = MOVESETS.RUFLDB
+): void {
+  const lastMove = moves.at(moves.length - 1);
+  const secondLastMove = moves.at(moves.length - 2);
+  const choiceIsValid = (choice: Move3x3) =>
+    !lastMove || // if there is no last move, we can choose any move as valid
+    (!sameLayerOrAxis(choice, lastMove) &&
+      (!secondLastMove ||
+        !endsWithRedundantParallelMoves([secondLastMove, lastMove, choice])));
+  const validChoices = moveSet.filter(choiceIsValid);
+  const move = sample(validChoices);
+  move && moves.push(move);
+}
+
+function endsWithRedundantParallelMoves(solution: Move3x3[]): boolean {
+  if (solution.length < 3) {
+    return false;
+  }
+  const [thirdLast, secondLast, last] = solution.slice(-3);
+  if ([thirdLast, secondLast, last].some(isCubeRotation)) {
+    return false;
+  }
+  return (
+    sameLayerOrAxis(thirdLast, last) && movesAreParallel(thirdLast, secondLast)
+  );
+}
+
+export type MovePower = 1 | 2 | 3;
+
+export function powerOfMove(move: Move3x3): MovePower {
+  const suffix = move[1];
+  if (suffix === "'") {
+    return 3;
+  }
+  if (suffix === "2") {
+    return 2;
+  }
+  return 1;
+}
+
+// TODO: update OH scrambler
+export function translateMoves(
+  moves: Move3x3[],
+  rotations: Array<RotationMove>
+): Move3x3[] {
+  return moves.map((move) => translateMove(move, rotations));
+}
+
+function translateMove(move: Move3x3, rotations: Array<RotationMove>): Move3x3 {
+  let newMove = move;
+  rotations.forEach((rotation) => {
+    if (isCubeRotation(newMove)) {
+      newMove = translateRotation(newMove, rotation);
+    } else {
+      newMove = translateLayerMove(newMove, rotation);
+    }
+  });
+  return newMove;
+}
+
+type Cycle<T> = Array<T>;
+
+// prettier-ignore
+const ROTATION_TO_LAYER_CYCLES: Readonly<{ [rotation in RotationMove]: Array<Cycle<Layer>> }> = {
+  "x":  [["U", "B", "D", "F"], ["u", "b", "d", "f"], ["E", "S"]],
+  "x'": [["U", "F", "D", "B"], ["u", "f", "d", "b"], ["E", "S"]],
+  "x2": [["U", "D"], ["F", "B"], ["u", "d"], ["f", "b"]],
+  "y":  [["F", "L", "B", "R"], ["f", "l", "b", "r"], ["M", "S"]],
+  "y'": [["F", "R", "B", "L"], ["f", "r", "b", "l"], ["M", "S"]],
+  "y2": [["R", "L"], ["F", "B"], ["r", "l"], ["f", "b"]],
+  "z":  [["U", "R", "D", "L"], ["u", "r", "d", "l"], ["E", "M"]],
+  "z'": [["U", "L", "D", "R"], ["u", "l", "d", "r"], ["E", "M"]],
+  "z2": [["U", "D"], ["L", "R"], ["u", "d"], ["l", "r"]],
+}
+
+// prettier-ignore
+const LAYERS_REVERSED_MAP: Readonly<{ [rotation in RotationMove]?: Layer }> = {
+  "x":  "S",
+  "x'": "E",
+  "y":  "M",
+  "y'": "S",
+  "z":  "M",
+  "z'": "E",
+};
+
+function translateLayerMove(
+  move: LayerMove,
+  rotation: RotationMove
+): LayerMove {
+  const layerCycles = ROTATION_TO_LAYER_CYCLES[rotation];
+  for (const cycle of layerCycles) {
+    const moveLayer = layerOfLayerMove(move);
+    const index = cycle.indexOf(moveLayer);
+    if (index !== -1) {
+      const newLayer = nextElement(cycle, index);
+      const newSuffix = move[1] ?? "";
+      const newMove = (newLayer + newSuffix) as LayerMove;
+      const needToReverse = LAYERS_REVERSED_MAP[rotation] === moveLayer;
+      return needToReverse ? invertMove(newMove) : newMove;
+    }
+  }
+  return move;
+}
+
+type RotationMap = Readonly<{ [rotation in RotationMove]: RotationMove }>;
+// prettier-ignore
+const AXIS_TO_ROTATION_MAP: Readonly<{ [axis in Axis]: RotationMap }> = {
+  x: {
+    "x" : "x",
+    "y" : "z'",
+    "z" : "y",
+    "x'": "x'",
+    "y'": "z",
+    "z'": "y'",
+    "x2": "x2",
+    "y2": "z2",
+    "z2": "y2",
+  },
+  y: {
+    "x" : "z",
+    "y" : "y",
+    "z" : "x'",
+    "x'": "z'",
+    "y'": "y'",
+    "z'": "x",
+    "x2": "z2",
+    "y2": "y2",
+    "z2": "x2",
+  },
+  z: {
+    "x" : "y'",
+    "y" : "x",
+    "z" : "z",
+    "x'": "y",
+    "y'": "x'",
+    "z'": "z'",
+    "x2": "y2",
+    "y2": "x2",
+    "z2": "z2",
+  },
+}
+
+function translateRotation(
+  rotationToTranslate: RotationMove,
+  rotation: RotationMove
+): RotationMove {
+  const rotationPower = powerOfMove(rotation);
+  const axis = axisOfRotation(rotation);
+  const rotationMap = AXIS_TO_ROTATION_MAP[axis];
+  let translatedRotation = rotationToTranslate;
+  for (let i = 0; i < rotationPower; i++) {
+    translatedRotation = rotationMap[translatedRotation];
+  }
+  return translatedRotation;
+}
+
+function nextElement<T>(arr: Array<T>, index: number): T {
+  return arr[(index + 1) % arr.length];
 }
