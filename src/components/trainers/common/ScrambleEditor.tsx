@@ -88,12 +88,13 @@ export default function ScrambleEditor<Move extends string>({
       <Stack
         direction={{ base: "column", md: "row" }}
         alignItems={{ base: "flex-start", md: "center" }}
+        gap={4}
       >
         <Heading size="md">scramble</Heading>
         <HStack width="100%">
           <Skeleton isLoaded={!debouncedLoading} minWidth="10rem" width="100%">
             <FormControl isInvalid={inputIsInvalid}>
-              <Editable value={inputScramble}>
+              <Editable value={inputScramble} fontSize="lg">
                 <EditablePreview />
                 <EditableInput
                   onChange={handleInputChange}
@@ -122,9 +123,7 @@ export default function ScrambleEditor<Move extends string>({
       {scrambleFailed && (
         <HStack>
           <IoWarning />
-          <Text fontSize="md">
-            failed to generate new scramble. please try again
-          </Text>
+          <Text>failed to generate new scramble. please try again</Text>
         </HStack>
       )}
     </VStack>

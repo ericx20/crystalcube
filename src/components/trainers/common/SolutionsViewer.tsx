@@ -70,7 +70,7 @@ export default function SolutionsViewer({
     <VStack align="left">
       <Heading size="md">
         solutions
-        <Badge ml={2} colorScheme="blue" variant="solid">
+        <Badge ml={4} colorScheme="blue" variant="solid">
           {badgeText}
         </Badge>
       </Heading>
@@ -96,7 +96,7 @@ export default function SolutionsViewer({
             scramble={scramble}
             preRotation={preRotation}
             solution={selectedSolution ?? []}
-            solutionAnnotation={eoSolutionAnnotation}
+            solutionAnnotation={showEO ? eoSolutionAnnotation : undefined}
             mask={mask}
             showEO={showEO}
             hideSolution={hideSolutions}
@@ -215,7 +215,7 @@ function Spoiler({
             top="50%"
             left="50%"
             transform="translate(-50%, -50%)"
-            fontSize="lg"
+            fontSize="md"
             bg={badgeColor}
             color="white"
           >

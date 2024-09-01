@@ -32,9 +32,7 @@ export default function PreferenceSelect({
     <VStack align="left" gap={4}>
       <Heading size="md">preferences</Heading>
       <Box>
-        <Text fontSize="lg" mb={2}>
-          solution orientation:
-        </Text>
+        <Text mb={2}>solution orientation:</Text>
         <Stack direction={{ base: "column", sm: "row" }}>
           <OrientationSelect
             orientation={orientation}
@@ -47,7 +45,7 @@ export default function PreferenceSelect({
           isChecked={shortScrambles}
           onChange={() => setShortScrambles(!shortScrambles)}
         />
-        <Text fontSize="lg">short scrambles</Text>
+        <Text>short scrambles</Text>
         <HelpButton
           title="short scrambles"
           ariaLabel="info about short scrambles"

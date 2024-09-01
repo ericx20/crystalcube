@@ -15,7 +15,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select,
   Stack,
   Tooltip,
   useClipboard,
@@ -28,7 +27,6 @@ import {
   isFaceMove,
   MASKS,
   Move3x3,
-  PuzzleConfigName,
   RotationMove,
 } from "src/lib/puzzles/cube3x3";
 
@@ -36,27 +34,25 @@ import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/lib/puzzles/cube3x3";
 
-import { useEOStepOptions, useActions, useUIOptions } from "./eoStepOptions";
-import type { EOStep } from "./eoStepTypes";
+import { useCrossOptions, useActions, useUIOptions } from "./crossOptions";
 
 import scrambler from "./scrambler";
 import solver from "./solver";
 
 import SolutionsViewer from "../common/SolutionsViewer";
-import EOStepLevelSelect from "./cards/EOStepLevelSelect";
+import CrossLevelSelect from "./cards/CrossLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
-import { getEOSolutionAnnotation } from "./utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import KeyboardControls from "./cards/KeyboardControls";
 
-export default function EOStepTrainer() {
+export default function CrossTrainer() {
   const [areSolutionsHidden, setSolutionsHidden] = useState(true);
   const hideSolutions = () => setSolutionsHidden(true);
   const showSolutions = () => setSolutionsHidden(false);
 
   // if any of the options change, this component will re-render
   // that's what we want for now, but if not then make selectors for the parts of the state we care about
-  const eoStepOptions = useEOStepOptions();
+  const crossOptions = useCrossOptions();
   const uiOptions = useUIOptions();
   const actions = useActions();
 
@@ -68,15 +64,14 @@ export default function EOStepTrainer() {
     isScrambleLoading,
     isLoading,
     getNext,
-  } = useScrambleAndSolutions(scrambler, solver, eoStepOptions, hideSolutions);
+  } = useScrambleAndSolutions(scrambler, solver, crossOptions, hideSolutions);
   const preRotation = cubeOrientationToRotations(
-    eoStepOptions.solutionOrientation
+    crossOptions.solutionOrientation
   );
 
   const mainAction = areSolutionsHidden ? showSolutions : getNext;
 
   const copyText = generateCopyText({
-    solverName: eoStepOptions.eoStep,
     scramble,
     preRotation,
     solutions,
@@ -93,11 +88,7 @@ export default function EOStepTrainer() {
     <Container maxW="container.lg">
       <VStack spacing={4} my={4}>
         <HStack spacing={4}>
-          <Heading fontSize="xl">EO Trainer</Heading>
-          <EOStepSelect
-            eoStep={eoStepOptions.eoStep}
-            setEOStep={actions.setEOStep}
-          />
+          <Heading size="md">CFOP cross trainer</Heading>
         </HStack>
         <Card p="1.5rem" w="100%">
           <ScrambleEditor
@@ -110,11 +101,10 @@ export default function EOStepTrainer() {
         </Card>
         <Card p="1.5rem" w="100%">
           <SolutionsViewer
-            mask={MASKS[eoStepOptions.eoStep]}
+            mask={MASKS.Cross}
             scramble={scramble}
             preRotation={preRotation}
             solutions={solutions}
-            showEO
             isLoading={isLoading}
             hideSolutions={areSolutionsHidden || isLoading}
             onRevealSolutions={showSolutions}
@@ -135,14 +125,11 @@ export default function EOStepTrainer() {
         </Card>
         <Flex direction="column" w="100%" gap={4}>
           <Card p="1.5rem">
-            <EOStepLevelSelect
-              levelMode={eoStepOptions.levelMode}
+            <CrossLevelSelect
+              levelMode={crossOptions.levelMode}
               setLevelMode={actions.setLevelMode}
-              numOfBadEdges={eoStepOptions.numOfBadEdges}
-              setNumOfBadEdges={actions.setLevelNumOfBadEdges}
-              numOfMoves={eoStepOptions.numOfMoves}
+              numOfMoves={crossOptions.numOfMoves}
               setNumOfMoves={actions.setLevelNumOfMoves}
-              numOfMovesConfig={actions.getNumOfMovesConfig()}
             />
           </Card>
           <Stack
@@ -153,10 +140,9 @@ export default function EOStepTrainer() {
           >
             <Card p="1.5rem" flex={1}>
               <PreferenceSelect
-                eoStep={eoStepOptions.eoStep}
-                orientation={eoStepOptions.solutionOrientation}
+                orientation={crossOptions.solutionOrientation}
                 setOrientation={actions.setSolutionOrientation}
-                shortScrambles={eoStepOptions.shortScrambles}
+                shortScrambles={crossOptions.shortScrambles}
                 setShortScrambles={actions.setShortScrambles}
               />
             </Card>
@@ -173,34 +159,12 @@ export default function EOStepTrainer() {
   );
 }
 
-interface EOStepSelectProps {
-  eoStep: EOStep;
-  setEOStep: (step: EOStep) => void;
-}
-
-function EOStepSelect({ eoStep, setEOStep }: EOStepSelectProps) {
-  return (
-    <Select
-      value={eoStep}
-      onChange={(e) => setEOStep(e.target.value as EOStep)}
-      variant="filled"
-      width="10rem"
-    >
-      <option value="EO">EO</option>
-      <option value="EOLine">EOLine</option>
-      <option value="EOCross">EOCross</option>
-      <option value="EOArrowBack">EOArrow (B)</option>
-      <option value="EOArrowLeft">EOArrow (L)</option>
-      <option value="EO222">EO222</option>
-    </Select>
-  );
-}
-
 const scrambleParser = (input: string) => {
   const parsed = Cube3x3.parseNotation(input);
   return parsed?.every(isFaceMove) ? parsed : null;
 };
 
+// TODO: make this common
 function ShareButton({ text }: { text: string }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { onCopy, hasCopied, setValue } = useClipboard(text);
@@ -245,12 +209,10 @@ function ShareButton({ text }: { text: string }) {
 }
 
 function generateCopyText({
-  solverName,
   scramble,
   preRotation,
   solutions,
 }: {
-  solverName: PuzzleConfigName;
   scramble: Move3x3[];
   preRotation: RotationMove[];
   solutions: Move3x3[][];
@@ -258,21 +220,12 @@ function generateCopyText({
   const scrambleText = `scramble: ${scramble.join(" ")}`;
 
   const solutionText = [
-    `${solverName} solutions:`,
+    "cross solutions:",
     ...solutions.map((solution, index) => {
       const prefixText = `${index + 1}.`;
       const movecountText = `(${solution.length} HTM)`;
       const solutionText = [...preRotation, ...solution].join(" ");
-      const eoAnnotationText = `[${getEOSolutionAnnotation(
-        scramble,
-        preRotation,
-        solution
-      )
-        .filter(Boolean)
-        .join(" ")}]`;
-      return [prefixText, movecountText, solutionText, eoAnnotationText]
-        .join(" ")
-        .trimEnd();
+      return [prefixText, movecountText, solutionText].join(" ").trimEnd();
     }),
   ].join("\n");
 

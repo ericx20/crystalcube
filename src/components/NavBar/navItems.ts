@@ -8,7 +8,17 @@ export interface NavItem {
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: "trainer",
-    href: "trainer/",
+    href: "train/",
+    children: [
+      {
+        label: "CFOP cross trainer",
+        href: "train/cross",
+      },
+      {
+        label: "ZZ EO trainer",
+        href: "train/eo",
+      },
+    ],
   },
   {
     label: "tools",

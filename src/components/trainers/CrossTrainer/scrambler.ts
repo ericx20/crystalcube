@@ -1,10 +1,4 @@
-import { KState } from "cubing/kpuzzle";
 import { randomScrambleForEvent } from "cubing/scramble";
-import {
-  experimentalSolve3x3x3IgnoringCenters,
-  random333State,
-} from "cubing/search";
-import shuffle from "lodash/shuffle";
 import sample from "lodash/sample";
 
 import {
@@ -20,33 +14,24 @@ import {
   simplifyMoves,
   translateMoves,
 } from "src/lib/puzzles/cube3x3";
-import { EOStepOptions, NUM_OF_MOVES_CONFIGS } from "./eoStepOptions";
-import { EOStep } from "./eoStepTypes";
+import { CrossOptions } from "./crossOptions";
 import { genReversePruningTable } from "src/lib/search";
 import { solveCube3x3, solveEntire3x3 } from "src/lib/puzzles/cube3x3/solvers";
 import random3x3Scramble from "src/lib/puzzles/cube3x3/scramble";
 
 export default async function scrambler(
-  options: EOStepOptions
+  options: CrossOptions
 ): Promise<Move3x3[] | null> {
+  console.log({ options });
   switch (options.levelMode) {
-    case "num-of-bad-edges":
-      return numBadEdgesScramble(
-        options.numOfBadEdges,
-        options.eoStep,
-        options.solutionOrientation,
-        options.shortScrambles
-      );
     case "num-of-moves":
       return await numOfMovesScramble(
         options.numOfMoves,
-        options.eoStep,
         options.solutionOrientation,
         options.shortScrambles
       );
     case "random":
       return await randomScramble(
-        options.eoStep,
         options.solutionOrientation,
         options.shortScrambles
       );
@@ -58,11 +43,10 @@ export default async function scrambler(
  */
 async function numOfMovesScramble(
   n: number,
-  eoStep: EOStep,
   solutionOrientation: CubeOrientation,
   shortScramble: boolean = false
 ): Promise<Move3x3[] | null> {
-  const puzzleConfig = PUZZLE_CONFIGS[eoStep];
+  const puzzleConfig = PUZZLE_CONFIGS.Cross;
   const preRotation = cubeOrientationToRotations(solutionOrientation);
 
   // Approach 1: if the difficulty `n` is between 0 and `pruningDepth`, we can get a random-state scramble with respect to edges by sampling a "reverse" pruning table
@@ -79,18 +63,17 @@ async function numOfMovesScramble(
     // TODO: cache these?
     const table = genReversePruningTable(puzzle, {
       pruningDepth: puzzleConfig.solverConfig.pruningDepth,
-      name: `${eoStep}-reverse`,
+      name: "cross-reverse",
     });
 
     const scramble = sample(table[n]) ?? [];
     return shortScramble
-      ? makeShortScramble(scramble, preRotation, eoStep, 4)
-      : makeBetterScramble(scramble, preRotation, eoStep);
+      ? makeShortScramble(scramble, preRotation, 4)
+      : makeBetterScramble(scramble, preRotation);
   } else {
     // Approach 2: if the difficulty `n` exceeds pruning depth, we have to do a random-move scramble
     // We will need to shorten the scramble, either with respect to only the edges or we need to get proper random state corners as well!
-    const { iterationLimit } = NUM_OF_MOVES_CONFIGS[eoStep];
-
+    const iterationLimit = 2000;
     /*
       Our goal is to generate a scramble that can be solved optimally in exactly `n` moves.
       Typically we do this with trial and error, generating random-state scrambles until one with the correct difficulty is found.
@@ -105,7 +88,7 @@ async function numOfMovesScramble(
     let success = false;
     for (let i = 0; i < iterationLimit; i++) {
       const optimalSolutionLength = (
-        await solveCube3x3(scramble, eoStep, preRotation, 1)
+        await solveCube3x3(scramble, "Cross", preRotation, 1)
       )[0].length;
       if (optimalSolutionLength === n) {
         success = true;
@@ -120,67 +103,24 @@ async function numOfMovesScramble(
     }
 
     return shortScramble
-      ? makeShortScramble(scramble, preRotation, eoStep, 4)
-      : makeBetterScramble(scramble, preRotation, eoStep);
+      ? makeShortScramble(scramble, preRotation, 4)
+      : makeBetterScramble(scramble, preRotation);
   }
-}
-
-async function numBadEdgesScramble(
-  n: number,
-  eoStep: EOStep,
-  solutionOrientation: CubeOrientation,
-  shortScramble: boolean = false
-): Promise<Move3x3[]> {
-  const { kpuzzle, stateData } = await random333State();
-  const newStateData = {
-    ...stateData,
-    EDGES: {
-      orientation: nFlipEOArray(n),
-      pieces: stateData.EDGES.pieces,
-    },
-  };
-  const newPuzzle = new KState(kpuzzle, newStateData);
-  const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle);
-  const scrambleForFBAxis = invertMoves(
-    Cube3x3.parseNotation(solution.toString())!
-  );
-  // Our scramble only has the desired number of bad edges when looking at the F/B axis!
-  // However if the solution orientation has a different axis, we need to translate the whole scramble
-  const preRotation = cubeOrientationToRotations(solutionOrientation);
-  const scramble = translateMoves(scrambleForFBAxis, invertMoves(preRotation));
-
-  if (shortScramble) {
-    const preRotation = cubeOrientationToRotations(solutionOrientation);
-    return await makeShortScramble(scramble, preRotation, eoStep, 4);
-  }
-  return scramble;
-}
-
-function nFlipEOArray(n: number): Array<number> {
-  if (!Number.isInteger(n) || n % 2 !== 0 || n < 0 || n > 12) {
-    console.error(
-      "nFlipEOArray(): must be an even integer from 0 to 12 inclusive"
-    );
-    return Array(12).fill(0);
-  }
-  const goodEdges = Array<number>(12 - n).fill(0);
-  const badEdges = Array<number>(n).fill(1);
-  return shuffle(goodEdges.concat(badEdges));
 }
 
 async function randomScramble(
-  eoStep: EOStep,
   solutionOrientation: CubeOrientation,
   shortScramble: boolean = false
 ): Promise<Move3x3[]> {
   const scramble = await random3x3Scramble();
   if (shortScramble) {
     const preRotation = cubeOrientationToRotations(solutionOrientation);
-    return await makeShortScramble(scramble, preRotation, eoStep, 4);
+    return await makeShortScramble(scramble, preRotation, 4);
   }
   return scramble;
 }
 
+// TODO: refactor into common
 /**
  * Given a scramble for a specific step (e.g. EOCross)
  * Generate an equivalent scramble that also evenly scrambles the pieces not involved in that step.
@@ -190,8 +130,7 @@ async function randomScramble(
  */
 async function makeBetterScramble(
   originalScramble: Move3x3[],
-  preRotation: RotationMove[],
-  eoStep: EOStep
+  preRotation: RotationMove[]
 ) {
   // This implementation is not very efficient but it's easy to implement
   // step 1: generate a random-state cube scramble and solve the selected EOStep on it
@@ -203,7 +142,7 @@ async function makeBetterScramble(
     (await randomScrambleForEvent("333")).toString()
   )!;
   const solutionForRandomScramble = (
-    await solveCube3x3(randomScramble, eoStep, preRotation, 1)
+    await solveCube3x3(randomScramble, "Cross", preRotation, 1)
   )[0]!;
   // the setup is `[...randomScramble, ...preRotation, ...solutionForRandomScramble, invertMoves(...preRotation) ...originalScramble]`
   // however we need to translate the setup so it doesn't have any rotations
@@ -215,15 +154,17 @@ async function makeBetterScramble(
   return invertMoves(await solveEntire3x3(setup));
 }
 
+// TODO: refactor into common
 async function makeShortScramble(
   scramble: Move3x3[],
   preRotation: RotationMove[],
-  eoStep: EOStep,
   numExtraMoves = 0
 ) {
   const extraMoves = randomMoves(numExtraMoves);
   const newScramble = [...scramble, ...extraMoves];
-  const solution = (await solveCube3x3(newScramble, eoStep, preRotation, 1))[0];
+  const solution = (
+    await solveCube3x3(newScramble, "Cross", preRotation, 1)
+  )[0];
   const solutionInverse = translateMoves(
     invertMoves(solution),
     invertMoves(preRotation)

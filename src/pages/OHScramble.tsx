@@ -138,7 +138,9 @@ export default function OHScramble() {
   return (
     <SlideFade in>
       <VStack spacing={3}>
-        <Heading textAlign="center">one handed scrambles</Heading>
+        <Heading textAlign="center" size="lg">
+          one handed scrambles
+        </Heading>
         <TwistyPlayer
           alg={scramble}
           visualization="2D"

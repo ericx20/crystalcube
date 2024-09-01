@@ -209,7 +209,6 @@ function SolutionMoveLabel({
       </Center>
       <Text
         colorScheme={isSelected ? "blue" : "gray"}
-        fontSize="md"
         textAlign="center"
         whiteSpace="nowrap"
         fontWeight={isSelected ? "bold" : "normal"}

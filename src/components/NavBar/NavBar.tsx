@@ -18,21 +18,21 @@ import {
   Image,
   Badge,
   Container,
-} from "@chakra-ui/react"
+} from "@chakra-ui/react";
 import {
   HamburgerIcon,
   CloseIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-} from "@chakra-ui/icons"
-import { ColorModeSwitcher } from "./ColorModeSwitcher"
-import { Link as RouterLink } from "react-router-dom"
-import logo from "src/assets/crystalcube.png"
-import NAV_ITEMS, { NavItem } from "./navItems"
-import { useNavigate } from "react-router-dom"
+} from "@chakra-ui/icons";
+import { ColorModeSwitcher } from "./ColorModeSwitcher";
+import { Link as RouterLink } from "react-router-dom";
+import logo from "src/assets/crystalcube.png";
+import NAV_ITEMS, { NavItem } from "./navItems";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
-  const { isOpen, onToggle, onClose } = useDisclosure()
+  const { isOpen, onToggle, onClose } = useDisclosure();
   const navigate = useNavigate();
 
   return (
@@ -49,18 +49,20 @@ export default function NavBar() {
       borderColor={useColorModeValue("gray.200", "gray.900")}
     >
       <Container maxW="container.lg" p={0}>
-        <Flex
-          py={{ base: 2 }}
-          px={{ base: 4 }}
-        >
+        <Flex py={{ base: 2 }} px={{ base: 4 }}>
           <Flex
             flex={{ base: 1, md: "auto" }}
             ml={-2}
-            display={{ base: "flex", md: "none" }}>
+            display={{ base: "flex", md: "none" }}
+          >
             <IconButton
               onClick={onToggle}
               icon={
-                isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />
+                isOpen ? (
+                  <CloseIcon w={3} h={3} />
+                ) : (
+                  <HamburgerIcon w={5} h={5} />
+                )
               }
               variant="ghost"
               aria-label="Toggle Navigation"
@@ -79,13 +81,15 @@ export default function NavBar() {
               <Text
                 textAlign={useBreakpointValue({ base: "center", md: "left" })}
                 fontFamily="heading"
+                fontSize="lg"
                 color={useColorModeValue("gray.800", "white")}
                 fontWeight="semibold"
-                as={RouterLink} to=""
+                as={RouterLink}
+                to=""
               >
                 crystalcube
               </Text>
-              <Flex display={{ base: "none", sm: "flex"}}>
+              <Flex display={{ base: "none", sm: "flex" }}>
                 <VersionBadge />
               </Flex>
             </HStack>
@@ -130,14 +134,14 @@ export default function NavBar() {
         </Collapse>
       </Container>
     </Box>
-  )
+  );
 }
 
 const DesktopNav = () => {
-  const linkColor = useColorModeValue("gray.600", "gray.200")
-  const linkHoverColor = useColorModeValue("gray.800", "white")
-  const popoverContentBgColor = useColorModeValue("white", "gray.800")
-  const buttonColor = useColorModeValue("#EDF2F7", "#2C313D")
+  const linkColor = useColorModeValue("gray.600", "gray.200");
+  const linkHoverColor = useColorModeValue("gray.800", "white");
+  const popoverContentBgColor = useColorModeValue("white", "gray.800");
+  const buttonColor = useColorModeValue("#EDF2F7", "#2C313D");
 
   return (
     <Stack direction="row" spacing={4}>
@@ -149,7 +153,6 @@ const DesktopNav = () => {
                 as={navItem.href ? RouterLink : undefined}
                 // href={navItem.href ?? "#"
                 to={navItem.href ?? ""}
-                fontSize="md"
                 fontWeight={500}
                 color={linkColor}
                 bg="none"
@@ -157,7 +160,8 @@ const DesktopNav = () => {
                   textDecoration: "none",
                   color: linkHoverColor,
                   bg: buttonColor,
-                }}>
+                }}
+              >
                 {navItem.label}
               </Button>
             </PopoverTrigger>
@@ -169,7 +173,8 @@ const DesktopNav = () => {
                 bg={popoverContentBgColor}
                 p={4}
                 rounded="xl"
-                minW="sm">
+                minW="sm"
+              >
                 <Stack>
                   {navItem.children.map((child) => (
                     <DesktopSubNav key={child.label} {...child} />
@@ -181,8 +186,8 @@ const DesktopNav = () => {
         </Box>
       ))}
     </Stack>
-  )
-}
+  );
+};
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
@@ -194,13 +199,15 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
       display="block"
       p={2}
       rounded="md"
-      _hover={{ bg: useColorModeValue("cyan.50", "gray.900") }}>
+      _hover={{ bg: useColorModeValue("cyan.50", "gray.900") }}
+    >
       <Stack direction="row" align="center">
         <Box>
           <Text
             transition="all .3s ease"
             _groupHover={{ color: "cyan.500" }}
-            fontWeight={500}>
+            fontWeight={500}
+          >
             {label}
           </Text>
           <Text fontSize="sm">{subLabel}</Text>
@@ -212,31 +219,40 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           _groupHover={{ opacity: "100%", transform: "translateX(0)" }}
           justify="flex-end"
           align="center"
-          flex={1}>
+          flex={1}
+        >
           <Icon color="cyan.500" w={5} h={5} as={ChevronRightIcon} />
         </Flex>
       </Stack>
     </Link>
-  )
-}
+  );
+};
 
-interface MobileNavProps { onClose: () => void }
+interface MobileNavProps {
+  onClose: () => void;
+}
 const MobileNav = ({ onClose }: MobileNavProps) => {
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
       p={4}
-      display={{ md: "none" }}>
+      display={{ md: "none" }}
+    >
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} onClose={onClose} />
       ))}
     </Stack>
-  )
-}
+  );
+};
 
-type MobileNavItemProps = NavItem & MobileNavProps
-const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) => {
-  const { isOpen, onToggle } = useDisclosure()
+type MobileNavItemProps = NavItem & MobileNavProps;
+const MobileNavItem = ({
+  label,
+  children,
+  href,
+  onClose,
+}: MobileNavItemProps) => {
+  const { isOpen, onToggle } = useDisclosure();
   return (
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
@@ -249,10 +265,12 @@ const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) =
         cursor="pointer"
         _hover={{
           textDecoration: "none",
-        }}>
+        }}
+      >
         <Text
           fontWeight={600}
-          color={useColorModeValue("gray.600", "gray.200")}>
+          color={useColorModeValue("gray.600", "gray.200")}
+        >
           {label}
         </Text>
         {children && (
@@ -273,7 +291,8 @@ const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) =
           borderLeft={1}
           borderStyle="solid"
           borderColor={useColorModeValue("gray.200", "gray.700")}
-          align="start">
+          align="start"
+        >
           {children &&
             children.map((child) => (
               <Link
@@ -282,17 +301,14 @@ const MobileNavItem = ({ label, children, href, onClose }: MobileNavItemProps) =
                 py={2}
                 to={child.href ?? ""}
                 onClick={onClose}
-                >
+              >
                 {child.label}
               </Link>
             ))}
         </Stack>
       </Collapse>
     </Stack>
-  )
-}
+  );
+};
 
-
-const VersionBadge = () => (
-  <Badge textTransform="none">v{APP_VERSION}</Badge>
-)
+const VersionBadge = () => <Badge textTransform="none">v{APP_VERSION}</Badge>;
