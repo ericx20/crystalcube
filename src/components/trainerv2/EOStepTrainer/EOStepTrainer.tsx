@@ -62,6 +62,7 @@ export default function EOStepTrainer() {
 
   const {
     scramble,
+    scrambleFailed,
     setScramble,
     solutions,
     isScrambleLoading,
@@ -100,6 +101,7 @@ export default function EOStepTrainer() {
         </HStack>
         <Card p="1.5rem" w="100%">
           <ScrambleEditor
+            scrambleFailed={scrambleFailed}
             isScrambleLoading={isScrambleLoading}
             scramble={scramble}
             setScramble={setScramble}

@@ -30,7 +30,7 @@ import {
 
 export default async function scrambler(
   options: EOStepOptions
-): Promise<Move3x3[]> {
+): Promise<Move3x3[] | null> {
   switch (options.levelMode) {
     case "num-of-bad-edges":
       return numBadEdgesScramble(
@@ -55,12 +55,15 @@ export default async function scrambler(
   }
 }
 
+/**
+ * This algorithm may fail to generate a scramble, it returns `null` in that case
+ */
 async function numOfMovesScramble(
   n: number,
   eoStep: EOStep,
   solutionOrientation: CubeOrientation,
   shortScramble: boolean = false
-): Promise<Move3x3[]> {
+): Promise<Move3x3[] | null> {
   const puzzleConfig = PUZZLE_CONFIGS[eoStep];
   const preRotation = cubeOrientationToRotations(solutionOrientation);
 
@@ -88,11 +91,7 @@ async function numOfMovesScramble(
   } else {
     // Approach 2: if the difficulty `n` exceeds pruning depth, we have to do a random-move scramble
     // We will need to shorten the scramble, either with respect to only the edges or we need to get proper random state corners as well!
-    const { min, max, iterationLimit } = NUM_OF_MOVES_CONFIGS[eoStep];
-    // if (n < min || n > max) {
-    // // TODO: handle failure where the scramble function is being used
-    //   return null;
-    // }
+    const { iterationLimit } = NUM_OF_MOVES_CONFIGS[eoStep];
 
     /*
       Our goal is to generate a scramble that can be solved optimally in exactly `n` moves.
@@ -107,6 +106,7 @@ async function numOfMovesScramble(
     const scramble: Move3x3[] = randomMoves(n);
     let success = false;
     for (let i = 0; i < iterationLimit; i++) {
+      console.log(i);
       const optimalSolutionLength = (
         await solveCube3x3(scramble, eoStep, preRotation, 1)
       )[0].length;
@@ -119,7 +119,7 @@ async function numOfMovesScramble(
 
     if (!success) {
       console.warn("scramble failed!");
-      return []; // TODO: return null if scramble fails, or fallback to a random state and show an error message saying couldn't do it
+      return null;
     }
 
     return shortScramble

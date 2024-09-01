@@ -21,9 +21,7 @@ export interface UIOptions {
 }
 
 export interface Actions {
-  // getters: calculate something from state
   getNumOfMovesConfig: () => NumOfMovesConfig;
-  // setters: change state
   setEOStep: (eoStep: EOStep) => void;
   setLevelMode: (mode: LevelMode) => void;
   setLevelNumOfBadEdges: (num: number) => void;
@@ -56,7 +54,6 @@ const useStore = create(
         enableHotkeys: true,
       },
       actions: {
-        // TODO: getter for solverConfig
         getNumOfMovesConfig: () =>
           NUM_OF_MOVES_CONFIGS[get().eoStepOptions.eoStep],
         setEOStep: (eoStep) =>
@@ -100,7 +97,6 @@ const useStore = create(
     {
       name: "eo-step",
       version: 0.1,
-      // TODO: move this function out
       merge: (persistedState, currentState) =>
         mergeDeepLeft(persistedState ?? {}, currentState),
     }
