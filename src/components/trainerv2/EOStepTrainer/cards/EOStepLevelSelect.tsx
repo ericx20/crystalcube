@@ -1,4 +1,3 @@
-import TrainerCard from "../../common/TrainerCard";
 import {
   Box,
   Heading,
@@ -12,6 +11,7 @@ import {
   useColorModeValue,
   HStack,
   Icon,
+  VStack,
 } from "@chakra-ui/react";
 import type { LevelMode, NumOfMovesConfig } from "../eoStepTypes";
 import range from "lodash/range";
@@ -37,7 +37,7 @@ export default function EOStepLevelSelect({
   numOfMovesConfig,
 }: EOStepLevelSelectProps) {
   return (
-    <TrainerCard>
+    <VStack align="left">
       <HStack spacing={4}>
         <Heading size="md">level</Heading>
         <Select
@@ -64,7 +64,7 @@ export default function EOStepLevelSelect({
           numOfMovesConfig={numOfMovesConfig}
         />
       )}
-    </TrainerCard>
+    </VStack>
   );
 }
 

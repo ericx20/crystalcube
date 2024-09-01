@@ -13,9 +13,9 @@ import {
   Tooltip,
   useClipboard,
   Spinner,
+  VStack,
 } from "@chakra-ui/react";
 import SolutionPlayer from "./SolutionPlayer";
-import TrainerCard from "./TrainerCard";
 import { RotationMove, Move3x3, Cube3x3Mask } from "src/libv2/puzzles/cube3x3";
 import { getEOSolutionAnnotation } from "../EOStepTrainer/utils";
 import { CopyIcon } from "@chakra-ui/icons";
@@ -29,6 +29,7 @@ interface SolutionsViewerProps {
   isLoading?: boolean;
   hideSolutions?: boolean;
   onRevealSolutions?: () => void;
+  enableHotkeys?: boolean;
   children?: React.ReactNode;
 }
 
@@ -46,6 +47,7 @@ export default function SolutionsViewer({
   onRevealSolutions = () => {
     /* noop */
   },
+  enableHotkeys = false,
   children,
 }: SolutionsViewerProps) {
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState(0);
@@ -63,8 +65,9 @@ export default function SolutionsViewer({
         : undefined,
     [scramble, preRotation, selectedSolution]
   );
+
   return (
-    <TrainerCard>
+    <VStack align="left">
       <Heading size="md">
         solutions
         <Badge ml={2} colorScheme="blue" variant="solid">
@@ -98,11 +101,12 @@ export default function SolutionsViewer({
             showEO={showEO}
             hideSolution={hideSolutions}
             isLoading={isLoading}
+            enableHotkeys={enableHotkeys}
           />
         </Box>
       </Stack>
       {children}
-    </TrainerCard>
+    </VStack>
   );
 }
 

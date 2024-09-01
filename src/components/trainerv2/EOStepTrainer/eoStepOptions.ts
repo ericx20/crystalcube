@@ -16,7 +16,11 @@ export interface EOStepOptions {
   shortScrambles: boolean;
 }
 
-interface Actions {
+export interface UIOptions {
+  enableHotkeys: boolean;
+}
+
+export interface Actions {
   // getters: calculate something from state
   getNumOfMovesConfig: () => NumOfMovesConfig;
   // setters: change state
@@ -26,57 +30,70 @@ interface Actions {
   setLevelNumOfMoves: (num: number) => void;
   setSolutionOrientation: (orientation: CubeOrientation) => void;
   setShortScrambles: (shortScrambles: boolean) => void;
+
+  setEnableHotkeys: (enable: boolean) => void;
 }
 
 interface State {
-  options: EOStepOptions;
+  eoStepOptions: EOStepOptions;
+  uiOptions: UIOptions;
   actions: Actions;
 }
 
 const useStore = create(
   persist(
     immer<State>((set, get) => ({
-      options: {
+      eoStepOptions: {
         eoStep: "EOCross",
         levelMode: "random",
         numOfBadEdges: 4,
         numOfMoves: 3,
         solutionOrientation: "YB",
         shortScrambles: true,
+        enableHotkeys: true,
+      },
+      uiOptions: {
+        enableHotkeys: true,
       },
       actions: {
         // TODO: getter for solverConfig
-        getNumOfMovesConfig: () => NUM_OF_MOVES_CONFIGS[get().options.eoStep],
+        getNumOfMovesConfig: () =>
+          NUM_OF_MOVES_CONFIGS[get().eoStepOptions.eoStep],
         setEOStep: (eoStep) =>
           set((state) => {
             const { min, max } = NUM_OF_MOVES_CONFIGS[eoStep];
-            if (state.options.numOfMoves < min) {
-              state.options.numOfMoves = min;
-            } else if (state.options.numOfMoves > max) {
-              state.options.numOfMoves = max;
+            if (state.eoStepOptions.numOfMoves < min) {
+              state.eoStepOptions.numOfMoves = min;
+            } else if (state.eoStepOptions.numOfMoves > max) {
+              state.eoStepOptions.numOfMoves = max;
             }
-            state.options.eoStep = eoStep;
+            state.eoStepOptions.eoStep = eoStep;
           }),
         setLevelMode: (levelMode) =>
           set((state) => {
-            state.options.levelMode = levelMode;
+            state.eoStepOptions.levelMode = levelMode;
           }),
         setLevelNumOfBadEdges: (numOfBadEdges) =>
           numOfBadEdgesValid(numOfBadEdges) &&
           set((state) => {
-            state.options.numOfBadEdges = numOfBadEdges;
+            state.eoStepOptions.numOfBadEdges = numOfBadEdges;
           }),
         setLevelNumOfMoves: (numOfMoves) =>
           set((state) => {
-            state.options.numOfMoves = numOfMoves;
+            state.eoStepOptions.numOfMoves = numOfMoves;
           }),
         setSolutionOrientation: (orientation) =>
           set((state) => {
-            state.options.solutionOrientation = orientation;
+            state.eoStepOptions.solutionOrientation = orientation;
           }),
         setShortScrambles: (shortScrambles) =>
           set((state) => {
-            state.options.shortScrambles = shortScrambles;
+            state.eoStepOptions.shortScrambles = shortScrambles;
+          }),
+
+        setEnableHotkeys: (enable) =>
+          set((state) => {
+            state.uiOptions.enableHotkeys = enable;
           }),
       },
     })),
@@ -90,7 +107,8 @@ const useStore = create(
   )
 );
 
-export const useOptions = () => useStore((state) => state.options);
+export const useEOStepOptions = () => useStore((state) => state.eoStepOptions);
+export const useUIOptions = () => useStore((state) => state.uiOptions);
 export const useActions = () => useStore((state) => state.actions);
 
 // prettier-ignore

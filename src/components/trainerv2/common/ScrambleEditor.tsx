@@ -12,9 +12,9 @@ import {
   Stack,
   Tooltip,
   useClipboard,
+  VStack,
 } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
-import TrainerCard from "./TrainerCard";
 import { debounce } from "lodash";
 
 interface ScrambleViewerProps<Move> {
@@ -80,40 +80,38 @@ export default function ScrambleEditor<Move extends string>({
   }, [isScrambleLoading]);
 
   return (
-    <TrainerCard>
-      <Stack
-        direction={{ base: "column", md: "row" }}
-        alignItems={{ base: "flex-start", md: "center" }}
-      >
-        <Heading size="md">scramble</Heading>
-        <HStack width="100%">
-          <Skeleton isLoaded={!debouncedLoading} minWidth="10rem" width="100%">
-            <FormControl isInvalid={inputIsInvalid}>
-              <Editable value={inputScramble}>
-                <EditablePreview />
-                <EditableInput
-                  value={inputScramble}
-                  onChange={handleInputChange}
-                  onBlur={submitScramble}
-                />
-              </Editable>
-              {inputIsInvalid && (
-                <FormErrorMessage position="absolute" mt="0.25rem">
-                  invalid scramble
-                </FormErrorMessage>
-              )}
-            </FormControl>
-          </Skeleton>
-          <Tooltip label="copied scramble!" isOpen={hasCopied} hasArrow>
-            <IconButton
-              onClick={onCopy}
-              size="sm"
-              icon={<CopyIcon />}
-              aria-label="copy scramble"
-            />
-          </Tooltip>
-        </HStack>
-      </Stack>
-    </TrainerCard>
+    <Stack
+      direction={{ base: "column", md: "row" }}
+      alignItems={{ base: "flex-start", md: "center" }}
+    >
+      <Heading size="md">scramble</Heading>
+      <HStack width="100%">
+        <Skeleton isLoaded={!debouncedLoading} minWidth="10rem" width="100%">
+          <FormControl isInvalid={inputIsInvalid}>
+            <Editable value={inputScramble}>
+              <EditablePreview />
+              <EditableInput
+                value={inputScramble}
+                onChange={handleInputChange}
+                onBlur={submitScramble}
+              />
+            </Editable>
+            {inputIsInvalid && (
+              <FormErrorMessage position="absolute" mt="0.25rem">
+                invalid scramble
+              </FormErrorMessage>
+            )}
+          </FormControl>
+        </Skeleton>
+        <Tooltip label="copied scramble!" isOpen={hasCopied} hasArrow>
+          <IconButton
+            onClick={onCopy}
+            size="sm"
+            icon={<CopyIcon />}
+            aria-label="copy scramble"
+          />
+        </Tooltip>
+      </HStack>
+    </Stack>
   );
 }

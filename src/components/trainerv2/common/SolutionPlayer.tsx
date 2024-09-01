@@ -1,4 +1,12 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Box,
   Center,
@@ -22,6 +30,7 @@ import {
   Move3x3,
   invertMoves,
 } from "src/libv2/puzzles/cube3x3";
+import { useHotkeys } from "react-hotkeys-hook";
 const CubeV2 = lazy(() => import("src/components/CubeV2/Cube"));
 
 interface SolutionPlayerProps {
@@ -33,6 +42,7 @@ interface SolutionPlayerProps {
   showEO?: boolean;
   hideSolution?: boolean;
   isLoading?: boolean;
+  enableHotkeys?: boolean;
 }
 
 export default function SolutionPlayer({
@@ -44,6 +54,7 @@ export default function SolutionPlayer({
   showEO,
   hideSolution,
   isLoading,
+  enableHotkeys,
 }: SolutionPlayerProps) {
   // The full solution is `preRotation` then `solution`
 
@@ -76,7 +87,26 @@ export default function SolutionPlayer({
     return cube;
   }, [mask, preRotation, scramble, partialSolution]);
 
+  const selectPreviousMove = () =>
+    setCurrentMoveIndex(
+      currentMoveIndex === null
+        ? null
+        : currentMoveIndex === 0
+        ? null
+        : Math.max(currentMoveIndex - 1, 0)
+    );
+  const selectNextMove = () =>
+    setCurrentMoveIndex(
+      currentMoveIndex === null
+        ? 0
+        : Math.min(currentMoveIndex + 1, solution.length - 1)
+    );
+
   const cubeBackground = useColorModeValue("gray.200", undefined);
+
+  // hotkeys
+  useHotkeys("left", selectPreviousMove, { enabled: enableHotkeys });
+  useHotkeys("right", selectNextMove, { enabled: enableHotkeys });
 
   return (
     <VStack align="left">

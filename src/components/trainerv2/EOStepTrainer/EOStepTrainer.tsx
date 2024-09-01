@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Button,
+  Card,
+  Container,
+  Flex,
   Heading,
   HStack,
   Modal,
@@ -13,6 +16,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
+  Stack,
   Tooltip,
   useClipboard,
   useColorModeValue,
@@ -32,7 +36,7 @@ import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/libv2/puzzles/cube3x3";
 
-import { useOptions, useActions } from "./eoStepOptions";
+import { useEOStepOptions, useActions, useUIOptions } from "./eoStepOptions";
 import type { EOStep } from "./eoStepTypes";
 
 import scrambler from "./scrambler";
@@ -42,6 +46,8 @@ import SolutionsViewer from "../common/SolutionsViewer";
 import EOStepLevelSelect from "./cards/EOStepLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
 import { getEOSolutionAnnotation } from "./utils";
+import { useHotkeys } from "react-hotkeys-hook";
+import KeyboardControls from "./cards/KeyboardControls";
 
 export default function EOStepTrainer() {
   const [areSolutionsHidden, setSolutionsHidden] = useState(true);
@@ -50,7 +56,8 @@ export default function EOStepTrainer() {
 
   // if any of the options change, this component will re-render
   // that's what we want for now, but if not then make selectors for the parts of the state we care about
-  const options = useOptions();
+  const eoStepOptions = useEOStepOptions();
+  const uiOptions = useUIOptions();
   const actions = useActions();
 
   const {
@@ -60,69 +67,107 @@ export default function EOStepTrainer() {
     isScrambleLoading,
     isLoading,
     getNext,
-  } = useScrambleAndSolutions(scrambler, solver, options, hideSolutions);
-  const preRotation = cubeOrientationToRotations(options.solutionOrientation);
+  } = useScrambleAndSolutions(scrambler, solver, eoStepOptions, hideSolutions);
+  const preRotation = cubeOrientationToRotations(
+    eoStepOptions.solutionOrientation
+  );
 
   const mainAction = areSolutionsHidden ? showSolutions : getNext;
 
-  // TODO: add scroll to top and hotkeys
-
   const copyText = generateCopyText({
-    solverName: options.eoStep,
+    solverName: eoStepOptions.eoStep,
     scramble,
     preRotation,
     solutions,
   });
 
+  // hotkeys (note, more hotkeys are implemented in children)
+  useHotkeys(" ", mainAction, [areSolutionsHidden], {
+    enabled: uiOptions.enableHotkeys,
+    preventDefault: true,
+  });
+  useHotkeys("Backspace", hideSolutions, { enabled: uiOptions.enableHotkeys });
+
   return (
-    <VStack spacing={4} my={4}>
-      <HStack spacing={4}>
-        <Heading fontSize="xl">EO Trainer</Heading>
-        <EOStepSelect eoStep={options.eoStep} setEOStep={actions.setEOStep} />
-      </HStack>
-      <ScrambleEditor
-        isScrambleLoading={isScrambleLoading}
-        scramble={scramble}
-        setScramble={setScramble}
-        notationParser={scrambleParser}
-      />
-      <SolutionsViewer
-        mask={MASKS[options.eoStep]}
-        scramble={scramble}
-        preRotation={preRotation}
-        solutions={solutions}
-        showEO
-        isLoading={isLoading}
-        hideSolutions={areSolutionsHidden || isLoading}
-        onRevealSolutions={showSolutions}
-      >
-        <HStack>
-          {!areSolutionsHidden && !isLoading && <ShareButton text={copyText} />}
-          <Button onClick={mainAction} isLoading={isLoading} w="100%">
-            {areSolutionsHidden ? "reveal" : "next"}
-          </Button>
-          {!areSolutionsHidden && !isLoading && (
-            <Button onClick={hideSolutions}>hide</Button>
-          )}
+    <Container maxW="container.lg">
+      <VStack spacing={4} my={4}>
+        <HStack spacing={4}>
+          <Heading fontSize="xl">EO Trainer</Heading>
+          <EOStepSelect
+            eoStep={eoStepOptions.eoStep}
+            setEOStep={actions.setEOStep}
+          />
         </HStack>
-      </SolutionsViewer>
-      <EOStepLevelSelect
-        levelMode={options.levelMode}
-        setLevelMode={actions.setLevelMode}
-        numOfBadEdges={options.numOfBadEdges}
-        setNumOfBadEdges={actions.setLevelNumOfBadEdges}
-        numOfMoves={options.numOfMoves}
-        setNumOfMoves={actions.setLevelNumOfMoves}
-        numOfMovesConfig={actions.getNumOfMovesConfig()}
-      />
-      <PreferenceSelect
-        eoStep={options.eoStep}
-        orientation={options.solutionOrientation}
-        setOrientation={actions.setSolutionOrientation}
-        shortScrambles={options.shortScrambles}
-        setShortScrambles={actions.setShortScrambles}
-      />
-    </VStack>
+        <Card p="1.5rem" w="100%">
+          <ScrambleEditor
+            isScrambleLoading={isScrambleLoading}
+            scramble={scramble}
+            setScramble={setScramble}
+            notationParser={scrambleParser}
+          />
+        </Card>
+        <Card p="1.5rem" w="100%">
+          <SolutionsViewer
+            mask={MASKS[eoStepOptions.eoStep]}
+            scramble={scramble}
+            preRotation={preRotation}
+            solutions={solutions}
+            showEO
+            isLoading={isLoading}
+            hideSolutions={areSolutionsHidden || isLoading}
+            onRevealSolutions={showSolutions}
+            enableHotkeys={!areSolutionsHidden && uiOptions.enableHotkeys}
+          >
+            <HStack>
+              {!areSolutionsHidden && !isLoading && (
+                <ShareButton text={copyText} />
+              )}
+              <Button onClick={mainAction} isLoading={isLoading} w="100%">
+                {areSolutionsHidden ? "reveal" : "next"}
+              </Button>
+              {!areSolutionsHidden && !isLoading && (
+                <Button onClick={hideSolutions}>hide</Button>
+              )}
+            </HStack>
+          </SolutionsViewer>
+        </Card>
+        <Flex direction="column" w="100%" gap={4}>
+          <Card p="1.5rem">
+            <EOStepLevelSelect
+              levelMode={eoStepOptions.levelMode}
+              setLevelMode={actions.setLevelMode}
+              numOfBadEdges={eoStepOptions.numOfBadEdges}
+              setNumOfBadEdges={actions.setLevelNumOfBadEdges}
+              numOfMoves={eoStepOptions.numOfMoves}
+              setNumOfMoves={actions.setLevelNumOfMoves}
+              numOfMovesConfig={actions.getNumOfMovesConfig()}
+            />
+          </Card>
+          <Stack
+            direction={{ base: "column", md: "row" }}
+            spacing={4}
+            w="100%"
+            maxW="container.lg"
+          >
+            <Card p="1.5rem" flex={1}>
+              <PreferenceSelect
+                eoStep={eoStepOptions.eoStep}
+                orientation={eoStepOptions.solutionOrientation}
+                setOrientation={actions.setSolutionOrientation}
+                shortScrambles={eoStepOptions.shortScrambles}
+                setShortScrambles={actions.setShortScrambles}
+              />
+            </Card>
+            <Card p="1.5rem" flex={1}>
+              <KeyboardControls
+                enableHotkeys={uiOptions.enableHotkeys}
+                setEnableHotkeys={actions.setEnableHotkeys}
+              />
+            </Card>
+          </Stack>
+        </Flex>
+      </VStack>
+    </Container>
   );
 }
 
