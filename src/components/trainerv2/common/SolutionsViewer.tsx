@@ -12,6 +12,7 @@ import {
   IconButton,
   Tooltip,
   useClipboard,
+  Spinner,
 } from "@chakra-ui/react";
 import SolutionPlayer from "./SolutionPlayer";
 import TrainerCard from "./TrainerCard";
@@ -25,7 +26,8 @@ interface SolutionsViewerProps {
   solutions: Move3x3[][];
   mask?: Cube3x3Mask;
   showEO?: boolean;
-  areSolutionsHidden?: boolean;
+  isLoading?: boolean;
+  hideSolutions?: boolean;
   onRevealSolutions?: () => void;
   children?: React.ReactNode;
 }
@@ -39,7 +41,8 @@ export default function SolutionsViewer({
   // then make cubeviewer a prop as well
   mask,
   showEO,
-  areSolutionsHidden = false,
+  isLoading = false,
+  hideSolutions = false,
   onRevealSolutions = () => {
     /* noop */
   },
@@ -53,7 +56,6 @@ export default function SolutionsViewer({
   // TODO: add functions that calculate metrics, since we shouldn't assume the length of a solution is its HTM metric (slice moves, rotations etc.)
   // make metrics a prop of the form { name: string, calculateMetric: (moves: MoveType[]) => number }
   const badgeText = solutions.length ? `best: ${solutions[0].length} HTM` : "";
-
   const eoSolutionAnnotation = useMemo(
     () =>
       selectedSolution
@@ -71,11 +73,13 @@ export default function SolutionsViewer({
       </Heading>
       <Stack direction={{ base: "column", md: "row" }}>
         <Spoiler
-          hide={solutions.length ? areSolutionsHidden : false}
+          isLoading={isLoading}
+          hide={solutions.length ? hideSolutions : false}
           onReveal={onRevealSolutions}
         >
           <Box minW={["14rem", "20rem"]}>
             <SelectSolution
+              inactive={hideSolutions}
               preRotation={preRotation}
               solutions={solutions}
               selectedSolutionIndex={selectedSolutionIndex}
@@ -92,7 +96,7 @@ export default function SolutionsViewer({
             solutionAnnotation={eoSolutionAnnotation}
             mask={mask}
             showEO={showEO}
-            hideSolution={areSolutionsHidden}
+            hideSolution={hideSolutions}
           />
         </Box>
       </Stack>
@@ -102,6 +106,8 @@ export default function SolutionsViewer({
 }
 
 interface SelectSolutionProps {
+  /** When `inactive` is true, the buttons receive no keyboard focus and there is no selected solution */
+  inactive?: boolean;
   preRotation: RotationMove[];
   solutions: Move3x3[][];
   selectedSolutionIndex: number;
@@ -109,6 +115,7 @@ interface SelectSolutionProps {
 }
 
 function SelectSolution({
+  inactive = false,
   preRotation,
   solutions,
   selectedSolutionIndex,
@@ -121,7 +128,7 @@ function SelectSolution({
       {solutions.map((solution, index) => {
         const solutionDisplayString = [...preRotation, ...solution].join(" ");
         const movecount = solution.length;
-        const isSelected = selectedSolutionIndex === index;
+        const isSelected = !inactive && selectedSolutionIndex === index;
 
         return (
           <HStack key={solutionDisplayString}>
@@ -131,6 +138,7 @@ function SelectSolution({
               w="100%"
               justifyContent="left"
               colorScheme={isSelected ? "blue" : undefined}
+              tabIndex={inactive ? -1 : undefined}
             >
               <HStack>
                 <Badge
@@ -155,41 +163,61 @@ function SelectSolution({
 }
 
 interface SpoilerProps {
+  isLoading?: boolean;
   hide: boolean;
   onReveal: () => void;
   children: JSX.Element;
 }
 
-function Spoiler({ hide, onReveal, children }: SpoilerProps) {
-  const styles = {
-    opacity: hide ? "0" : "1",
-    visibility: hide ? "hidden" : "visible",
-    transition: "opacity 0.12s linear",
-  };
-  const coverColor = useColorModeValue("gray.200", "gray.800");
+function Spoiler({
+  isLoading = false,
+  hide,
+  onReveal,
+  children,
+}: SpoilerProps) {
+  const coverColor = useColorModeValue("gray.100", "gray.800");
   const badgeColor = useColorModeValue("gray.500", "gray.700");
+
   return (
     <Box
-      onClick={onReveal}
+      onClick={isLoading ? undefined : onReveal}
       bg={hide ? coverColor : undefined}
       borderRadius="md"
-      cursor={hide ? "pointer" : "cursor"}
+      cursor={isLoading ? "not-allowed" : hide ? "pointer" : "cursor"}
       position="relative"
     >
-      {hide && (
-        <Badge
-          position="absolute"
-          top="50%"
-          left="50%"
-          transform="translate(-50%, -50%)"
-          fontSize="lg"
-          bg={badgeColor}
-          color="white"
-        >
-          click to reveal
-        </Badge>
-      )}
-      <Box sx={styles}>{children}</Box>
+      <Box
+        pointerEvents={hide ? "none" : undefined}
+        transition="opacity 0.12s linear"
+        filter={hide ? "blur(8px)" : undefined}
+        tabIndex={-1}
+      >
+        {children}
+      </Box>
+      {hide &&
+        (isLoading ? (
+          <Spinner
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            margin="auto"
+            opacity={0.5}
+          />
+        ) : (
+          <Badge
+            position="absolute"
+            top="50%"
+            left="50%"
+            transform="translate(-50%, -50%)"
+            fontSize="lg"
+            bg={badgeColor}
+            color="white"
+          >
+            click to reveal
+          </Badge>
+        ))}
     </Box>
   );
 }
@@ -201,7 +229,7 @@ function CopySolutionButton({ solutionText }: { solutionText: string }) {
   }, [solutionText]);
 
   return (
-    <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
+    <Tooltip label="copied solution!" isOpen={hasCopied} hasArrow>
       <IconButton
         onClick={onCopy}
         icon={<CopyIcon />}

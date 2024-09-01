@@ -1,18 +1,25 @@
 import { CheckIcon, CloseIcon, EditIcon, CopyIcon } from "@chakra-ui/icons";
 import {
+  Editable,
+  EditablePreview,
+  EditableTextarea,
   FormControl,
   FormErrorMessage,
   Heading,
   HStack,
   IconButton,
-  Input,
+  Skeleton,
+  Spacer,
   Stack,
-  Text,
+  Tooltip,
+  useClipboard,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import TrainerCard from "./TrainerCard";
+import { debounce } from "lodash";
 
 interface ScrambleViewerProps<Move> {
+  isScrambleLoading?: boolean;
   scramble: Move[];
   setScramble: (newScramble: Move[]) => void;
   /** A function that parses a string into move notation, or if invalid, returns null */
@@ -21,39 +28,59 @@ interface ScrambleViewerProps<Move> {
 
 // TODO: show "Failed to generate scramble" message if scramble === null
 export default function ScrambleEditor<Move extends string>({
+  isScrambleLoading = false,
   scramble,
   setScramble,
   notationParser,
 }: ScrambleViewerProps<Move>) {
-  const [isEditing, setEditing] = useState(false);
   const [inputScramble, setInputScramble] = useState("");
   const parsedInput = notationParser(inputScramble);
   const inputIsInvalid = parsedInput === null;
 
-  // reset the input whenever a new scramble is set
+  // set the input whenever a new scramble is set
   useEffect(() => {
-    setInputScramble("");
+    setInputScramble(scramble.join(" "));
   }, [scramble]);
 
-  const handleInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  const handleInputChange: React.ChangeEventHandler<HTMLTextAreaElement> = (
+    e
+  ) => {
     setInputScramble(e.target.value);
   };
 
   const submitScramble = () => {
     if (!inputIsInvalid) {
       setScramble(parsedInput);
-      setEditing(false);
     }
   };
 
-  const handleFormSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault();
-    submitScramble();
-  };
+  const scrambleText = scramble.join(" ");
 
-  const copyScramble = () => {
-    navigator.clipboard.writeText(scramble.join(" "));
-  };
+  const { onCopy, hasCopied, setValue } = useClipboard(scrambleText);
+  useEffect(() => {
+    setValue(scrambleText);
+  }, [scrambleText]);
+
+  // Prevents the loading state from flickering too quickly for the user
+  const TIMEOUT = 200;
+  const [debouncedLoading, setDebouncedLoading] = useState(false);
+  const setDebouncedLoadingTrue = useCallback(
+    debounce(() => setDebouncedLoading(true), TIMEOUT),
+    [setDebouncedLoading]
+  );
+  const setDebouncedLoadingFalse = useCallback(
+    debounce(() => setDebouncedLoading(false), TIMEOUT),
+    [setDebouncedLoading]
+  );
+  useEffect(() => {
+    if (isScrambleLoading) {
+      setDebouncedLoadingFalse.cancel();
+      setDebouncedLoadingTrue();
+    } else {
+      setDebouncedLoadingTrue.cancel();
+      setDebouncedLoadingFalse();
+    }
+  }, [isScrambleLoading]);
 
   return (
     <TrainerCard>
@@ -62,52 +89,34 @@ export default function ScrambleEditor<Move extends string>({
         alignItems={{ base: "flex-start", md: "center" }}
       >
         <Heading size="md">scramble</Heading>
-        {isEditing ? (
-          <HStack>
-            <form onSubmit={handleFormSubmit}>
-              <FormControl isInvalid={inputIsInvalid}>
-                <Input
+        <HStack width="100%">
+          <Skeleton isLoaded={!debouncedLoading} minWidth="10rem">
+            <FormControl isInvalid={inputIsInvalid}>
+              <Editable value={inputScramble}>
+                <EditablePreview />
+                <EditableTextarea
                   value={inputScramble}
                   onChange={handleInputChange}
-                  autoFocus
+                  onBlur={submitScramble}
                 />
-                {inputIsInvalid && (
-                  <FormErrorMessage position="absolute" mt="0.25rem">
-                    invalid scramble
-                  </FormErrorMessage>
-                )}
-              </FormControl>
-            </form>
+              </Editable>
+              {inputIsInvalid && (
+                <FormErrorMessage position="absolute" mt="0.25rem">
+                  invalid scramble
+                </FormErrorMessage>
+              )}
+            </FormControl>
+          </Skeleton>
+          <Spacer />
+          <Tooltip label="copied scramble!" isOpen={hasCopied} hasArrow>
             <IconButton
-              onClick={submitScramble}
-              size="sm"
-              icon={<CheckIcon />}
-              aria-label="submit scramble"
-            />
-            <IconButton
-              onClick={() => setEditing(false)}
-              size="sm"
-              icon={<CloseIcon />}
-              aria-label="cancel editing scramble"
-            />
-          </HStack>
-        ) : (
-          <HStack>
-            <Text>{scramble.join(" ")}</Text>
-            <IconButton
-              onClick={() => setEditing(true)}
-              size="sm"
-              icon={<EditIcon />}
-              aria-label="edit scramble"
-            />
-            <IconButton
-              onClick={() => copyScramble()}
+              onClick={onCopy}
               size="sm"
               icon={<CopyIcon />}
               aria-label="copy scramble"
             />
-          </HStack>
-        )}
+          </Tooltip>
+        </HStack>
       </Stack>
     </TrainerCard>
   );

@@ -5,9 +5,6 @@ import { useCallback, useEffect, useState } from "react";
 // Pass in an Options param to change the mode of the scrambler/solver
 // For example, for ZZ trainer you could pass in "EOCross" or "EOLine"
 // depending on the mode the user has selected
-/**
- * @deprecated
- */
 function useScrambleAndSolutions<MoveType, Options>(
   scrambler: (options: Options) => Promise<MoveType[]>, // TODO: Promise<MoveType[] | null> for failure
   solver: (scramble: MoveType[], options: Options) => Promise<MoveType[][]>,
@@ -16,12 +13,19 @@ function useScrambleAndSolutions<MoveType, Options>(
 ) {
   const [scramble, setScramble] = useState<MoveType[]>([]);
   const [solutions, setSolutions] = useState<MoveType[][]>([]);
+
+  const [hasFirstScrambleLoaded, setHasFirstScrambleLoaded] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [isScrambleLoading, setScrambleLoading] = useState(true);
 
   const generateScramble = useCallback(async () => {
     setLoading(true);
+    setScrambleLoading(true);
     const newScramble = await scrambler(options);
     setScramble(newScramble);
+    setScrambleLoading(false);
+    setHasFirstScrambleLoaded(true);
+
     onNewScramble && onNewScramble();
   }, [scrambler, options, onNewScramble]);
 
@@ -38,8 +42,10 @@ function useScrambleAndSolutions<MoveType, Options>(
 
   // generate new solutions when the scramble changes
   useEffect(() => {
-    generateSolutions();
-  }, [scramble]);
+    if (hasFirstScrambleLoaded) {
+      generateSolutions();
+    }
+  }, [scramble, hasFirstScrambleLoaded]);
 
   const getNext = () => generateScramble();
 
@@ -49,6 +55,7 @@ function useScrambleAndSolutions<MoveType, Options>(
     solutions,
     getNext,
     isLoading,
+    isScrambleLoading,
   };
 }
 

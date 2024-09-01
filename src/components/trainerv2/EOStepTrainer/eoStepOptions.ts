@@ -5,6 +5,7 @@ import { mergeDeepLeft } from "ramda";
 
 import type { EOStep, LevelMode, NumOfMovesConfig } from "./eoStepTypes";
 import type { CubeOrientation } from "src/libv2/puzzles/cube3x3";
+import { numOfBadEdgesValid } from "./utils";
 
 export interface EOStepOptions {
   eoStep: EOStep;
@@ -86,15 +87,11 @@ export const useOptions = () => useStore((state) => state.options);
 export const useActions = () => useStore((state) => state.actions);
 
 // prettier-ignore
-const NUM_OF_MOVES_CONFIGS: { [eoStep in EOStep]: NumOfMovesConfig } = {
-  EO:           { min: 3, max: 7 },
-  EOLine:       { min: 3, max: 8 },
-  EOCross:      { min: 3, max: 9 },
-  EOArrowBack:  { min: 3, max: 8 },
-  EOArrowLeft:  { min: 3, max: 8 },
-  EO222:        { min: 3, max: 9 },
+export const NUM_OF_MOVES_CONFIGS: { [eoStep in EOStep]: NumOfMovesConfig } = {
+  EO:           { min: 3, max: 7, iterationLimit: 2000 },
+  EOLine:       { min: 3, max: 8, iterationLimit: 1000 },
+  EOCross:      { min: 3, max: 9, iterationLimit: 200 },
+  EOArrowBack:  { min: 3, max: 8, iterationLimit: 200 },
+  EOArrowLeft:  { min: 3, max: 8, iterationLimit: 200 },
+  EO222:        { min: 3, max: 9, iterationLimit: 200 },
 };
-
-function numOfBadEdgesValid(n: number) {
-  return Number.isInteger(n) && n % 2 === 0 && 0 <= n && n <= 12;
-}

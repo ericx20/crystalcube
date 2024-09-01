@@ -42,3 +42,7 @@ function countBadEdges(cube: Cube3x3): number {
 }
 
 const EO_CHANGING_MOVES: Array<Move3x3> = ["F", "F'", "B", "B'"];
+
+export function numOfBadEdgesValid(n: number): boolean {
+  return Number.isInteger(n) && n % 2 === 0 && 0 <= n && n <= 12;
+}

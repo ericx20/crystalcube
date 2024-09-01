@@ -30,7 +30,7 @@ export interface SolverConfig {
   depthLimit: number;
 }
 
-export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
+export const PUZZLE_CONFIGS = {
   EO: {
     solverConfig: {
       moveSet: MOVESETS.RUFLDB,
@@ -109,4 +109,4 @@ export const PUZZLE_CONFIGS: { [name in PuzzleConfigName]: PuzzleConfig } = {
       depthLimit: 18,
     },
   },
-} as const;
+} as const satisfies { [name in PuzzleConfigName]: PuzzleConfig };

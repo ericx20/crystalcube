@@ -35,7 +35,7 @@ export function solve<Move extends string>(
   //   const worstSolution = solutionsList.at(-1);
   //   if (!worstSolution) return false;
   //   return bestSolution.length !== worstSolution.length;
-    
+
   // }
 
   const addSolution = (solutionToAdd: Move[]) => {

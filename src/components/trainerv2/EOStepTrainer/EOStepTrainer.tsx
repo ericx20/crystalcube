@@ -13,13 +13,11 @@ import {
   ModalHeader,
   ModalOverlay,
   Select,
-  Text,
   Tooltip,
   useClipboard,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { solveCube3x3 } from "src/libv2/puzzles/cube3x3/solvers";
 import {
   cubeOrientationToRotations,
   isFaceMove,
@@ -29,29 +27,20 @@ import {
   RotationMove,
 } from "src/libv2/puzzles/cube3x3";
 
-import useScrambleAndSolutions from "src/hooks/useScrambleAndSolutions";
+import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/libv2/puzzles/cube3x3";
 
-import { useOptions, useActions, EOStepOptions } from "./eoStepOptions";
+import { useOptions, useActions } from "./eoStepOptions";
 import type { EOStep } from "./eoStepTypes";
 
 import scrambler from "./scrambler";
+import solver from "./solver";
 
 import SolutionsViewer from "../common/SolutionsViewer";
 import EOStepLevelSelect from "./cards/EOStepLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
 import { getEOSolutionAnnotation } from "./utils";
-
-async function solver(scramble: Move3x3[], options: EOStepOptions) {
-  const solutions = await solveCube3x3(
-    scramble,
-    options.eoStep,
-    cubeOrientationToRotations(options.solutionOrientation),
-    5
-  );
-  return solutions;
-}
 
 export default function EOStepTrainer() {
   const [areSolutionsHidden, setSolutionsHidden] = useState(true);
@@ -63,9 +52,14 @@ export default function EOStepTrainer() {
   const options = useOptions();
   const actions = useActions();
 
-  const { scramble, setScramble, solutions, isLoading, getNext } =
-    useScrambleAndSolutions(scrambler, solver, options, hideSolutions);
-
+  const {
+    scramble,
+    setScramble,
+    solutions,
+    isScrambleLoading,
+    isLoading,
+    getNext,
+  } = useScrambleAndSolutions(scrambler, solver, options, hideSolutions);
   const preRotation = cubeOrientationToRotations(options.solutionOrientation);
 
   const mainAction = areSolutionsHidden ? showSolutions : getNext;
@@ -86,6 +80,7 @@ export default function EOStepTrainer() {
         <EOStepSelect eoStep={options.eoStep} setEOStep={actions.setEOStep} />
       </HStack>
       <ScrambleEditor
+        isScrambleLoading={isScrambleLoading}
         scramble={scramble}
         setScramble={setScramble}
         notationParser={scrambleParser}
@@ -96,11 +91,12 @@ export default function EOStepTrainer() {
         preRotation={preRotation}
         solutions={solutions}
         showEO
-        areSolutionsHidden={areSolutionsHidden}
+        isLoading={isLoading}
+        hideSolutions={areSolutionsHidden || isLoading}
         onRevealSolutions={showSolutions}
       >
         <HStack>
-          <ShareButton text={copyText} />
+          {!areSolutionsHidden && !isLoading && <ShareButton text={copyText} />}
           <Button onClick={mainAction} isLoading={isLoading} w="100%">
             {areSolutionsHidden ? "reveal" : "next"}
           </Button>
