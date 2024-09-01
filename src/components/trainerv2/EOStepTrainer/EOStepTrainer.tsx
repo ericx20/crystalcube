@@ -117,6 +117,8 @@ export default function EOStepTrainer() {
       <PreferenceSelect
         orientation={options.solutionOrientation}
         setOrientation={actions.setSolutionOrientation}
+        shortScrambles={options.shortScrambles}
+        setShortScrambles={actions.setShortScrambles}
       />
     </VStack>
   );

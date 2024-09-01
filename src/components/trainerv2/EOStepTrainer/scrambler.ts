@@ -17,14 +17,12 @@ import {
   PUZZLE_CONFIGS,
   randomMoves,
   RotationMove,
+  simplifyMoves,
   translateMoves,
 } from "src/libv2/puzzles/cube3x3";
 import { EOStepOptions, NUM_OF_MOVES_CONFIGS } from "./eoStepOptions";
 import { EOStep } from "./eoStepTypes";
-import {
-  genPruningTableWithSetups,
-  genReversePruningTable,
-} from "src/libv2/search";
+import { genReversePruningTable } from "src/libv2/search";
 import {
   solveCube3x3,
   solveEntire3x3,
@@ -35,48 +33,43 @@ export default async function scrambler(
 ): Promise<Move3x3[]> {
   switch (options.levelMode) {
     case "num-of-bad-edges":
-      return await nFlipScramble(options.numOfBadEdges);
-    case "num-of-moves": // TODO: implement
+      return nFlipScramble(
+        options.numOfBadEdges,
+        options.eoStep,
+        options.solutionOrientation,
+        options.shortScrambles
+      );
+    case "num-of-moves":
       return await numMovesScramble(
         options.numOfMoves,
         options.eoStep,
-        options.solutionOrientation
+        options.solutionOrientation,
+        options.shortScrambles
       );
     case "random":
-      return await randomScramble();
+      return await randomScramble(
+        options.eoStep,
+        options.solutionOrientation,
+        options.shortScrambles
+      );
   }
 
   // TODO: shorten the scramble based on the option
 }
 
-// TODO: we need to make a singleton class Scrambler
-// that way we can keep track of scramble generations and cancel old ones if a new one started
-// each time the scrambler runs, one of its member functions will be called (nFlipScramble, numMovesScramble...)
-// and in local scope store a copy of some counter thats like "scramble #"
-// when the scrambler runs again, that thing will be incremented
-// for a function like nFlipScramble, each iteration it can check if its backup of the counter is the same as the counter
-// if different, immediately give up and reject the promise
-// this also means that we need to do a try/catch for the solution generation
-// if the promise rejects, do nothing
-// WAIT actually can just do https://dev.to/ak_ram/asynchronous-javascript-operations-understanding-canceling-pausing-and-resuming-4ih5
-// handle the cancelling logic in the useScrambleAndSolutions hook
-
 // let's first make this run on the main thread, then move to a web worker once it works
-// we need to move to web worker, currently it blocks the UI thread for even just a bit, preventing loading state from showing on UI
 async function numMovesScramble(
   n: number,
   eoStep: EOStep,
-  solutionOrientation: CubeOrientation
+  solutionOrientation: CubeOrientation,
+  shortScramble: boolean = false
 ): Promise<Move3x3[]> {
   const puzzleConfig = PUZZLE_CONFIGS[eoStep];
   const preRotation = cubeOrientationToRotations(solutionOrientation);
 
-  // Approach 1: if the difficulty `n` is between 0 and `pruningDepth`, we can get a random-state scramble with respect to edges by sampling the pruning table
-  // the scramble will be optimal however, which is bad
-  // so we have to combine the random state edges with randomly generated corners of a cube with matching edge-corner swap parity
-  // to get a suitable state that we can try to solve
+  // Approach 1: if the difficulty `n` is between 0 and `pruningDepth`, we can get a random-state scramble with respect to edges by sampling a "reverse" pruning table
+  // The reverse pruning table has a list of all states of a given depth, so you sample a random one to achieve random-state scrambles
   if (0 <= n && n <= puzzleConfig.solverConfig.pruningDepth) {
-    // ok let's just try to get the most basic thing done possible
     const maskedPuzzleState = new Cube3x3()
       .applyMoves(preRotation)
       .applyMask(puzzleConfig.solverConfig.mask)
@@ -85,13 +78,16 @@ async function numMovesScramble(
       puzzleConfig.solverConfig.moveSet,
       maskedPuzzleState
     );
+    // TODO: cache these?
     const table = genReversePruningTable(puzzle, {
       pruningDepth: puzzleConfig.solverConfig.pruningDepth,
       name: eoStep,
     });
 
     const scramble = sample(table[n]) ?? [];
-    return makeBetterScramble(scramble, preRotation, eoStep);
+    return shortScramble
+      ? makeShortScramble(scramble, preRotation, eoStep, 4)
+      : makeBetterScramble(scramble, preRotation, eoStep);
   } else {
     // Approach 2: if the difficulty `n` exceeds pruning depth, we have to do a random-move scramble
     // We will need to shorten the scramble, either with respect to only the edges or we need to get proper random state corners as well!
@@ -102,14 +98,14 @@ async function numMovesScramble(
     // }
 
     /*
-    Our goal is to generate a scramble that can be solved optimally in exactly `n` moves.
-    Typically we do this with trial and error, generating random-state scrambles until one with the correct difficulty is found.
-    This requires solving each of the scrambles optimally, however for EOCross and other EO steps this takes far too much time.
+      Our goal is to generate a scramble that can be solved optimally in exactly `n` moves.
+      Typically we do this with trial and error, generating random-state scrambles until one with the correct difficulty is found.
+      This requires solving each of the scrambles optimally, however for EOCross and other EO steps this takes far too much time.
 
-    Instead we will generate random-move scrambles.
-    Start with `n` random moves, and keep adding random moves until the scramble is hard enough to be optimally solved in `n` moves.
-    This converges very quickly and requires fewer iterations to achieve a high success rate.
-  */
+      Instead we will generate random-move scrambles.
+      Start with `n` random moves, and keep adding random moves until the scramble is hard enough to be optimally solved in `n` moves.
+      This converges very quickly and requires fewer iterations to achieve a high success rate.
+    */
 
     const scramble: Move3x3[] = randomMoves(n);
     let success = false;
@@ -129,10 +125,68 @@ async function numMovesScramble(
       return []; // TODO: return null if scramble fails, or fallback to a random state and show an error message saying couldn't do it
     }
 
-    return makeBetterScramble(scramble, preRotation, eoStep);
-
-    // if the option for shorter scrambles is selected, then we just need to port the simplifyScramble function and apply it to the raw `scramble`, skipping the above 4 steps.
+    return shortScramble
+      ? makeShortScramble(scramble, preRotation, eoStep, 4)
+      : makeBetterScramble(scramble, preRotation, eoStep);
   }
+}
+
+async function nFlipScramble(
+  n: number,
+  eoStep: EOStep,
+  solutionOrientation: CubeOrientation,
+  shortScramble: boolean = false
+): Promise<Move3x3[]> {
+  const { kpuzzle, stateData } = await random333State();
+  const newStateData = {
+    ...stateData,
+    EDGES: {
+      orientation: nFlipEOArray(n),
+      pieces: stateData.EDGES.pieces,
+    },
+  };
+  const newPuzzle = new KState(kpuzzle, newStateData);
+  const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle);
+  const scrambleForFBAxis = invertMoves(
+    Cube3x3.parseNotation(solution.toString())!
+  );
+  // Our scramble only has the desired number of bad edges when looking at the F/B axis!
+  // However if the solution orientation has a different axis, we need to translate the whole scramble
+  const preRotation = cubeOrientationToRotations(solutionOrientation);
+  const scramble = translateMoves(scrambleForFBAxis, preRotation);
+
+  if (shortScramble) {
+    const preRotation = cubeOrientationToRotations(solutionOrientation);
+    return await makeShortScramble(scramble, preRotation, eoStep, 4);
+  }
+  return scramble;
+}
+
+function nFlipEOArray(n: number): Array<number> {
+  if (!Number.isInteger(n) || n % 2 !== 0 || n < 0 || n > 12) {
+    console.error(
+      "nFlipEOArray(): must be an even integer from 0 to 12 inclusive"
+    );
+    return Array(12).fill(0);
+  }
+  const goodEdges = Array<number>(12 - n).fill(0);
+  const badEdges = Array<number>(n).fill(1);
+  return shuffle(goodEdges.concat(badEdges));
+}
+
+async function randomScramble(
+  eoStep: EOStep,
+  solutionOrientation: CubeOrientation,
+  shortScramble: boolean = false
+): Promise<Move3x3[]> {
+  const scramble = (await randomScrambleForEvent("333"))
+    .toString()
+    .split(" ") as Move3x3[];
+  if (shortScramble) {
+    const preRotation = cubeOrientationToRotations(solutionOrientation);
+    return await makeShortScramble(scramble, preRotation, eoStep, 4);
+  }
+  return scramble;
 }
 
 /**
@@ -169,34 +223,16 @@ async function makeBetterScramble(
   return invertMoves(await solveEntire3x3(setup));
 }
 
-async function nFlipScramble(n: number): Promise<Move3x3[]> {
-  const { kpuzzle, stateData } = await random333State();
-  const newStateData = {
-    ...stateData,
-    EDGES: {
-      orientation: nFlipEOArray(n),
-      pieces: stateData.EDGES.pieces,
-    },
-  };
-  const newPuzzle = new KState(kpuzzle, newStateData);
-  const solution = await experimentalSolve3x3x3IgnoringCenters(newPuzzle);
-  return invertMoves(Cube3x3.parseNotation(solution.toString())!);
-}
-
-function nFlipEOArray(n: number): Array<number> {
-  if (!Number.isInteger(n) || n % 2 !== 0 || n < 0 || n > 12) {
-    console.error(
-      "nFlipEOArray(): must be an even integer from 0 to 12 inclusive"
-    );
-    return Array(12).fill(0);
-  }
-  const goodEdges = Array<number>(12 - n).fill(0);
-  const badEdges = Array<number>(n).fill(1);
-  return shuffle(goodEdges.concat(badEdges));
-}
-
-async function randomScramble(): Promise<Move3x3[]> {
-  return (await randomScrambleForEvent("333"))
-    .toString()
-    .split(" ") as Move3x3[];
+async function makeShortScramble(
+  scramble: Move3x3[],
+  preRotation: RotationMove[],
+  eoStep: EOStep,
+  numExtraMoves = 0
+) {
+  const extraMoves = randomMoves(numExtraMoves);
+  const newScramble = [...scramble, ...extraMoves];
+  const solution = (await solveCube3x3(newScramble, eoStep, preRotation, 1))[0];
+  const solutionInverse = translateMoves(invertMoves(solution), preRotation);
+  // cancel out any moves if possible
+  return simplifyMoves([...solutionInverse, ...invertMoves(extraMoves)]);
 }

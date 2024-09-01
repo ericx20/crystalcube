@@ -13,6 +13,7 @@ export interface EOStepOptions {
   numOfBadEdges: number;
   numOfMoves: number;
   solutionOrientation: CubeOrientation;
+  shortScrambles: boolean;
 }
 
 interface Actions {
@@ -24,6 +25,7 @@ interface Actions {
   setLevelNumOfBadEdges: (num: number) => void;
   setLevelNumOfMoves: (num: number) => void;
   setSolutionOrientation: (orientation: CubeOrientation) => void;
+  setShortScrambles: (shortScrambles: boolean) => void;
 }
 
 interface State {
@@ -40,6 +42,7 @@ const useStore = create(
         numOfBadEdges: 4,
         numOfMoves: 3,
         solutionOrientation: "YB",
+        shortScrambles: true,
       },
       actions: {
         // TODO: getter for solverConfig
@@ -70,6 +73,10 @@ const useStore = create(
         setSolutionOrientation: (orientation) =>
           set((state) => {
             state.options.solutionOrientation = orientation;
+          }),
+        setShortScrambles: (shortScrambles) =>
+          set((state) => {
+            state.options.shortScrambles = shortScrambles;
           }),
       },
     })),

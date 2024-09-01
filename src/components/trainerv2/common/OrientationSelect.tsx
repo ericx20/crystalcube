@@ -38,14 +38,24 @@ export default function OrientationSelect({
 
   return (
     <>
-      <Select value={topColor} onChange={handleTopColor}>
+      <Select
+        value={topColor}
+        onChange={handleTopColor}
+        variant="filled"
+        maxWidth="12rem"
+      >
         {COLORS.map((color) => (
           <option value={color} key={color}>
             {COLOR_NAMES[color]} top
           </option>
         ))}
       </Select>
-      <Select value={frontColor} onChange={handleFrontColor}>
+      <Select
+        value={frontColor}
+        onChange={handleFrontColor}
+        variant="filled"
+        maxWidth="12rem"
+      >
         {COLORS.map((color) => (
           <option value={color} key={color}>
             {COLOR_NAMES[color]} front

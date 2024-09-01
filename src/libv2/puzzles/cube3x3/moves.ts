@@ -241,6 +241,14 @@ export function powerOfMove(move: Move3x3): MovePower {
   return 1;
 }
 
+export function movePowerToSuffix(power: MovePower): string {
+  return {
+    1: "",
+    2: "2",
+    3: "'",
+  }[power];
+}
+
 // TODO: update OH scrambler
 export function translateMoves(
   moves: Move3x3[],
@@ -359,4 +367,85 @@ function translateRotation(
 
 function nextElement<T>(arr: Array<T>, index: number): T {
   return arr[(index + 1) % arr.length];
+}
+
+/**
+ * There might be a better way to implement this...
+ */
+export function simplifyMoves<M extends Move3x3>(
+  movesToSimplify: Array<M>
+): Array<M> {
+  const moves = [...movesToSimplify];
+  let i = 0;
+  // don't consider the last move, there's nothing after it to cancel with
+  while (i < moves.length - 1) {
+    const currentMove = moves[i];
+    const nextMove = moves[i + 1];
+    const afterNextMove = moves.at(i + 2); // this may not exist
+
+    // 1. compare the current and next moves
+    const cancelResult = cancelTwoMoves(currentMove, nextMove);
+    if (cancelResult === true) {
+      // current and next move cancel completely, delete them
+      moves.splice(i, 2);
+      // step back a move if we're not already at the start
+      if (i !== 0) i--;
+    } else if (cancelResult === false) {
+      // no moves can be cancelled
+      // check if currentMove, nextMove and afterNextMove are redundant parallel moves
+      // if they are, cancel currentMove and afterNextMove
+      // otherwise, advance to the next move
+      if (
+        isLayerMove(currentMove) &&
+        isLayerMove(nextMove) &&
+        afterNextMove &&
+        isLayerMove(afterNextMove) &&
+        movesAreParallel(currentMove, nextMove)
+      ) {
+        const result = cancelTwoMoves(currentMove, afterNextMove);
+        if (result === true) {
+          // currentMove and afterNextMove cancel completely, delete them
+          moves.splice(i + 2, 1);
+          moves.splice(i, 1);
+          // step back a move if we're not already at the start
+          if (i !== 0) i--;
+        } else if (result === false) {
+          // no moves can be cancelled, advance
+          i++;
+        } else {
+          // currentMove and afterNextMove combine into one move
+          moves[i] = result; // set currentMove to combined move
+          moves.splice(i + 2, 1); // delete afterNextMove
+          // step back a move if we're not already at the start
+          if (i !== 0) i--;
+        }
+      } else {
+        i++;
+      }
+    } else {
+      // current and next move combine into one move
+      moves[i] = cancelResult; // set currentMove to combined move
+      moves.splice(i + 1, 1); // delete the next move
+      // step back a move if we're not already at the start
+      if (i !== 0) i--;
+    }
+  }
+  return moves;
+}
+
+// given two moves A and B, it returns:
+// true if A and B are inverses of each other (cancel completely)
+// false if A and B can't cancel each other at all
+// C where C = A B, if A and B can combine into one move
+function cancelTwoMoves<M extends Move3x3>(a: M, b: M): boolean | M {
+  // if not the same layer/rotation, they cannot cancel
+  if (a[0] !== b[0]) return false;
+  const powerOfC = ((powerOfMove(a) + powerOfMove(b)) % 4) as MovePower | 0;
+  if (powerOfC === 0) {
+    // A and B are like R R' (1+3) or U2 U2 (2+2): cancel completely
+    return true;
+  }
+  // otherwise, A and B are like R R2
+  const newMove = (a[0] + movePowerToSuffix(powerOfC)) as M;
+  return newMove;
 }
