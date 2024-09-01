@@ -15,17 +15,15 @@ import {
 // will be cloning states to perform separate things with them
 // TODO: refactor to accept an optional TurningRestriction object that manages
 // move history and what turns are/aren't allowed, and which can also be cloned
-export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
+export class Cube3x3 implements Puzzle<Move3x3> {
   private state: Facelet3x3;
   private solvedState: Readonly<Facelet3x3>;
-  private moveHistory: Move[];
+  private moveHistory: Move3x3[];
   constructor(
-    private moveset: Readonly<Move[]> = MOVESETS.Full as unknown as Readonly<
-      Move[]
-    >,
+    private moveset: Readonly<Move3x3[]> = MOVESETS.Full,
     initialState: Readonly<Facelet3x3> = [...SOLVED_FACELET_CUBE], // can we shallow copy this
     solvedState: Readonly<Facelet3x3> = initialState,
-    history: Move[] = []
+    history: Move3x3[] = []
     // TODO: allow passing in history-based turning restrictions
   ) {
     this.state = [...initialState];
@@ -51,7 +49,7 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return this;
   }
 
-  private isMoveAvailable(move: Move): boolean {
+  private isMoveAvailable(move: Move3x3): boolean {
     const lastMove = this.moveHistory.at(-1);
     // const secondLastMove = this.history.at(-2);
     if (lastMove && sameLayerOrAxis(move, lastMove)) {
@@ -92,11 +90,11 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return true;
   }
 
-  get nextMoves(): readonly Move[] {
+  get nextMoves(): readonly Move3x3[] {
     return this.moveset.filter((move) => this.isMoveAvailable(move));
   }
 
-  get history(): Move[] {
+  get history(): Move3x3[] {
     return [...this.moveHistory];
   }
 
@@ -112,7 +110,7 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return this.state.join("");
   }
 
-  applyMove(move: Move): this {
+  applyMove(move: Move3x3): this {
     const nextState = [...this.state];
     const perms = MOVE_PERMS[move];
     perms.forEach(([src, dst]) => {
@@ -123,7 +121,7 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
     return this;
   }
 
-  applyMoves(moves: Move[]): this {
+  applyMoves(moves: Move3x3[]): this {
     moves.forEach((move) => this.applyMove(move));
     return this;
   }
@@ -139,7 +137,7 @@ export class Cube3x3<Move extends Move3x3 = Move3x3> implements Puzzle<Move> {
   }
 
   clone() {
-    return new Cube3x3<Move>(
+    return new Cube3x3(
       this.moveset,
       this.state,
       this.solvedState,

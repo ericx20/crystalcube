@@ -46,7 +46,7 @@ const CUBE_ORIENTATIONS_TO_ROTATIONS: {
   YO: ["x2", "y'"],
   YG: ["z2"],
   YR: ["x2", "y"],
-  YB: ["x2", "y'"],
+  YB: ["x2"],
 };
 
 export function cubeOrientationToRotations(

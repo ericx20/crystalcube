@@ -17,10 +17,12 @@ export const LAYERS = [
 export type Layer = (typeof LAYERS)[number];
 
 // prettier-ignore
-export const FACE_LAYERS = ["R", "L", "U", "D", "F", "B"] as const satisfies Layer[];
+export const FACE_LAYERS = ["R", "L", "U", "D", "F", "B"] as const satisfies Readonly<Layer[]>;
 export type FaceLayer = (typeof FACE_LAYERS)[number];
 
-export const SLICE_LAYERS = ["M", "E", "S"] as const satisfies Layer[];
+export const SLICE_LAYERS = ["M", "E", "S"] as const satisfies Readonly<
+  Layer[]
+>;
 export type SliceLayer = (typeof SLICE_LAYERS)[number];
 
 // Represents the axes when rotating the entire cube
@@ -151,7 +153,7 @@ export function isCubeRotation(move: Move3x3): move is RotationMove {
 export function isFaceMove(move: Move3x3): move is FaceMove {
   return (
     !isCubeRotation(move) &&
-    (FACE_LAYERS as Layer[]).includes(layerOfLayerMove(move))
+    (FACE_LAYERS as Readonly<Layer[]>).includes(layerOfLayerMove(move))
   );
 }
 
