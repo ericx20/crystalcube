@@ -1,185 +1,121 @@
-import type { MoveSeq, FaceletCube, PruningTable, SolverConfigName, RotationMove, SolverConfig, LayerMoveSeq } from "../types"
-import { SOLVER_CONFIGS, SOLVED_INDEXED_FACELET_CUBE } from "../constants"
-import { faceletCubeToString, getMaskedFaceletCube } from "../cubeState"
-import { endsWithRedundantParallelMoves, layerMovesAreParallel, invertMoves, applyMoves, moveSeqsAreIdentical, layerOfLayerMove, applyMove } from "../moves"
-import { getPruningTable } from "./prune"
+import { Puzzle } from "../types";
+import { PruningTable, genPruningTable } from "./prune";
 
+// TODO: rename `maxSolutionCount` to numSolutions
+// and make it accept either number, or the string value "all-optimal"
+// that would be very useful for e.g. EO+cross where find all optimal EO
+// and then solve cross continuation, pick top 5
 
-// NOTE: solve() is fixed orientation
-// Pre-rotation sets the desired cube orientation
-// TODO: add pre-rotation to the output, along with move annotations maybe
-// will be an object comprising of the solution and some "metadata" like pre-rotation etc
-// TODO: make the solver handle scrambles that can change the cube's orientation
-// e.g. rotations or slice moves, make the solver figure out how to rotate the cube to solving orientation
-/**
- * @deprecated
- */
-export function solve(scram: MoveSeq, configName: SolverConfigName, preRotation: Array<RotationMove> = [], maxNumberOfSolutions = 5): Array<LayerMoveSeq> {
-  const config = SOLVER_CONFIGS[configName]
+// TODO: allow passing in a pre-computed pruning table
+// make it possible to access pruning table from outside the worker
+// if the default behaviour is to copy the pruning table into the worker thread,
+// then instead take in a proxy function that will get you the depth for you given a cube state hash
 
-  const translatedScramble = [...invertMoves(preRotation), ...scram, ...preRotation]
-  const scrambledCube = applyMoves([...SOLVED_INDEXED_FACELET_CUBE], translatedScramble)
-  const maskedCube = getMaskedFaceletCube(scrambledCube, config.mask)
+export interface SolverOptions {
+  // name: string; // must be unique
+  pruningDepth: number;
+  depthLimit: number;
+  maxSolutionCount?: number;
+}
 
-  const pruningTable = getPruningTable(configName)
+// this is an iterative deepening depth-first search
+// the strat is to try doing DFS on depth 0, then depth 1, and so on
+export function solve<Move extends string>(
+  puzzleToSolve: Puzzle<Move>, // a scrambled puzzle
+  pruningTable: PruningTable,
+  { pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
+): Move[][] {
+  const puzzle = puzzleToSolve.clone().resetHistory();
+  const solutionsList: Move[][] = [];
+  const isSolutionsListFull = () => solutionsList.length >= maxSolutionCount;
+  // const isSolutionsListFull = () => {
+  //   if (solutionsList.length === 0) return false;
+  //   const bestSolution = solutionsList[0];
+  //   const worstSolution = solutionsList.at(-1);
+  //   if (!worstSolution) return false;
+  //   return bestSolution.length !== worstSolution.length;
 
-  const solutionsList: Array<LayerMoveSeq> = []
-  const isSolutionsListFull = () => solutionsList.length >= maxNumberOfSolutions
-  const addSolution = (solutionToAdd: LayerMoveSeq) => {
-    const sortedSolution = sortSimulMoves(solutionToAdd)
-    // check for duplicate/similar solutions
-    if (solutionsList.some(solution => solutionsAreTooSimilar(solution, sortedSolution))) {
-      return
+  // }
+
+  const addSolution = (solutionToAdd: Move[]) => {
+    if (solutionsList.some((s) => solutionsAreTooSimilar(s, solutionToAdd))) {
+      return;
     }
-    solutionsList.push(sortedSolution)
-  }
+    solutionsList.push(solutionToAdd);
+  };
 
-  const MAX_SEARCH_COUNT = 1000000
-  let searchCount = 0
+  const MAX_SEARCH_COUNT = 1000000;
+  let searchCount = 0;
 
-  const shouldStopSearch = () => isSolutionsListFull() || searchCount >= MAX_SEARCH_COUNT
+  const shouldStopSearch = () =>
+    isSolutionsListFull() || searchCount >= MAX_SEARCH_COUNT;
 
   // Depth limited search
-  // NOTE: MUTATES THE SOLUTION ARRAY
   function solveDepth(
-    config: SolverConfig,
-    pruningTable: PruningTable,
-    cube: FaceletCube,
-    solution: LayerMoveSeq,
-    depthRemaining: number,
+    puzzleState: Puzzle<Move>,
+    solution: Move[], // MUTATED
+    depthRemaining: number
   ): boolean {
+    if (shouldStopSearch()) return false;
 
-    // if the accumulator is full or we reached state limit, return false immediately
-    if (shouldStopSearch()) {
-      return false
-    }
+    searchCount++;
 
-    searchCount++
+    // the lower bound for the movecount of the optimal solution
+    // if pruning table doesn't have the optimal movecount, the movecount must be more than the table's depth
+    const lowerBound = pruningTable[puzzleState.encode()] ?? pruningDepth + 1;
+    if (lowerBound > depthRemaining) return false;
 
-    // pruning
-    let lowerBound: number | undefined = pruningTable[faceletCubeToString(cube)] // least # moves needed to solve this scram
-  
-    if (lowerBound === undefined) {
-      // if the pruning depth was 4 and it doesn't have our cube state,
-      // then we need 5 or more moves to solve the cube
-      lowerBound = config.pruningDepth + 1
-    }
-
-    if (lowerBound > depthRemaining) {
-      return false
-    }
-
-    if (isSolved(cube, pruningTable)) {
-      addSolution([...solution])
-      return true
+    if (puzzleState.isSolved()) {
+      addSolution([...solution]);
+      return true;
     }
 
     // cube is unsolved but we still have some remaining depth
-    for (const move of config.moveSet) {
-      // optimization: never use the same layer in consecutive moves
-      const previousMove = solution[solution.length - 1]
-      if (solution.length && layerOfLayerMove(move) === layerOfLayerMove(previousMove)) {
-        continue
-      }
-
-      // prevent exploring further if the solution has a redundant segment like R L R', guaranteed a better one would be found
-      if (endsWithRedundantParallelMoves(solution.concat(move))) {
-        continue
-      }
-
+    for (const move of puzzleState.nextMoves) {
       // try every available move by recursively calling solveDepth
-      solution.push(move)
+      solution.push(move);
       solveDepth(
-        config,
-        pruningTable,
-        applyMove(cube, move), // copy of cube + the move done
+        puzzleState.clone().applyMove(move),
         solution,
-        depthRemaining - 1,
-      )
-      // if a recursive call found a solution, then propagate the fact that a solution was found
-      // if (result) return true
-      solution.pop() // otherwise, remove the move we tried and try another move
+        depthRemaining - 1
+      );
+      solution.pop(); // remove the move we tried, in order to try another
     }
-    // ok we tried everything but nothing was found
-    return false
+    return false; // no solutions found
   }
 
-
-  for (let depth = 0; depth <= config.depthLimit; depth++) {
-    solveDepth(config, pruningTable, maskedCube, [], depth)
-    if (shouldStopSearch()) {
-      break
-    }
+  for (let depth = 0; depth <= depthLimit; depth++) {
+    solveDepth(puzzle, [], depth);
+    if (shouldStopSearch()) break;
   }
 
-  // eliminate solutions that are way longer than the shortest one we found
-  const MAX_SUBOPTIMALITY = 2
-  if (solutionsList.length) {
-    // by nature of this algorithm, solutionsList is always sorted by length (best solutions first)
-    const bestSolutionLength = solutionsList[0].length
-    const maxSolutionLength = bestSolutionLength + MAX_SUBOPTIMALITY
-    return solutionsList.filter(solution => solution.length <= maxSolutionLength)
-  }
-
-  return solutionsList
-}
-
-/**
- * @deprecated
- */
-function isSolved(cube: FaceletCube, pruningTable: PruningTable): boolean {
-  return pruningTable[faceletCubeToString(cube)] === 0
-}
-
-// solution post-processing
-/**
- * @deprecated
- */
-function sortSimulMoves(solution: LayerMoveSeq): LayerMoveSeq {
-  const sortedSolution: LayerMoveSeq = [...solution]
-  let i = 0
-  while (i < solution.length - 1) {
-    const currentMove = solution[i]
-    const nextMove = solution[i + 1]
-    if (layerMovesAreParallel(currentMove, nextMove)) {
-      // sort moves lexicographically (in reverse)
-      if (currentMove > nextMove) {
-        sortedSolution[i] = currentMove
-        sortedSolution[i + 1] = nextMove
-      } else {
-        sortedSolution[i] = nextMove
-        sortedSolution[i + 1] = currentMove
-      }
-      i += 2
-    } else {
-      i++
-    }
-  }
-  return sortedSolution
+  return trimBadSolutions(solutionsList);
 }
 
 // heuristic that eliminates a lot of solutions that are functionally the same
-/**
- * @deprecated
- */
-function solutionsAreTooSimilar(solA: LayerMoveSeq, solB: LayerMoveSeq): boolean {
-  if (moveSeqsAreIdentical(solA, solB)) {
-    return true
+// counts the number of moves that are the same
+// also important to filter out duplicate solutions: the algorithm uses IDDFS
+// so it may solve the same depth multiple times and find the same solution multiple times
+function solutionsAreTooSimilar<Move>(solA: Move[], solB: Move[]): boolean {
+  if (!solA.length && !solB.length) return true;
+
+  const commonLength = Math.min(solA.length, solB.length);
+  const maxSimilarMoves = Math.min(commonLength, 3);
+  let numOfSimilarMoves = 0;
+  for (let i = 0; i < commonLength; i++) {
+    if (solA[i] === solB[i]) numOfSimilarMoves++;
+    if (numOfSimilarMoves >= maxSimilarMoves) return true;
   }
+  return false;
+}
 
-  const length = Math.min(solA.length, solB.length)
-
-  let numOfSimilarMoves = 0
-  for (let i = 0; i < length; i++) {
-    const moveA = solA[i]
-    const moveB = solB[i]
-    if (layerOfLayerMove(moveA) === layerOfLayerMove(moveB)) {
-      numOfSimilarMoves++
-    }
-    if (numOfSimilarMoves >= 3) {
-      return true
-    }
-  }
-
-  return false
+// removes solutions that are much worse than the best one
+// the list of solutions must be sorted in increasing order of length
+function trimBadSolutions<Move>(solutionsList: Move[][]): Move[][] {
+  const MAX_SUBOPTIMALITY = 3;
+  const optimalMovecount = solutionsList[0].length;
+  const maxAcceptableMovecount = optimalMovecount + MAX_SUBOPTIMALITY;
+  return solutionsList.filter(
+    (solution) => solution.length <= maxAcceptableMovecount
+  );
 }

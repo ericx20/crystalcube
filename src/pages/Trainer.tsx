@@ -1,4 +1,4 @@
-import EOStepTrainer from "src/components/trainerv2/EOStepTrainer/EOStepTrainer";
+import EOStepTrainer from "src/components/trainers/EOStepTrainer/EOStepTrainer";
 
 export default function Trainer() {
   return <EOStepTrainer />;
