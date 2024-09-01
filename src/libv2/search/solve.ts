@@ -12,7 +12,7 @@ import { PruningTable, genPruningTable } from "./prune";
 // then instead take in a proxy function that will get you the depth for you given a cube state hash
 
 export interface SolverOptions {
-  name: string; // must be unique
+  // name: string; // must be unique
   pruningDepth: number;
   depthLimit: number;
   maxSolutionCount?: number;
@@ -22,11 +22,10 @@ export interface SolverOptions {
 // the strat is to try doing DFS on depth 0, then depth 1, and so on
 export function solve<Move extends string>(
   puzzleToSolve: Puzzle<Move>, // a scrambled puzzle
-  { name, pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
+  pruningTable: PruningTable,
+  { pruningDepth, depthLimit, maxSolutionCount = 5 }: SolverOptions
 ): Move[][] {
   const puzzle = puzzleToSolve.clone().resetHistory();
-  const pruningTable = genPruningTable(puzzle, { name, pruningDepth });
-
   const solutionsList: Move[][] = [];
   const isSolutionsListFull = () => solutionsList.length >= maxSolutionCount;
   // const isSolutionsListFull = () => {

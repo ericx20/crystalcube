@@ -25,7 +25,6 @@ function useScrambleAndSolutions<MoveType, Options>(
     setScramble(newScramble);
     setScrambleLoading(false);
     setHasFirstScrambleLoaded(true);
-
     onNewScramble && onNewScramble();
   }, [scrambler, options, onNewScramble]);
 

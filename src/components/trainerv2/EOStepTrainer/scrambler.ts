@@ -33,14 +33,14 @@ export default async function scrambler(
 ): Promise<Move3x3[]> {
   switch (options.levelMode) {
     case "num-of-bad-edges":
-      return nFlipScramble(
+      return numBadEdgesScramble(
         options.numOfBadEdges,
         options.eoStep,
         options.solutionOrientation,
         options.shortScrambles
       );
     case "num-of-moves":
-      return await numMovesScramble(
+      return await numOfMovesScramble(
         options.numOfMoves,
         options.eoStep,
         options.solutionOrientation,
@@ -55,7 +55,7 @@ export default async function scrambler(
   }
 }
 
-async function numMovesScramble(
+async function numOfMovesScramble(
   n: number,
   eoStep: EOStep,
   solutionOrientation: CubeOrientation,
@@ -128,7 +128,7 @@ async function numMovesScramble(
   }
 }
 
-async function nFlipScramble(
+async function numBadEdgesScramble(
   n: number,
   eoStep: EOStep,
   solutionOrientation: CubeOrientation,
@@ -150,7 +150,7 @@ async function nFlipScramble(
   // Our scramble only has the desired number of bad edges when looking at the F/B axis!
   // However if the solution orientation has a different axis, we need to translate the whole scramble
   const preRotation = cubeOrientationToRotations(solutionOrientation);
-  const scramble = translateMoves(scrambleForFBAxis, preRotation);
+  const scramble = translateMoves(scrambleForFBAxis, invertMoves(preRotation));
 
   if (shortScramble) {
     const preRotation = cubeOrientationToRotations(solutionOrientation);

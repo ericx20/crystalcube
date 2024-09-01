@@ -9,17 +9,18 @@ import { PuzzleConfigName } from ".";
 
 import type { Cube3x3Solver } from "./inside/solverWorker";
 
+const worker = new Worker(
+  new URL("./inside/solverWorker.ts", import.meta.url),
+  { type: "module" }
+);
+const Solver = Comlink.wrap<typeof Cube3x3Solver>(worker);
+
 export async function solveCube3x3(
   scramble: Move3x3[],
   configName: PuzzleConfigName,
   preRotation: RotationMove[] = [],
   maxSolutionCount?: number
 ) {
-  const worker = new Worker(
-    new URL("./inside/solverWorker.ts", import.meta.url),
-    { type: "module" }
-  );
-  const Solver = Comlink.wrap<typeof Cube3x3Solver>(worker);
   return await Solver.solve(
     scramble,
     configName,

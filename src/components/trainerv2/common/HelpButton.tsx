@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Icon,
   IconButton,
@@ -31,7 +30,8 @@ export default function HelpButton({
     <>
       <IconButton
         variant="ghost"
-        icon={<Icon as={IoHelpCircle} boxSize={6} color="blue.500" />}
+        colorScheme="blue"
+        icon={<Icon as={IoHelpCircle} boxSize={6} />}
         aria-label={ariaLabel}
         onClick={onOpen}
       />

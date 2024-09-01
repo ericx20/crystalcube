@@ -11,8 +11,10 @@ import {
 import OrientationSelect from "../../common/OrientationSelect";
 import { CubeOrientation } from "src/libv2/puzzles/cube3x3";
 import HelpButton from "../../common/HelpButton";
+import { EOStep } from "../eoStepTypes";
 
 export interface PreferenceSelectProps {
+  eoStep: EOStep;
   orientation: CubeOrientation;
   setOrientation: (orientation: CubeOrientation) => void;
   shortScrambles: boolean;
@@ -20,6 +22,7 @@ export interface PreferenceSelectProps {
 }
 
 export default function PreferenceSelect({
+  eoStep,
   orientation,
   setOrientation,
   shortScrambles,
@@ -52,14 +55,16 @@ export default function PreferenceSelect({
           >
             <Stack>
               <Text>
-                shorter scrambles are more convenient. however, they only
-                scramble the pieces that will be solved. the other pieces are
-                not scrambled randomly.
+                short scrambles only scramble the {eoStep} pieces. other pieces
+                are not scrambled well.
               </Text>
               <Text>
-                turn off this option when other pieces matter (for example
-                planning 1st pair after EOCross). longer scrambles will scramble
-                all pieces randomly.
+                use short scrambles for convenience when practicing just{" "}
+                {eoStep}.
+              </Text>
+              <Text>
+                turn off this option when practicing {eoStep} plus other pieces.
+                for example, planning EOCross + first ZZF2L pair.
               </Text>
             </Stack>
           </HelpButton>

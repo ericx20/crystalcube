@@ -15,6 +15,7 @@ import {
   Select,
   Tooltip,
   useClipboard,
+  useColorModeValue,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
@@ -115,6 +116,7 @@ export default function EOStepTrainer() {
         numOfMovesConfig={actions.getNumOfMovesConfig()}
       />
       <PreferenceSelect
+        eoStep={options.eoStep}
         orientation={options.solutionOrientation}
         setOrientation={actions.setSolutionOrientation}
         shortScrambles={options.shortScrambles}
@@ -158,6 +160,7 @@ function ShareButton({ text }: { text: string }) {
   useEffect(() => {
     setValue(text);
   }, [text]);
+  const boxColor = useColorModeValue("gray.100", "gray.600");
   return (
     <>
       <Button onClick={onOpen}>share</Button>
@@ -169,8 +172,8 @@ function ShareButton({ text }: { text: string }) {
           <ModalCloseButton />
           <ModalBody>
             <Box
+              bg={boxColor}
               whiteSpace="pre-line"
-              backgroundColor="gray.100"
               borderRadius="lg"
               padding="4"
             >
@@ -211,7 +214,7 @@ function generateCopyText({
     `${solverName} solutions:`,
     ...solutions.map((solution, index) => {
       const prefixText = `${index + 1}.`;
-      const movecountText = `(${solution.length} HTM)`; // TODO: compute HTM instead of checking length
+      const movecountText = `(${solution.length} HTM)`;
       const solutionText = [...preRotation, ...solution].join(" ");
       const eoAnnotationText = `[${getEOSolutionAnnotation(
         scramble,
