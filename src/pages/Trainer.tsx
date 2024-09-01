@@ -1,6 +1,5 @@
-import ZZTrainer from "src/components/Trainer/ZZTrainer";
+import EOStepTrainer from "src/components/trainerv2/EOStepTrainer/EOStepTrainer";
 
-// TODO
 export default function Trainer() {
-  return <ZZTrainer />
+  return <EOStepTrainer />;
 }

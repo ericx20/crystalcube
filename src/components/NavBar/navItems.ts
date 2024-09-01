@@ -1,18 +1,14 @@
 export interface NavItem {
-  label: string
-  subLabel?: string
-  children?: Array<NavItem>
-  href?: string
+  label: string;
+  subLabel?: string;
+  children?: Array<NavItem>;
+  href?: string;
 }
 
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: "trainer",
     href: "trainer/",
-  },
-  {
-    label: "trainer2",
-    href: "trainer2/",
   },
   {
     label: "tools",
@@ -23,6 +19,6 @@ const NAV_ITEMS: Array<NavItem> = [
       },
     ],
   },
-]
+];
 
-export default NAV_ITEMS
+export default NAV_ITEMS;

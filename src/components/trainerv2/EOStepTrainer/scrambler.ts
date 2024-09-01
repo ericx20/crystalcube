@@ -53,11 +53,8 @@ export default async function scrambler(
         options.shortScrambles
       );
   }
-
-  // TODO: shorten the scramble based on the option
 }
 
-// let's first make this run on the main thread, then move to a web worker once it works
 async function numMovesScramble(
   n: number,
   eoStep: EOStep,
@@ -232,7 +229,10 @@ async function makeShortScramble(
   const extraMoves = randomMoves(numExtraMoves);
   const newScramble = [...scramble, ...extraMoves];
   const solution = (await solveCube3x3(newScramble, eoStep, preRotation, 1))[0];
-  const solutionInverse = translateMoves(invertMoves(solution), preRotation);
+  const solutionInverse = translateMoves(
+    invertMoves(solution),
+    invertMoves(preRotation)
+  );
   // cancel out any moves if possible
   return simplifyMoves([...solutionInverse, ...invertMoves(extraMoves)]);
 }
