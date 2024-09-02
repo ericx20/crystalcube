@@ -48,6 +48,7 @@ import PreferenceSelect from "./cards/PreferenceSelect";
 import { getEOSolutionAnnotation } from "./utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import KeyboardControls from "./cards/KeyboardControls";
+import { plausible } from "src/App";
 
 export default function EOStepTrainer() {
   const [areSolutionsHidden, setSolutionsHidden] = useState(true);
@@ -73,7 +74,10 @@ export default function EOStepTrainer() {
     eoStepOptions.solutionOrientation
   );
 
-  const mainAction = areSolutionsHidden ? showSolutions : getNext;
+  const mainAction = areSolutionsHidden ? showSolutions : () => {
+    plausible.trackEvent("trainer-generate", { props: { method: eoStepOptions.eoStep } });
+    getNext();
+  };
 
   const copyText = generateCopyText({
     solverName: eoStepOptions.eoStep,
