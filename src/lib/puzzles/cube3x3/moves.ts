@@ -289,14 +289,14 @@ export function movePowerToSuffix(power: MovePower): string {
 // TODO: update OH scrambler
 export function translateMoves(
   moves: Move3x3[],
-  rotations: Array<RotationMove>
+  rotations: Readonly<Array<RotationMove>>
 ): Move3x3[] {
   return moves.map((move) => translateMove(move, rotations));
 }
 
 export function translateMove(
   move: Move3x3,
-  rotations: Array<RotationMove>
+  rotations: Readonly<Array<RotationMove>>
 ): Move3x3 {
   let newMove = move;
   rotations.forEach((rotation) => {

@@ -82,6 +82,11 @@ export default function EOStepTrainer() {
     solutions,
   });
 
+  const solutionsWithPrerotations = solutions.map((solution) => ({
+    solution,
+    preRotation,
+  }));
+
   // hotkeys (note, more hotkeys are implemented in children)
   useHotkeys(" ", mainAction, [areSolutionsHidden], {
     enabled: uiOptions.enableHotkeys && !isLoading,
@@ -112,8 +117,7 @@ export default function EOStepTrainer() {
           <SolutionsViewer
             mask={MASKS[eoStepOptions.eoStep]}
             scramble={scramble}
-            preRotation={preRotation}
-            solutions={solutions}
+            solutions={solutionsWithPrerotations}
             showEO
             isLoading={isLoading}
             hideSolutions={areSolutionsHidden || isLoading}
@@ -160,7 +164,7 @@ export default function EOStepTrainer() {
                 setShortScrambles={actions.setShortScrambles}
               />
             </Card>
-            <Card p="1.5rem" flex={1}>
+            <Card p="1.5rem" flex={1} display={{ base: "none", sm: "flex" }}>
               <KeyboardControls
                 enableHotkeys={uiOptions.enableHotkeys}
                 setEnableHotkeys={actions.setEnableHotkeys}

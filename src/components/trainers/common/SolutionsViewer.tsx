@@ -20,10 +20,14 @@ import { RotationMove, Move3x3, Cube3x3Mask } from "src/lib/puzzles/cube3x3";
 import { getEOSolutionAnnotation } from "../EOStepTrainer/utils";
 import { CopyIcon } from "@chakra-ui/icons";
 
+export interface SolutionWithPrerotation {
+  solution: Move3x3[];
+  preRotation: RotationMove[];
+}
+
 interface SolutionsViewerProps {
   scramble: Move3x3[];
-  preRotation: RotationMove[];
-  solutions: Move3x3[][];
+  solutions: SolutionWithPrerotation[];
   mask?: Cube3x3Mask;
   showEO?: boolean;
   isLoading?: boolean;
@@ -35,7 +39,6 @@ interface SolutionsViewerProps {
 
 export default function SolutionsViewer({
   scramble,
-  preRotation,
   /** The list of solutions, should be sorted by length starting with shortest */
   solutions,
   // make mask and showEO part of a PuzzleDisplayOptions type
@@ -57,13 +60,19 @@ export default function SolutionsViewer({
   const selectedSolution = solutions.at(selectedSolutionIndex);
   // TODO: add functions that calculate metrics, since we shouldn't assume the length of a solution is its HTM metric (slice moves, rotations etc.)
   // make metrics a prop of the form { name: string, calculateMetric: (moves: MoveType[]) => number }
-  const badgeText = solutions.length ? `best: ${solutions[0].length} HTM` : "";
+  const badgeText = solutions.length
+    ? `best: ${solutions[0].solution.length} HTM`
+    : "";
   const eoSolutionAnnotation = useMemo(
     () =>
       selectedSolution
-        ? getEOSolutionAnnotation(scramble, preRotation, selectedSolution)
+        ? getEOSolutionAnnotation(
+            scramble,
+            selectedSolution.preRotation,
+            selectedSolution.solution
+          )
         : undefined,
-    [scramble, preRotation, selectedSolution]
+    [scramble, selectedSolution?.preRotation, selectedSolution?.solution]
   );
 
   return (
@@ -83,7 +92,6 @@ export default function SolutionsViewer({
           <Box minW={["14rem", "20rem"]}>
             <SelectSolution
               inactive={hideSolutions}
-              preRotation={preRotation}
               solutions={solutions}
               selectedSolutionIndex={selectedSolutionIndex}
               onSelectSolution={setSelectedSolutionIndex}
@@ -94,8 +102,8 @@ export default function SolutionsViewer({
         <Box w="100%" minW={0}>
           <SolutionPlayer
             scramble={scramble}
-            preRotation={preRotation}
-            solution={selectedSolution ?? []}
+            preRotation={selectedSolution?.preRotation ?? []}
+            solution={selectedSolution?.solution ?? []}
             solutionAnnotation={showEO ? eoSolutionAnnotation : undefined}
             mask={mask}
             showEO={showEO}
@@ -113,15 +121,13 @@ export default function SolutionsViewer({
 interface SelectSolutionProps {
   /** When `inactive` is true, the buttons receive no keyboard focus and there is no selected solution */
   inactive?: boolean;
-  preRotation: RotationMove[];
-  solutions: Move3x3[][];
+  solutions: SolutionWithPrerotation[];
   selectedSolutionIndex: number;
   onSelectSolution: (index: number) => void;
 }
 
 function SelectSolution({
   inactive = false,
-  preRotation,
   solutions,
   selectedSolutionIndex,
   onSelectSolution,
@@ -130,7 +136,7 @@ function SelectSolution({
   const badgeSelectedColorScheme = useColorModeValue("blackAlpha", "blue");
   return (
     <SimpleGrid spacing={2} minChildWidth="17rem">
-      {solutions.map((solution, index) => {
+      {solutions.map(({ solution, preRotation }, index) => {
         const solutionDisplayString = [...preRotation, ...solution].join(" ");
         const movecount = solution.length;
         const isSelected = !inactive && selectedSolutionIndex === index;

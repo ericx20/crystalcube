@@ -6,6 +6,7 @@ import { mergeDeepLeft } from "ramda";
 import type { LevelMode } from "./crossTypes";
 import type { CubeOrientation } from "src/lib/puzzles/cube3x3";
 
+// When these options change, scrambles and solutions are regenerated
 export interface CrossOptions {
   levelMode: LevelMode;
   numOfMoves: number;
@@ -13,8 +14,10 @@ export interface CrossOptions {
   shortScrambles: boolean;
 }
 
+// These options control UI display settings, not the scramble and solver
 export interface UIOptions {
   enableHotkeys: boolean;
+  chooseExecutionAngle: boolean;
 }
 
 export interface Actions {
@@ -22,6 +25,7 @@ export interface Actions {
   setLevelNumOfMoves: (num: number) => void;
   setSolutionOrientation: (orientation: CubeOrientation) => void;
   setShortScrambles: (shortScrambles: boolean) => void;
+  setChooseExecutionAngle: (chooseExecutionAngle: boolean) => void;
 
   setEnableHotkeys: (enable: boolean) => void;
 }
@@ -40,9 +44,9 @@ const useStore = create(
         numOfMoves: 3,
         solutionOrientation: "YB",
         shortScrambles: true,
-        enableHotkeys: true,
       },
       uiOptions: {
+        chooseExecutionAngle: true,
         enableHotkeys: true,
       },
       actions: {
@@ -61,6 +65,10 @@ const useStore = create(
         setShortScrambles: (shortScrambles) =>
           set((state) => {
             state.crossOptions.shortScrambles = shortScrambles;
+          }),
+        setChooseExecutionAngle: (chooseExecutionAngle) =>
+          set((state) => {
+            state.uiOptions.chooseExecutionAngle = chooseExecutionAngle;
           }),
 
         setEnableHotkeys: (enable) =>

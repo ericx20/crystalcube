@@ -47,8 +47,8 @@ export default function PreferenceSelect({
         />
         <Text>short scrambles</Text>
         <HelpButton
-          title="short scrambles"
-          ariaLabel="info about short scrambles"
+          modalTitle="short scrambles"
+          buttonAriaLabel="info about short scrambles"
         >
           <Stack>
             <Text>

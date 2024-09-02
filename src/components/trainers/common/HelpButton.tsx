@@ -15,15 +15,15 @@ import React from "react";
 import { IoHelpCircle } from "react-icons/io5";
 
 export interface HelpButtonProps {
-  title: string;
+  modalTitle: string;
   children: React.ReactNode;
-  ariaLabel: string;
+  buttonAriaLabel: string;
 }
 
 export default function HelpButton({
-  title,
+  modalTitle: title,
   children,
-  ariaLabel,
+  buttonAriaLabel: ariaLabel,
 }: HelpButtonProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
