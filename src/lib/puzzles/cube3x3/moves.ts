@@ -231,6 +231,17 @@ export function appendRandomMove(
   moves: Move3x3[],
   moveSet: readonly Move3x3[] = MOVESETS.RUFLDB
 ): void {
+  const move = sample(movesToAppend(moves, moveSet))!;
+  move && moves.push(move);
+}
+
+/**
+ * Gets a list of moves that can be added to a sequence of moves without cancellations
+ */
+export function movesToAppend(
+  moves: Move3x3[],
+  moveSet: readonly Move3x3[] = MOVESETS.RUFLDB
+): Move3x3[] {
   const lastMove = moves.at(moves.length - 1);
   const secondLastMove = moves.at(moves.length - 2);
   const choiceIsValid = (choice: Move3x3) =>
@@ -238,9 +249,7 @@ export function appendRandomMove(
     (!sameLayerOrAxis(choice, lastMove) &&
       (!secondLastMove ||
         !endsWithRedundantParallelMoves([secondLastMove, lastMove, choice])));
-  const validChoices = moveSet.filter(choiceIsValid);
-  const move = sample(validChoices);
-  move && moves.push(move);
+  return moveSet.filter(choiceIsValid);
 }
 
 function endsWithRedundantParallelMoves(solution: Move3x3[]): boolean {

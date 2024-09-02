@@ -84,7 +84,7 @@ export default function EOStepTrainer() {
 
   // hotkeys (note, more hotkeys are implemented in children)
   useHotkeys(" ", mainAction, [areSolutionsHidden], {
-    enabled: uiOptions.enableHotkeys,
+    enabled: uiOptions.enableHotkeys && !isLoading,
     preventDefault: true,
   });
   useHotkeys("Backspace", hideSolutions, { enabled: uiOptions.enableHotkeys });
