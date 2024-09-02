@@ -103,7 +103,7 @@ export default function CrossTrainer() {
     <Container maxW="container.lg">
       <VStack spacing={4} my={4}>
         <HStack spacing={4}>
-          <Heading size="md">CFOP cross trainer</Heading>
+          <Heading size="md">cross trainer</Heading>
         </HStack>
         <Card p="1.5rem" w="100%">
           <ScrambleEditor

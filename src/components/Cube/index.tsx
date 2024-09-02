@@ -15,11 +15,20 @@ interface CubieData {
 interface CubeProps {
   cube: Cube3x3;
   showEO?: boolean;
+  disableControls?: boolean;
+  cameraPosition?: [number, number, number];
+  showHintStickers?: boolean;
 }
 
 const SOLVED_EO = Array<boolean>(12).fill(true);
 
-export default function Cube({ cube, showEO }: CubeProps) {
+export default function Cube({
+  cube,
+  showEO,
+  disableControls = false,
+  cameraPosition = [8, 8, 8],
+  showHintStickers = true,
+}: CubeProps) {
   const eo = showEO ? cube.EO : SOLVED_EO;
   const facelets = cube.stateData;
   // prettier-ignore
@@ -54,10 +63,11 @@ export default function Cube({ cube, showEO }: CubeProps) {
 
   return (
     <Canvas
-      camera={{ zoom: 2, position: [8, 8, 8] }}
+      camera={{ zoom: 2, position: cameraPosition }}
       gl={{ antialias: true, toneMapping: NoToneMapping, pixelRatio: 2 }}
     >
       <OrbitControls
+        enabled={!disableControls}
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={(Math.PI * 3) / 4}
         minDistance={10}
@@ -72,6 +82,7 @@ export default function Cube({ cube, showEO }: CubeProps) {
           label={label}
           position={position}
           cubieFacelets={cubieFacelets}
+          showHintStickers={showHintStickers}
         />
       ))}
     </Canvas>

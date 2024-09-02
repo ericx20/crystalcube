@@ -3,13 +3,10 @@ import { Puzzle } from "../types";
 export type PruningTable = { [encodedState: string]: number };
 
 export interface PrunerOptions {
+  // TODO: pruning tables are now cached somewhere else, don't need the name key here
   name: string; // must be unique
   pruningDepth: number;
 }
-
-// note: for now, pruning tables are regenerated every time the solver runs
-// it's not a problem, the eocross pruning table takes about 70 ms on err0rlaptop to generate
-// but the `name` option in `PrunerOptions` is there in case you need a unique key to use for caching purposes
 
 // the puzzle passed in may be scrambled, that's okay
 // only the solved state will be used as the starting point for the pruner

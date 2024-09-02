@@ -10,7 +10,6 @@ import {
   Text,
   Tooltip,
   Skeleton,
-  SlideFade,
   Spacer,
   Switch,
   VStack,
@@ -136,32 +135,30 @@ export default function OHScramble() {
   );
 
   return (
-    <SlideFade in>
-      <VStack spacing={3}>
-        <Heading textAlign="center" size="lg">
-          one handed scrambles
-        </Heading>
-        <TwistyPlayer
-          alg={scramble}
-          visualization="2D"
-          background="none"
-          controlPanel="none"
-        />
-        <Skeleton isLoaded={!isLoading}>
-          <Balancer>
-            <Text
-              textAlign="center"
-              fontSize={isLowercaseWide ? "2xl" : { base: "lg", md: "xl" }}
-            >
-              {scrambleString}
-            </Text>
-          </Balancer>
-        </Skeleton>
-        <Container>{buttons}</Container>
-        <Collapse in={showSettings} animateOpacity>
-          {settings}
-        </Collapse>
-      </VStack>
-    </SlideFade>
+    <VStack spacing={3}>
+      <Heading textAlign="center" size="lg" my={8}>
+        one handed scrambles
+      </Heading>
+      <TwistyPlayer
+        alg={scramble}
+        visualization="2D"
+        background="none"
+        controlPanel="none"
+      />
+      <Skeleton isLoaded={!isLoading}>
+        <Balancer>
+          <Text
+            textAlign="center"
+            fontSize={isLowercaseWide ? "2xl" : { base: "lg", md: "xl" }}
+          >
+            {scrambleString}
+          </Text>
+        </Balancer>
+      </Skeleton>
+      <Container>{buttons}</Container>
+      <Collapse in={showSettings} animateOpacity>
+        {settings}
+      </Collapse>
+    </VStack>
   );
 }

@@ -9,6 +9,7 @@ interface CubieProps {
   cubieFacelets: CubieFacelets;
   oriented?: boolean;
   label?: Face;
+  showHintStickers?: boolean;
 }
 
 export default function Cubie(
@@ -32,6 +33,7 @@ export default function Cubie(
             label={label}
             face={face}
             facelet={facelet}
+            showHintSticker={props.showHintStickers}
           />
         ) : (
           []

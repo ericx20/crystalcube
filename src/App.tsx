@@ -4,18 +4,18 @@ import {
   createRoutesFromElements,
   RouterProvider,
   Outlet,
+  Navigate,
 } from "react-router-dom";
 import { Container, Flex } from "@chakra-ui/react";
 import NavBar from "./components/NavBar/NavBar";
 import Home from "./pages/Home";
-import Trainer from "./pages/train/CrossTrainerPage";
-import Tools from "./pages/Tools";
 import ErrorPage from "./pages/ErrorPage";
 import CrossTrainerPage from "./pages/train/CrossTrainerPage";
 import EOStepTrainerPage from "./pages/train/EOStepTrainerPage";
 import TrainerPage from "./pages/train";
 import OHScramble from "./pages/OHScramble";
 import { ReactNode } from "react";
+import AboutPage from "./pages/About";
 
 function Layout({ children }: { children: ReactNode }) {
   return (
@@ -27,8 +27,6 @@ function Layout({ children }: { children: ReactNode }) {
     </Flex>
   );
 }
-
-// TODO: add back OH scrambler
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -53,9 +51,12 @@ const router = createBrowserRouter(
         </Route>
         <Route path="eo" element={<EOStepTrainerPage />} />
       </Route>
+      {/* redirect for old /trainer path */}
+      <Route path="trainer" element={<Navigate to="/train" />} />
       <Route path="tools">
         <Route path="ohscramble" element={<OHScramble />} />
       </Route>
+      <Route path="about" element={<AboutPage />} />
     </Route>
   )
 );

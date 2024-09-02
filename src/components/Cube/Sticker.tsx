@@ -56,6 +56,7 @@ interface StickerProps {
   facelet: Facelet;
   oriented: boolean;
   label?: Face;
+  showHintSticker?: boolean;
 }
 
 export default function Sticker({
@@ -63,6 +64,7 @@ export default function Sticker({
   facelet,
   oriented,
   label,
+  showHintSticker = true,
 }: StickerProps) {
   return (
     <mesh rotation={stickerRotationMap[face]}>
@@ -72,10 +74,15 @@ export default function Sticker({
         <meshBasicMaterial color={colorScheme[facelet]} />
       </mesh>
       {/* hint sticker */}
-      <mesh position={[0, 0, hintStickerDistance]} rotation={[0, halfTurn, 0]}>
-        <planeGeometry args={[stickerSize, stickerSize]} />
-        <meshBasicMaterial color={colorScheme[facelet]} />
-      </mesh>
+      {showHintSticker && (
+        <mesh
+          position={[0, 0, hintStickerDistance]}
+          rotation={[0, halfTurn, 0]}
+        >
+          <planeGeometry args={[stickerSize, stickerSize]} />
+          <meshBasicMaterial color={colorScheme[facelet]} />
+        </mesh>
+      )}
       {/* center label */}
       {label && (
         <mesh position={[0, 0, 0.5 + labelDistance]}>
@@ -96,13 +103,15 @@ export default function Sticker({
             <meshBasicMaterial color="#9b23eb" />
           </mesh>
           {/* hint dot */}
-          <mesh
-            position={[0, 0, hintStickerDistance - stickerThickness]}
-            rotation={[0, halfTurn, eighthTurn]}
-          >
-            <planeGeometry args={[misorientedDotSize, misorientedDotSize]} />
-            <meshBasicMaterial color="#9b23eb" />
-          </mesh>
+          {showHintSticker && (
+            <mesh
+              position={[0, 0, hintStickerDistance - stickerThickness]}
+              rotation={[0, halfTurn, eighthTurn]}
+            >
+              <planeGeometry args={[misorientedDotSize, misorientedDotSize]} />
+              <meshBasicMaterial color="#9b23eb" />
+            </mesh>
+          )}
         </>
       )}
     </mesh>

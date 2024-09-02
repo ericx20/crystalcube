@@ -1,22 +1,28 @@
-import { isRouteErrorResponse, useRouteError } from "react-router-dom";
+import { Button, Heading, VStack, Text } from "@chakra-ui/react";
+import { isRouteErrorResponse, Link, useRouteError } from "react-router-dom";
 
-// TODO: make it look nicer
 export default function ErrorPage() {
   const error = useRouteError();
 
   if (isRouteErrorResponse(error)) {
     return (
-      <>
-        <h1>page not found!</h1>
-        <p>{error.statusText}</p>
-      </>
+      <VStack h="100vh">
+        <Heading mt={8} size="lg">
+          page not found!
+        </Heading>
+        <Button as={Link} to="/" colorScheme="blue">
+          go home
+        </Button>
+      </VStack>
     );
   } else if (error instanceof Error) {
     return (
-      <>
-        <h1>an error has occurred!</h1>
-        <p>{error.message}</p>
-      </>
+      <VStack h="100vh">
+        <Heading mt={8} size="lg">
+          an error has occurred!
+        </Heading>
+        <Text>error: {error.message}</Text>
+      </VStack>
     );
   } else {
     return null;
