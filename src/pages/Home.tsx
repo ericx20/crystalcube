@@ -11,17 +11,17 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import Balancer from "react-wrap-balancer";
 
-import MockupLight from "src/assets/mockup-light.webp";
-import MockupDark from "src/assets/mockup-dark.webp";
-
 export default function Home() {
-  const mockupImage = useColorModeValue(MockupLight, MockupDark);
+  const mockupImage = useColorModeValue(
+    "assets/mockup-light.webp",
+    "/assets/mockup-dark.webp"
+  );
   return (
     <Container maxW="container.lg" py={12}>
       <VStack spacing={6}>
         <VStack>
           <Balancer>
-            <Heading textAlign="center">crystalcube trainer</Heading>
+            <Heading textAlign="center">crystalcube trainers</Heading>
           </Balancer>
           <Balancer>
             <Text align="center" fontSize="lg">

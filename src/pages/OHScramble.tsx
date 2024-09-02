@@ -16,6 +16,7 @@ import {
   useColorModeValue,
   useDisclosure,
   useClipboard,
+  FormLabel,
 } from "@chakra-ui/react";
 import { IoHandLeft, IoHandRight } from "react-icons/io5";
 import { Alg } from "cubing/alg";
@@ -118,17 +119,30 @@ export default function OHScramble() {
     >
       <HStack spacing={10}>
         <HStack>
-          <Icon as={IoHandLeft} />
-          <Switch isChecked={!isLefty} onChange={() => setIsLefty(!isLefty)} />
-          <Icon as={IoHandRight} />
+          <FormLabel htmlFor="toggle-lefty" m={0}>
+            <Icon as={IoHandLeft} display="block" />
+          </FormLabel>
+          <Switch
+            id="toggle-lefty"
+            isChecked={!isLefty}
+            onChange={() => setIsLefty(!isLefty)}
+          />
+          <FormLabel htmlFor="toggle-lefty" m={0}>
+            <Icon as={IoHandRight} display="block" />
+          </FormLabel>
         </HStack>
         <HStack>
-          <Text>r</Text>
+          <FormLabel htmlFor="toggle-notation" m={0}>
+            <Text>r</Text>
+          </FormLabel>
           <Switch
+            id="toggle-notation"
             isChecked={!isLowercaseWide}
             onChange={() => setLowercaseWide(!isLowercaseWide)}
           />
-          <Text>Rw</Text>
+          <FormLabel htmlFor="toggle-notation" m={0}>
+            <Text>Rw</Text>
+          </FormLabel>
         </HStack>
       </HStack>
     </Flex>

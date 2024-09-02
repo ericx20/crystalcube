@@ -1,18 +1,17 @@
 # crystalcube
 
 A collection of unique speedcubing tools
+
 ![screenshot of crystalcube](src/assets/mockup-dark.webp)
 
-## ZZ Trainer
+## CFOP Cross & ZZ EO Trainers
 
-Improves your EOStep efficiency: lets you learn from computer-optimal solutions with powerful EO visualization
+Improves your first step efficiency: lets you learn from computer-optimal solutions with visualization
 
-- Novel 3D cube visualizer highlights bad edges and how they get eliminated
+- Novel 3D cube visualizer highlights bad edges for EO and how they get eliminated
 - Scrambles are random-state or can be set to a specific level
-- Solver that suggests optimal solutions for EO, EOLine, EOCross
+- Fast solver that generates optimal solutions for cross, EO, EOLine, EOCross
 - Inspired by [Onionhoney's Roux Trainers](https://onionhoney.github.io/roux-trainers/)
-
-Support for CFOP is coming soon!
 
 ## OH Scrambler
 
@@ -24,7 +23,7 @@ Generates fair scrambles that are easy to do one-handed
 
 ## Cube solver library
 
-The trainer is powered by `crystalcube`'s own cube library. It's focused on generating solutions for the first step of ZZ and CFOP, and can also solve first steps of any method you define!
+The trainer is powered by `crystalcube`'s own cube library with some functionality from [`cubing.js`](https://github.com/cubing/cubing.js). It's focused on generating solutions for the first step of ZZ and CFOP, and can also solve first steps of any method you define!
 
 - This library is still being developed and doesn't have documentation yet, and it could be replaced by cubing.js in the future
 
@@ -83,4 +82,4 @@ The `crystalcube` logo is licensed under a <a rel="license" href="http://creativ
 
 Made with ❤️ by crystalcuber
 
-If you need help or have suggestions, DM me on Discord: `crystalcuber`
+If you need help or have suggestions, please open a GitHub issue or DM me on Discord: `crystalcuber`

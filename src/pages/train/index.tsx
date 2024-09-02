@@ -9,8 +9,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import crossArtwork from "src/assets/cross.svg";
-import eoArtwork from "src/assets/eo.svg";
 
 export default function TrainerPage() {
   const artworkOpacity = useColorModeValue(1, 0.9);
@@ -21,12 +19,19 @@ export default function TrainerPage() {
           crystalcube trainers
         </Heading>
         <Stack direction={{ base: "column", md: "row" }} gap={8}>
-          <Card as={Link} to="/train/cross" p="1.5rem" flex={1} maxW="20rem">
-            <Heading size="md" textAlign="center">
-              CFOP cross
-            </Heading>
+          <Card
+            as={Link}
+            to="/train/cross"
+            p="1.5rem"
+            flex={1}
+            maxW="20rem"
+            display="flex"
+            alignItems="center"
+          >
+            <Heading size="md">CFOP cross trainer</Heading>
             <Image
-              src={crossArtwork}
+              maxW="15rem"
+              src="/assets/cross.svg"
               opacity={artworkOpacity}
               transition="filter 0.1s ease-in"
               _hover={{
@@ -38,13 +43,19 @@ export default function TrainerPage() {
               improve your cross efficiency and cross-to-F2L transition
             </Text>
           </Card>
-          <Card as={Link} to="/train/eo" p="1.5rem" flex={1} maxW="20rem">
-            <Heading size="md" textAlign="center">
-              ZZ EO
-            </Heading>
+          <Card
+            as={Link}
+            to="/train/eo"
+            p="1.5rem"
+            flex={1}
+            maxW="20rem"
+            alignItems="center"
+          >
+            <Heading size="md">ZZ EO trainer</Heading>
 
             <Image
-              src={eoArtwork}
+              maxW="15rem"
+              src="/assets/eo.svg"
               opacity={artworkOpacity}
               transition="filter 0.1s ease-in"
               _hover={{

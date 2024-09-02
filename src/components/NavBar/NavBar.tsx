@@ -27,7 +27,6 @@ import {
 } from "@chakra-ui/icons";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import { Link as RouterLink } from "react-router-dom";
-import logo from "src/assets/logo.svg";
 import NAV_ITEMS, { NavItem } from "./navItems";
 import { useNavigate } from "react-router-dom";
 
@@ -71,7 +70,7 @@ export default function NavBar() {
           <Flex flex={{ base: 2 }} justify={{ base: "center", md: "start" }}>
             <HStack>
               <Image
-                src={logo}
+                src="/assets/logo.svg"
                 boxSize="30px"
                 objectFit="contain"
                 onClick={() => navigate("")}
