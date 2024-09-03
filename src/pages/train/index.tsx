@@ -24,13 +24,12 @@ export default function TrainerPage() {
             to="/train/cross"
             p="1.5rem"
             flex={1}
-            maxW="20rem"
             display="flex"
             alignItems="center"
           >
             <Heading size="md">CFOP cross trainer</Heading>
             <Image
-              maxW="15rem"
+              maxW="12rem"
               src="/assets/cross.svg"
               opacity={artworkOpacity}
               transition="filter 0.1s ease-in"
@@ -38,6 +37,7 @@ export default function TrainerPage() {
                 filter:
                   "drop-shadow(0 0 10px rgb(212, 131, 242)) saturate(1.15)",
               }}
+              m={4}
             />
             <Text textAlign="center">
               improve your cross efficiency and cross-to-F2L transition
@@ -48,13 +48,12 @@ export default function TrainerPage() {
             to="/train/eo"
             p="1.5rem"
             flex={1}
-            maxW="20rem"
             alignItems="center"
           >
             <Heading size="md">ZZ EO trainer</Heading>
 
             <Image
-              maxW="15rem"
+              maxW="12rem"
               src="/assets/eo.svg"
               opacity={artworkOpacity}
               transition="filter 0.1s ease-in"
@@ -62,6 +61,7 @@ export default function TrainerPage() {
                 filter:
                   "drop-shadow(0 0 10px rgb(212, 131, 242)) saturate(1.15)",
               }}
+              m={4}
             />
             <Text textAlign="center">
               improve your EO step efficiency with powerful EO visualizer
