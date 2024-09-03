@@ -29,7 +29,6 @@ export default function useScrambleAndSolutions<MoveType, Options>(
       setScrambleFailed(true);
     }
     setLoading(false);
-    onNewScramble && onNewScramble();
   }, [scrambler, solver, options, onNewScramble])
 
   const prefetch = useCallback(async (): Promise<void> => {
@@ -40,7 +39,7 @@ export default function useScrambleAndSolutions<MoveType, Options>(
     cachedSolutions.current = solutions;
   }, [scrambler, solver, options])
 
-  const getNext = () => {
+  const getNext = async () => {
     if (cachedScramble.current && cachedSolutions.current) {
       setScramble(cachedScramble.current);
       setSolutions(cachedSolutions.current);
@@ -48,8 +47,9 @@ export default function useScrambleAndSolutions<MoveType, Options>(
       cachedSolutions.current = null;
       prefetch();
     } else {
-      generate();
+      await generate();
     }
+    onNewScramble && onNewScramble();
   }
 
   useEffect(() => {
