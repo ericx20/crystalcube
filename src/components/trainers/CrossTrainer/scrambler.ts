@@ -1,6 +1,5 @@
 import { randomScrambleForEvent } from "cubing/scramble";
 import sample from "lodash/sample";
-import shuffle from "lodash/shuffle";
 
 import {
   appendRandomMove,
@@ -9,7 +8,6 @@ import {
   cubeOrientationToRotations,
   invertMoves,
   Move3x3,
-  movesToAppend,
   PUZZLE_CONFIGS,
   randomMoves,
   RotationMove,
@@ -20,6 +18,7 @@ import { CrossOptions } from "./crossOptions";
 import { genReversePruningTable } from "src/lib/search";
 import { solveCube3x3, solveEntire3x3 } from "src/lib/puzzles/cube3x3/solvers";
 import random3x3Scramble from "src/lib/puzzles/cube3x3/scramble";
+import { eightMoveCrosses } from "./eightMoveCrosses";
 
 export default async function scrambler(
   options: CrossOptions
@@ -71,6 +70,12 @@ async function numOfMovesScramble(
     return shortScramble
       ? makeShortScramble(scramble, preRotation, 4)
       : makeBetterScramble(scramble, preRotation);
+  } else if (n === 8) {
+    // 8-move crosses are extremely rare, there are only 102 of them. Best way is to sample a list of all 8 move cross scrambles
+    const scramble = sample(eightMoveCrosses)!;
+    return shortScramble
+      ? makeShortScramble(scramble, preRotation, 4)
+      : makeBetterScramble(scramble, preRotation);
   } else {
     // Approach 2: if the difficulty `n` exceeds pruning depth, we have to do a random-move scramble
     // We will need to shorten the scramble, either with respect to only the edges or we need to get proper random state corners as well!
@@ -96,32 +101,34 @@ async function numOfMovesScramble(
         break;
       }
 
+      appendRandomMove(scramble);
+
       /**
-       * 8-move crosses are extremely rare, so we switch to a different algorithm that only considers the hardest move we can add to the scramble
-       * TODO: apparently there are 102 8-movers: https://www.cubezone.be/crossstudy.html
-       * Find all of them on a beefy computer, then randomly sample in crystalcube for instant and random-state 8-movers
+       * Leaving here for documentation: old approach for finding 8 move cross scrambles.
+       * This is an altered algorithm where instead of appending any random move to our current scramble,
+       * we only append a random scramble that makes the scramble at least as hard
        */
-      if (n === 8 && optimalSolutionLength === n - 1) {
-        const validChoices = movesToAppend(scramble);
-        let bestChoice: Move3x3 = sample(validChoices)!;
-        let bestLength: number = 0;
-        // it's very important to shuffle the list of valid choices, prevents us from getting stuck
-        for (const choice of shuffle(validChoices)) {
-          const choiceLength = (
-            await solveCube3x3([...scramble, choice], "Cross", preRotation, 1)
-          )[0].length;
-          if (choiceLength > bestLength) {
-            bestChoice = choice;
-            bestLength = choiceLength;
-            // when adding a move to a scramble, you can only make that scramble at most one move more difficult
-            // so if we found a better choice, there would be nothing better
-            continue;
-          }
-        }
-        scramble.push(bestChoice);
-      } else {
-        appendRandomMove(scramble);
-      }
+      //   if (n === 8 && optimalSolutionLength === n - 1) {
+      //     const validChoices = movesToAppend(scramble);
+      //     let bestChoice: Move3x3 = sample(validChoices)!;
+      //     let bestLength: number = 0;
+      //     // it's very important to shuffle the list of valid choices, prevents us from getting stuck
+      //     for (const choice of shuffle(validChoices)) {
+      //       const choiceLength = (
+      //         await solveCube3x3([...scramble, choice], "Cross", preRotation, 1)
+      //       )[0].length;
+      //       if (choiceLength > bestLength) {
+      //         bestChoice = choice;
+      //         bestLength = choiceLength;
+      //         // when adding a move to a scramble, you can only make that scramble at most one move more difficult
+      //         // so if we found a better choice, there would be nothing better
+      //         continue;
+      //       }
+      //     }
+      //     scramble.push(bestChoice);
+      //   } else {
+      //     appendRandomMove(scramble);
+      //   }
     }
 
     if (!success) {
