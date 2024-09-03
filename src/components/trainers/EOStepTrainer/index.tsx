@@ -66,7 +66,6 @@ export default function EOStepTrainer() {
     scrambleFailed,
     setScramble,
     solutions,
-    isScrambleLoading,
     isLoading,
     getNext,
   } = useScrambleAndSolutions(scrambler, solver, eoStepOptions, hideSolutions);
@@ -111,7 +110,7 @@ export default function EOStepTrainer() {
         <Card p="1.5rem" w="100%">
           <ScrambleEditor
             scrambleFailed={scrambleFailed}
-            isScrambleLoading={isScrambleLoading}
+            isLoading={isLoading}
             scramble={scramble}
             setScramble={setScramble}
             notationParser={scrambleParser}

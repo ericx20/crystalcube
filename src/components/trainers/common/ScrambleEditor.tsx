@@ -15,13 +15,12 @@ import {
   useClipboard,
   VStack,
 } from "@chakra-ui/react";
-import { useCallback, useEffect, useState } from "react";
-import { debounce } from "lodash";
+import { useEffect, useState } from "react";
 import { IoWarning } from "react-icons/io5";
 
 interface ScrambleViewerProps<Move> {
   scrambleFailed?: boolean;
-  isScrambleLoading?: boolean;
+  isLoading?: boolean;
   scramble: Move[];
   setScramble: (newScramble: Move[]) => void;
   /** A function that parses a string into move notation, or if invalid, returns null */
@@ -31,7 +30,7 @@ interface ScrambleViewerProps<Move> {
 // TODO: show "Failed to generate scramble" message if scramble === null
 export default function ScrambleEditor<Move extends string>({
   scrambleFailed = false,
-  isScrambleLoading = false,
+  isLoading = false,
   scramble,
   setScramble,
   notationParser,
@@ -62,27 +61,6 @@ export default function ScrambleEditor<Move extends string>({
     setValue(scrambleText);
   }, [scrambleText]);
 
-  // Prevents the loading state from flickering too quickly for the user
-  const TIMEOUT = 200;
-  const [debouncedLoading, setDebouncedLoading] = useState(false);
-  const setDebouncedLoadingTrue = useCallback(
-    debounce(() => setDebouncedLoading(true), TIMEOUT),
-    [setDebouncedLoading]
-  );
-  const setDebouncedLoadingFalse = useCallback(
-    debounce(() => setDebouncedLoading(false), TIMEOUT),
-    [setDebouncedLoading]
-  );
-  useEffect(() => {
-    if (isScrambleLoading) {
-      setDebouncedLoadingFalse.cancel();
-      setDebouncedLoadingTrue();
-    } else {
-      setDebouncedLoadingTrue.cancel();
-      setDebouncedLoadingFalse();
-    }
-  }, [isScrambleLoading]);
-
   return (
     <VStack align="left">
       <Stack
@@ -92,7 +70,7 @@ export default function ScrambleEditor<Move extends string>({
       >
         <Heading size="md">scramble</Heading>
         <HStack width="100%">
-          <Skeleton isLoaded={!debouncedLoading} minWidth="10rem" width="100%">
+          <Skeleton isLoaded={!isLoading} minWidth="10rem" width="100%">
             <FormControl isInvalid={inputIsInvalid}>
               <Editable value={inputScramble} fontSize="lg">
                 <EditablePreview />

@@ -1,59 +1,66 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-// State management for intuitive step trainers
-// Stores the current scramble and the solution for that scramble
-// Pass in an Options param to change the mode of the scrambler/solver
-// For example, for ZZ trainer you could pass in "EOCross" or "EOLine"
-// depending on the mode the user has selected
-function useScrambleAndSolutions<MoveType, Options>(
+// State management for scrambles and solutions in intuitive step trainers
+// Generates the scrambles and solutions initially, and returns a function to get the next round of scrambles and solutions
+// They regenerate when options change, and the next scrambles/solutions are also pre-fetched to save time.
+export default function useScrambleAndSolutions<MoveType, Options>(
   scrambler: (options: Options) => Promise<MoveType[] | null>,
   solver: (scramble: MoveType[], options: Options) => Promise<MoveType[][]>,
   options: Options,
   onNewScramble?: () => void
 ) {
-  const [scramble, setScramble] = useState<MoveType[]>([]);
-  const [solutions, setSolutions] = useState<MoveType[][]>([]);
-
-  const [hasFirstScrambleLoaded, setHasFirstScrambleLoaded] = useState(false);
-  const [isLoading, setLoading] = useState(false);
-  const [isScrambleLoading, setScrambleLoading] = useState(true);
+  const [scramble, setScramble] = useState<MoveType[]>([])
   const [scrambleFailed, setScrambleFailed] = useState(false);
+  const [solutions, setSolutions] = useState<MoveType[][]>([])
+  const [isLoading, setLoading] = useState(false);
 
-  const generateScramble = useCallback(async () => {
+  const cachedScramble = useRef<MoveType[] | null>(null);
+  const cachedSolutions = useRef<MoveType[][] | null>(null);
+
+  const generate = useCallback(async (): Promise<void> => {
     setLoading(true);
-    setScrambleLoading(true);
-    const newScramble = await scrambler(options);
-    const failed = newScramble === null;
-    setScrambleFailed(failed);
-    if (failed) {
-      setLoading(false);
+    const scramble = await scrambler(options);
+    if (scramble) {
+      const solutions = await solver(scramble, options);
+      setScrambleFailed(false);
+      setScramble(scramble)
+      setSolutions(solutions)
     } else {
-      setScramble(newScramble);
+      setScrambleFailed(true);
     }
-    setScrambleLoading(false);
-    setHasFirstScrambleLoaded(true);
-    onNewScramble && onNewScramble();
-  }, [scrambler, options, onNewScramble]);
-
-  const generateSolutions = useCallback(async () => {
-    const newSolutions = await solver(scramble, options);
-    setSolutions(newSolutions);
     setLoading(false);
-  }, [scramble, solver, options]);
+    onNewScramble && onNewScramble();
+  }, [scrambler, solver, options, onNewScramble])
 
-  // generate a new scramble when options change (including upon page load)
-  useEffect(() => {
-    generateScramble();
-  }, [options]);
+  const prefetch = useCallback(async (): Promise<void> => {
+    const scramble = await scrambler(options);
+    if (!scramble) return;
+    const solutions = await solver(scramble, options);
+    cachedScramble.current = scramble;
+    cachedSolutions.current = solutions;
+  }, [scrambler, solver, options])
 
-  // generate new solutions when the scramble changes
-  useEffect(() => {
-    if (hasFirstScrambleLoaded && !scrambleFailed) {
-      generateSolutions();
+  const getNext = () => {
+    if (cachedScramble.current && cachedSolutions.current) {
+      setScramble(cachedScramble.current);
+      setSolutions(cachedSolutions.current);
+      cachedScramble.current = null;
+      cachedSolutions.current = null;
+      prefetch();
+    } else {
+      generate();
     }
-  }, [scramble, hasFirstScrambleLoaded, scrambleFailed]);
+  }
 
-  const getNext = () => generateScramble();
+  useEffect(() => {
+    generate()
+  }, [options])
+
+  useEffect(() => {
+    if (!isLoading && (!cachedScramble.current || !cachedSolutions.current)) {
+      prefetch();
+    }
+  }, [isLoading])
 
   return {
     scramble,
@@ -62,8 +69,5 @@ function useScrambleAndSolutions<MoveType, Options>(
     solutions,
     getNext,
     isLoading,
-    isScrambleLoading,
   };
 }
-
-export default useScrambleAndSolutions;

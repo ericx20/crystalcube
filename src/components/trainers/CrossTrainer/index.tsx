@@ -68,7 +68,6 @@ export default function CrossTrainer() {
     scrambleFailed,
     setScramble,
     solutions,
-    isScrambleLoading,
     isLoading,
     getNext,
   } = useScrambleAndSolutions(scrambler, solver, crossOptions, hideSolutions);
@@ -112,7 +111,7 @@ export default function CrossTrainer() {
         <Card p="1.5rem" w="100%">
           <ScrambleEditor
             scrambleFailed={scrambleFailed}
-            isScrambleLoading={isScrambleLoading}
+            isLoading={isLoading}
             scramble={scramble}
             setScramble={setScramble}
             notationParser={scrambleParser}
