@@ -1,6 +1,5 @@
 import {
   Box,
-  Flex,
   Heading,
   HStack,
   Stack,
@@ -21,6 +20,15 @@ export interface PreferenceSelectProps {
   setShortScrambles: (shortScrambles: boolean) => void;
 }
 
+const eoStepFriendlyNames: { [name in EOStep]: string } = {
+  EO: "EO",
+  EOLine: "EOLine",
+  EOCross: "EOCross",
+  EOArrowBack: "EOArrow",
+  EOArrowLeft: "EOArrow",
+  EO222: "",
+};
+
 export default function PreferenceSelect({
   eoStep,
   orientation,
@@ -28,6 +36,7 @@ export default function PreferenceSelect({
   shortScrambles,
   setShortScrambles,
 }: PreferenceSelectProps) {
+  const eoStepName = eoStepFriendlyNames[eoStep];
   return (
     <VStack align="left" gap={4}>
       <Heading size="md">preferences</Heading>
@@ -42,25 +51,25 @@ export default function PreferenceSelect({
       </Box>
       <HStack>
         <Switch
-          isChecked={shortScrambles}
+          isChecked={!shortScrambles}
           onChange={() => setShortScrambles(!shortScrambles)}
         />
-        <Text>short scrambles</Text>
+        <Text whiteSpace="nowrap">scramble all pieces</Text>
         <HelpButton
-          modalTitle="short scrambles"
-          buttonAriaLabel="info about short scrambles"
+          modalTitle="scramble all pieces"
+          buttonAriaLabel="info about scrambling all pieces"
         >
           <Stack>
             <Text>
-              short scrambles only scramble the {eoStep} pieces. other pieces
-              are not scrambled well.
+              by default, the scrambles are conveniently short but do not
+              properly scramble the entire cube. only{" "}
+              {eoStep === "EO"
+                ? "the orientation of edges is random."
+                : `the solved ${eoStepName} pieces and the orientation of unsolved edges are random.`}
             </Text>
             <Text>
-              use short scrambles for convenience when practicing just {eoStep}.
-            </Text>
-            <Text>
-              turn off this option when practicing {eoStep} plus other pieces.
-              for example, planning EOCross + first ZZF2L pair.
+              if this option is enabled, scrambles will scramble the entire
+              cube. useful for planning beyond {eoStepName}.
             </Text>
           </Stack>
         </HelpButton>

@@ -45,26 +45,22 @@ export default function PreferenceSelect({
       <Box w="min-content">
         <HStack>
           <Switch
-            isChecked={shortScrambles}
+            isChecked={!shortScrambles}
             onChange={() => setShortScrambles(!shortScrambles)}
           />
-          <Text whiteSpace="nowrap">short scrambles</Text>
+          <Text whiteSpace="nowrap">scramble all pieces</Text>
           <Spacer />
           <HelpButton
-            modalTitle="short scrambles"
-            buttonAriaLabel="info about short scrambles"
+            modalTitle="scramble all pieces"
+            buttonAriaLabel="info about scrambling all pieces"
           >
             <Stack>
               <Text>
-                short scrambles only scramble the cross pieces. other pieces are
-                not scrambled well.
+                by default, the scrambles are conveniently short but only scramble the cross pieces.
               </Text>
               <Text>
-                use short scrambles for convenience when practicing just cross.
-              </Text>
-              <Text>
-                turn off this option when practicing cross plus other pieces.
-                for example, cross plus planning 1st pair
+                if this option is enabled, scrambles will scramble the entire cube.
+                useful for planning cross + 1 pair, xcross and more!
               </Text>
             </Stack>
           </HelpButton>
@@ -87,7 +83,7 @@ export default function PreferenceSelect({
                 sides.
               </Text>
               <Text>
-                when "choose best angle" is enabled, crystalcube will choose the
+                when this option is enabled, crystalcube will choose the
                 angle it thinks is faster to execute. it minimizes F and B moves
                 in the solution.
               </Text>

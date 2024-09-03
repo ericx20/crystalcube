@@ -9,9 +9,9 @@ export default function useScrambleAndSolutions<MoveType, Options>(
   options: Options,
   onNewScramble?: () => void
 ) {
-  const [scramble, setScramble] = useState<MoveType[]>([])
+  const [scramble, setScramble] = useState<MoveType[]>([]);
   const [scrambleFailed, setScrambleFailed] = useState(false);
-  const [solutions, setSolutions] = useState<MoveType[][]>([])
+  const [solutions, setSolutions] = useState<MoveType[][]>([]);
   const [isLoading, setLoading] = useState(false);
 
   const cachedScramble = useRef<MoveType[] | null>(null);
@@ -23,13 +23,13 @@ export default function useScrambleAndSolutions<MoveType, Options>(
     if (scramble) {
       const solutions = await solver(scramble, options);
       setScrambleFailed(false);
-      setScramble(scramble)
-      setSolutions(solutions)
+      setScramble(scramble);
+      setSolutions(solutions);
     } else {
       setScrambleFailed(true);
     }
     setLoading(false);
-  }, [scrambler, solver, options, onNewScramble])
+  }, [scrambler, solver, options, onNewScramble]);
 
   const prefetch = useCallback(async () => {
     const scramble = await scrambler(options);
@@ -37,7 +37,7 @@ export default function useScrambleAndSolutions<MoveType, Options>(
     const solutions = await solver(scramble, options);
     cachedScramble.current = scramble;
     cachedSolutions.current = solutions;
-  }, [scrambler, solver, options])
+  }, [scrambler, solver, options]);
 
   const getNext = useCallback(async () => {
     if (cachedScramble.current && cachedSolutions.current) {
@@ -50,26 +50,29 @@ export default function useScrambleAndSolutions<MoveType, Options>(
       await generate();
     }
     onNewScramble && onNewScramble();
-  }, [prefetch, generate, onNewScramble])
+  }, [prefetch, generate, onNewScramble]);
 
-  const setCustomScramble = useCallback(async (scramble: MoveType[]) => {
-    setLoading(true);
-    const solutions = await solver(scramble, options);
-    setScrambleFailed(false);
-    setScramble(scramble)
-    setSolutions(solutions)
-    setLoading(false);
-  }, [solver])
+  const setCustomScramble = useCallback(
+    async (scramble: MoveType[]) => {
+      setLoading(true);
+      const solutions = await solver(scramble, options);
+      setScrambleFailed(false);
+      setScramble(scramble);
+      setSolutions(solutions);
+      setLoading(false);
+    },
+    [solver]
+  );
 
   useEffect(() => {
-    generate()
-  }, [options])
+    generate();
+  }, [options]);
 
   useEffect(() => {
     if (!isLoading && (!cachedScramble.current || !cachedSolutions.current)) {
       prefetch();
     }
-  }, [isLoading])
+  }, [isLoading]);
 
   return {
     scramble,
