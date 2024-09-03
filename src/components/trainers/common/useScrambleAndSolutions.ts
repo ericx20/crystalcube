@@ -17,7 +17,7 @@ export default function useScrambleAndSolutions<MoveType, Options>(
   const cachedScramble = useRef<MoveType[] | null>(null);
   const cachedSolutions = useRef<MoveType[][] | null>(null);
 
-  const generate = useCallback(async (): Promise<void> => {
+  const generate = useCallback(async () => {
     setLoading(true);
     const scramble = await scrambler(options);
     if (scramble) {
@@ -31,7 +31,7 @@ export default function useScrambleAndSolutions<MoveType, Options>(
     setLoading(false);
   }, [scrambler, solver, options, onNewScramble])
 
-  const prefetch = useCallback(async (): Promise<void> => {
+  const prefetch = useCallback(async () => {
     const scramble = await scrambler(options);
     if (!scramble) return;
     const solutions = await solver(scramble, options);
@@ -39,7 +39,7 @@ export default function useScrambleAndSolutions<MoveType, Options>(
     cachedSolutions.current = solutions;
   }, [scrambler, solver, options])
 
-  const getNext = async () => {
+  const getNext = useCallback(async () => {
     if (cachedScramble.current && cachedSolutions.current) {
       setScramble(cachedScramble.current);
       setSolutions(cachedSolutions.current);
@@ -50,7 +50,16 @@ export default function useScrambleAndSolutions<MoveType, Options>(
       await generate();
     }
     onNewScramble && onNewScramble();
-  }
+  }, [prefetch, generate, onNewScramble])
+
+  const setCustomScramble = useCallback(async (scramble: MoveType[]) => {
+    setLoading(true);
+    const solutions = await solver(scramble, options);
+    setScrambleFailed(false);
+    setScramble(scramble)
+    setSolutions(solutions)
+    setLoading(false);
+  }, [solver])
 
   useEffect(() => {
     generate()
@@ -65,7 +74,7 @@ export default function useScrambleAndSolutions<MoveType, Options>(
   return {
     scramble,
     scrambleFailed,
-    setScramble,
+    setScramble: setCustomScramble,
     solutions,
     getNext,
     isLoading,
