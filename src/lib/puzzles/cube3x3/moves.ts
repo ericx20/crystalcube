@@ -410,67 +410,53 @@ function nextElement<T>(arr: Array<T>, index: number): T {
 }
 
 /**
- * There might be a better way to implement this...
+ * Note: for now, does not deal with rotations, slice moves or wide moves. <RUFLDB> only.
  */
-export function simplifyMoves<M extends Move3x3>(
-  movesToSimplify: Array<M>
-): Array<M> {
-  const moves = [...movesToSimplify];
-  let i = 0;
-  // don't consider the last move, there's nothing after it to cancel with
-  while (i < moves.length - 1) {
-    const currentMove = moves[i];
-    const nextMove = moves[i + 1];
-    const afterNextMove = moves.at(i + 2); // this may not exist
-
-    // 1. compare the current and next moves
-    const cancelResult = cancelTwoMoves(currentMove, nextMove);
-    if (cancelResult === true) {
-      // current and next move cancel completely, delete them
-      moves.splice(i, 2);
-      // step back a move if we're not already at the start
-      if (i !== 0) i--;
-    } else if (cancelResult === false) {
-      // no moves can be cancelled
-      // check if currentMove, nextMove and afterNextMove are redundant parallel moves
-      // if they are, cancel currentMove and afterNextMove
-      // otherwise, advance to the next move
-      if (
-        isLayerMove(currentMove) &&
-        isLayerMove(nextMove) &&
-        afterNextMove &&
-        isLayerMove(afterNextMove) &&
-        movesAreParallel(currentMove, nextMove)
-      ) {
-        const result = cancelTwoMoves(currentMove, afterNextMove);
-        if (result === true) {
-          // currentMove and afterNextMove cancel completely, delete them
-          moves.splice(i + 2, 1);
-          moves.splice(i, 1);
-          // step back a move if we're not already at the start
-          if (i !== 0) i--;
-        } else if (result === false) {
-          // no moves can be cancelled, advance
-          i++;
-        } else {
-          // currentMove and afterNextMove combine into one move
-          moves[i] = result; // set currentMove to combined move
-          moves.splice(i + 2, 1); // delete afterNextMove
-          // step back a move if we're not already at the start
-          if (i !== 0) i--;
-        }
-      } else {
-        i++;
-      }
-    } else {
-      // current and next move combine into one move
-      moves[i] = cancelResult; // set currentMove to combined move
-      moves.splice(i + 1, 1); // delete the next move
-      // step back a move if we're not already at the start
-      if (i !== 0) i--;
+export function simplifyMoves(moves: Move3x3[]): Move3x3[] {
+  const simplified: Move3x3[] = [];
+  for (const curr of moves) {
+    // does the current move cancel with the previous? e.g. R R
+    const prev = simplified.at(-1);
+    if (!prev) {
+      simplified.push(curr);
+      continue;
     }
+    const result = cancelTwoMoves(prev, curr);
+    if (result === true) {
+      // cancel completely (e.g. R R' = nothing)
+      simplified.pop();
+      continue;
+    } else if (typeof result === "string") {
+      // combined (e.g. R R = R2)
+      simplified.pop();
+      simplified.push(result);
+      continue;
+    }
+
+    // at this point, the current move does not cancel with the previous
+    // does the current move cancel with the second previous?
+    const secondPrev = simplified.at(-2);
+    // assumption: no slice moves or wide moves
+    if (
+      secondPrev &&
+      movesAreParallel(secondPrev, prev) &&
+      movesAreParallel(prev, curr)
+    ) {
+      const result2 = cancelTwoMoves(secondPrev, curr);
+      if (result2 === true) {
+        // cancelled completely, need to remove the second previous move entirely. e.g. U D U' => D
+        simplified.splice(simplified.length - 2, 1);
+        continue;
+      } else if (typeof result2 === "string") {
+        // combine with the second previous move
+        simplified[simplified.length - 2] = result2;
+        continue;
+      }
+    }
+
+    simplified.push(curr);
   }
-  return moves;
+  return simplified;
 }
 
 // given two moves A and B, it returns:
