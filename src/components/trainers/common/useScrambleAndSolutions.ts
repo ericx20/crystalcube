@@ -61,18 +61,22 @@ export default function useScrambleAndSolutions<MoveType, Options>(
       setSolutions(solutions);
       setLoading(false);
     },
-    [solver]
+    [solver, options]
   );
 
+  // Generate fresh scrambles and invalidate cached scrambles whenever options change
   useEffect(() => {
+    cachedScramble.current = null;
+    cachedSolutions.current = null;
     generate();
+    onNewScramble && onNewScramble();
   }, [options]);
 
   useEffect(() => {
     if (!isLoading && (!cachedScramble.current || !cachedSolutions.current)) {
       prefetch();
     }
-  }, [isLoading]);
+  }, [isLoading, prefetch]);
 
   return {
     scramble,

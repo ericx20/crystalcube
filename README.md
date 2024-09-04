@@ -2,7 +2,7 @@
 
 A collection of unique speedcubing tools
 
-![screenshot of crystalcube](src/assets/mockup-dark.webp)
+![screenshot of crystalcube](public/assets/mockup-dark.webp)
 
 ## CFOP Cross & ZZ EO Trainers
 
@@ -47,8 +47,7 @@ yarn dev
 
 ## Acknowledgements
 
-**[Contributors](https://github.com/ericx20/crystalcube/graphs/contributors)**
-Thanks to all of you!
+Thanks to **[Contributors](https://github.com/ericx20/crystalcube/graphs/contributors)**!
 
 **Zhouheng (Jeffrey) Sun**
 

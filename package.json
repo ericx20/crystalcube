@@ -1,7 +1,7 @@
 {
   "name": "crystalcube",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "type": "module",
   "license": "MPL-2.0",
   "scripts": {
