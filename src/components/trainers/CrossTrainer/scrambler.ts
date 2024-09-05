@@ -72,7 +72,11 @@ async function numOfMovesScramble(
       : makeBetterScramble(scramble, preRotation);
   } else if (n === 8) {
     // 8-move crosses are extremely rare, there are only 102 of them. Best way is to sample a list of all 8 move cross scrambles
-    const scramble = sample(eightMoveCrosses)!;
+    const eightMoveYellowCrossScramble = sample(eightMoveCrosses)!;
+    const scramble = translateMoves(
+      eightMoveYellowCrossScramble,
+      invertMoves(preRotation)
+    );
     return shortScramble
       ? makeShortScramble(scramble, preRotation, 4)
       : makeBetterScramble(scramble, preRotation);

@@ -1,6 +1,7 @@
 import { Move3x3 } from "src/lib/puzzles/cube3x3";
 
 /**
+ * NOTE: scrambled with white top green front, these are 8-move yellow crosses!
  * Generated with the following code:
  * @example
  * genReversePruningTable(new Cube3x3(MOVESETS.RUFLDB).applyMask(MASKS.Cross), {
