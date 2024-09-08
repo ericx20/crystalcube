@@ -1,5 +1,5 @@
 import { Puzzle } from "../types";
-import { PruningTable, genPruningTable } from "./prune";
+import { PruningTable } from "./prune";
 
 // TODO: rename `maxSolutionCount` to numSolutions
 // and make it accept either number, or the string value "all-optimal"
@@ -112,6 +112,7 @@ function solutionsAreTooSimilar<Move>(solA: Move[], solB: Move[]): boolean {
 // removes solutions that are much worse than the best one
 // the list of solutions must be sorted in increasing order of length
 function trimBadSolutions<Move>(solutionsList: Move[][]): Move[][] {
+  if (solutionsList.length === 0) return [];
   const MAX_SUBOPTIMALITY = 3;
   const optimalMovecount = solutionsList[0].length;
   const maxAcceptableMovecount = optimalMovecount + MAX_SUBOPTIMALITY;

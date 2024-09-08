@@ -1,11 +1,12 @@
 {
   "name": "crystalcube",
   "private": true,
-  "version": "2.1.2",
+  "version": "2.2.0",
   "type": "module",
   "license": "MPL-2.0",
   "scripts": {
     "dev": "vite",
+    "type-check": "tsc",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

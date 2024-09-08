@@ -1,5 +1,5 @@
 import { invertPerm, doublePerm } from "src/lib/puzzles/common";
-import { Perm, MoveSet } from "src/lib/types";
+import { Perm, MoveSet, MovecountMetric } from "src/lib/types";
 import { FaceletIndex } from "./state";
 import sample from "lodash/sample";
 
@@ -286,7 +286,6 @@ export function movePowerToSuffix(power: MovePower): string {
   }[power];
 }
 
-// TODO: update OH scrambler
 export function translateMoves(
   moves: Move3x3[],
   rotations: Readonly<Array<RotationMove>>
@@ -475,3 +474,15 @@ function cancelTwoMoves<M extends Move3x3>(a: M, b: M): boolean | M {
   const newMove = (a[0] + movePowerToSuffix(powerOfC)) as M;
   return newMove;
 }
+
+export const MOVECOUNT_METRICS = {
+  HTM: {
+    name: "HTM",
+    metric: (moves: Move3x3[]): number =>
+      moves.reduce(
+        (total, move) =>
+          total + (isCubeRotation(move) ? 0 : isSliceMove(move) ? 2 : 1),
+        0
+      ),
+  },
+} satisfies { [k: string]: MovecountMetric<Move3x3> };

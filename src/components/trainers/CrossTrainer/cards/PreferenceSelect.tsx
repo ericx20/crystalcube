@@ -56,11 +56,12 @@ export default function PreferenceSelect({
           >
             <Stack>
               <Text>
-                by default, the scrambles are conveniently short but only scramble the cross pieces.
+                by default, the scrambles are conveniently short but only
+                scramble the cross pieces.
               </Text>
               <Text>
-                if this option is enabled, scrambles will scramble the entire cube.
-                useful for planning cross + 1 pair, xcross and more!
+                if this option is enabled, scrambles will scramble the entire
+                cube. useful for planning cross + 1 pair, xcross and more!
               </Text>
             </Stack>
           </HelpButton>
@@ -83,9 +84,9 @@ export default function PreferenceSelect({
                 sides.
               </Text>
               <Text>
-                when this option is enabled, crystalcube will choose the
-                angle it thinks is faster to execute. it minimizes F and B moves
-                in the solution.
+                when this option is enabled, crystalcube will choose the angle
+                it thinks is faster to execute. it minimizes F and B moves in
+                the solution.
               </Text>
               <Text>
                 turn off this option if focusing only on efficiency rather than
@@ -104,6 +105,7 @@ interface CrossOrientationSelectProps {
   setOrientation: (orientation: CubeOrientation) => void;
 }
 
+// TODO: remove
 function CrossOrientationSelect({
   orientation,
   setOrientation,

@@ -3,9 +3,10 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import { mergeDeepLeft } from "ramda";
 
-import type { EOStep, LevelMode, NumOfMovesConfig } from "./eoStepTypes";
+import type { EOStep, LevelMode } from "./types";
 import type { CubeOrientation } from "src/lib/puzzles/cube3x3";
 import { numOfBadEdgesValid } from "./utils";
+import { NUM_OF_MOVES_CONFIGS } from "./constants";
 
 export interface EOStepOptions {
   eoStep: EOStep;
@@ -21,7 +22,6 @@ export interface UIOptions {
 }
 
 export interface Actions {
-  getNumOfMovesConfig: () => NumOfMovesConfig;
   setEOStep: (eoStep: EOStep) => void;
   setLevelMode: (mode: LevelMode) => void;
   setLevelNumOfBadEdges: (num: number) => void;
@@ -54,8 +54,6 @@ const useStore = create(
         enableHotkeys: true,
       },
       actions: {
-        getNumOfMovesConfig: () =>
-          NUM_OF_MOVES_CONFIGS[get().eoStepOptions.eoStep],
         setEOStep: (eoStep) =>
           set((state) => {
             const { min, max } = NUM_OF_MOVES_CONFIGS[eoStep];
@@ -106,13 +104,3 @@ const useStore = create(
 export const useEOStepOptions = () => useStore((state) => state.eoStepOptions);
 export const useUIOptions = () => useStore((state) => state.uiOptions);
 export const useActions = () => useStore((state) => state.actions);
-
-// prettier-ignore
-export const NUM_OF_MOVES_CONFIGS: { [eoStep in EOStep]: NumOfMovesConfig } = {
-  EO:           { min: 3, max: 7, iterationLimit: 2000 },
-  EOLine:       { min: 3, max: 8, iterationLimit: 1000 },
-  EOCross:      { min: 3, max: 9, iterationLimit: 200 },
-  EOArrowBack:  { min: 3, max: 8, iterationLimit: 200 },
-  EOArrowLeft:  { min: 3, max: 8, iterationLimit: 200 },
-  EO222:        { min: 3, max: 9, iterationLimit: 200 },
-};

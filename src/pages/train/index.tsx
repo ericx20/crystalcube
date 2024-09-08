@@ -9,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import Balancer from "react-wrap-balancer";
 
 export default function TrainerPage() {
   const artworkOpacity = useColorModeValue(1, 0.9);
@@ -39,9 +40,11 @@ export default function TrainerPage() {
               }}
               m={4}
             />
-            <Text textAlign="center">
-              improve your cross efficiency and cross-to-F2L transition
-            </Text>
+            <Balancer>
+              <Text textAlign="center">
+                improve your cross efficiency and cross-to-F2L transition
+              </Text>
+            </Balancer>
           </Card>
           <Card
             as={Link}
@@ -63,9 +66,11 @@ export default function TrainerPage() {
               }}
               m={4}
             />
-            <Text textAlign="center">
-              improve your EO step efficiency with powerful EO visualizer
-            </Text>
+            <Balancer>
+              <Text textAlign="center">
+                improve your EO step efficiency with powerful EO visualizer
+              </Text>
+            </Balancer>
           </Card>
         </Stack>
       </VStack>

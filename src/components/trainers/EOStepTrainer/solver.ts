@@ -1,6 +1,6 @@
 import { Move3x3, cubeOrientationToRotations } from "src/lib/puzzles/cube3x3";
 import { solveCube3x3 } from "src/lib/puzzles/cube3x3/solvers";
-import { EOStepOptions } from "./eoStepOptions";
+import { EOStepOptions } from "./store";
 
 export default async function solver(
   scramble: Move3x3[],

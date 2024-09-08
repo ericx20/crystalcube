@@ -1,12 +1,4 @@
-import {
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Center,
@@ -31,13 +23,13 @@ import {
   invertMoves,
 } from "src/lib/puzzles/cube3x3";
 import { useHotkeys } from "react-hotkeys-hook";
+import { DisplayedSolution } from "./SolutionsViewer";
 const Cube = lazy(() => import("src/components/Cube"));
 
-interface SolutionPlayerProps {
-  scramble: Move3x3[];
-  preRotation: RotationMove[];
-  solution: Move3x3[];
-  solutionAnnotation?: string[];
+interface SolutionPlayerProps<MoveType, RotationMoveType> {
+  scramble: MoveType[];
+  solution: DisplayedSolution<MoveType, RotationMoveType>;
+  // TODO: accept a prop for a cube viewer component instead of mask or showEO. the component should accept partial solution
   mask?: Cube3x3Mask;
   showEO?: boolean;
   hideSolution?: boolean;
@@ -45,19 +37,18 @@ interface SolutionPlayerProps {
   enableHotkeys?: boolean;
 }
 
-export default function SolutionPlayer({
+export default function SolutionPlayer<
+  MoveType extends string,
+  RotationMoveType extends string
+>({
   scramble,
-  preRotation,
-  solution,
-  solutionAnnotation,
+  solution: { preRotation, solution, annotation },
   mask,
   showEO,
   hideSolution,
   isLoading,
   enableHotkeys,
-}: SolutionPlayerProps) {
-  // The full solution is `preRotation` then `solution`
-
+}: SolutionPlayerProps<MoveType, RotationMoveType>) {
   // null means no move is selected
   const [currentMoveIndex, setCurrentMoveIndex] = useState<number | null>(null);
 
@@ -72,18 +63,18 @@ export default function SolutionPlayer({
   const partialSolution =
     currentMoveIndex === null ? [] : solution.slice(0, currentMoveIndex + 1);
 
-  // TODO: why couldn't we cache this with useMemo? weird issue where first render is wrong, was my dependency array incorrect?
   const cubeToShow = useMemo(() => {
     const cube = new Cube3x3();
+    // TODO: remove the `as`, this whole piece of code should be moved to the user of this component that will pass in a cube viewer component
     if (mask) {
-      cube.applyMoves(preRotation);
+      cube.applyMoves(preRotation as RotationMove[]);
       cube.applyMask(mask);
-      cube.applyMoves(invertMoves(preRotation));
+      cube.applyMoves(invertMoves(preRotation as RotationMove[]));
     }
     cube
-      .applyMoves(scramble)
-      .applyMoves(preRotation)
-      .applyMoves(partialSolution);
+      .applyMoves(scramble as Move3x3[])
+      .applyMoves(preRotation as RotationMove[])
+      .applyMoves(partialSolution as Move3x3[]);
     return cube;
   }, [mask, preRotation, scramble, partialSolution]);
 
@@ -128,7 +119,6 @@ export default function SolutionPlayer({
           max={solution.length - 1}
           onChange={(e) => setCurrentMoveIndex(e)}
         >
-          {/* TODO: dummy slider mark for the cube orientation, if no orientation then its just a dot */}
           <SliderMark key={-1} value={-1} ml="-0.75rem" mt="-3.3rem">
             <SolutionMoveLabel
               label={preRotation.length ? preRotation.join(" ") : null}
@@ -151,9 +141,7 @@ export default function SolutionPlayer({
                 >
                   <SolutionMoveLabel
                     label={move}
-                    moveAnnotation={
-                      solutionAnnotation && solutionAnnotation[index]
-                    }
+                    moveAnnotation={annotation && annotation[index]}
                     isSelected={isSelected}
                     isPreviousMove={isPreviousMove}
                     hide={hideMove}

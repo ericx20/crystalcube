@@ -12,6 +12,9 @@ const EO_FACELETS: FaceletIndex[] = [
 const CROSS_FACELETS: FaceletIndex[] = [
   4, 22, 25, 28, 31, 34, 37, 40, 43, 46, 48, 49, 50, 52,
 ];
+const XCROSS_FACELETS = [
+  4, 22, 23, 24, 25, 28, 31, 34, 35, 36, 37, 40, 43, 45, 46, 48, 49, 50, 52,
+];
 const FB_FACELETS: FaceletIndex[] = [
   21, 22, 23, 24, 32, 33, 34, 35, 36, 44, 45, 48, 51,
 ];
@@ -56,6 +59,9 @@ export const MASKS = {
   },
   Cross: {
     solvedFaceletIndices: CROSS_FACELETS,
+  },
+  XCross: {
+    solvedFaceletIndices: XCROSS_FACELETS,
   },
   FB: {
     solvedFaceletIndices: FB_FACELETS,

@@ -20,8 +20,9 @@ import {
   simplifyMoves,
   translateMoves,
 } from "src/lib/puzzles/cube3x3";
-import { EOStepOptions, NUM_OF_MOVES_CONFIGS } from "./eoStepOptions";
-import { EOStep } from "./eoStepTypes";
+import { EOStepOptions } from "./store";
+import { NUM_OF_MOVES_CONFIGS } from "./constants";
+import { EOStep } from "./types";
 import { genReversePruningTable } from "src/lib/search";
 import { solveCube3x3, solveEntire3x3 } from "src/lib/puzzles/cube3x3/solvers";
 import random3x3Scramble from "src/lib/puzzles/cube3x3/scramble";

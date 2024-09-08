@@ -3,19 +3,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 // State management for scrambles and solutions in intuitive step trainers
 // Generates the scrambles and solutions initially, and returns a function to get the next round of scrambles and solutions
 // They regenerate when options change, and the next scrambles/solutions are also pre-fetched to save time.
-export default function useScrambleAndSolutions<MoveType, Options>(
+export default function useScrambleAndSolutions<MoveType, Options, Solution>(
   scrambler: (options: Options) => Promise<MoveType[] | null>,
-  solver: (scramble: MoveType[], options: Options) => Promise<MoveType[][]>,
+  solver: (scramble: MoveType[], options: Options) => Promise<Solution[]>,
   options: Options,
   onNewScramble?: () => void
 ) {
   const [scramble, setScramble] = useState<MoveType[]>([]);
   const [scrambleFailed, setScrambleFailed] = useState(false);
-  const [solutions, setSolutions] = useState<MoveType[][]>([]);
+  const [solutions, setSolutions] = useState<Solution[]>([]);
   const [isLoading, setLoading] = useState(false);
 
   const cachedScramble = useRef<MoveType[] | null>(null);
-  const cachedSolutions = useRef<MoveType[][] | null>(null);
+  const cachedSolutions = useRef<Solution[] | null>(null);
 
   const generate = useCallback(async () => {
     setLoading(true);

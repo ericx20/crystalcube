@@ -13,3 +13,8 @@ export interface Puzzle<Move extends string = string> {
 export type Perm<T = number> = [src: T, dst: T][];
 
 export type MoveSet<Move> = readonly Move[];
+
+export type MovecountMetric<Move> = {
+  name: string;
+  metric: (sequence: Move[]) => number;
+};

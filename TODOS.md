@@ -1,0 +1,23 @@
+TODOs:
+
+- update solver
+  - add masks for each of the XCross positions, BL BR FL FR
+- make the # of moves scramble work for xcross (fixed cross color) of any slot
+  - wrap the part that solves cross/xcross into a function that tells you how hard a scramble is
+- refactor trainers to pass in a cube viewer! necessary to show the right mask for a given XCross
+- in the cross scramble settings, show/hide options as necessary
+  - number of moves scramble is not allowed during color neutral mode
+  - NEW: in colour neutral mode, we do not shorten scrambles
+- in the store:
+  - when color neutrality changed, update the list of solution orientations and set scramble mode to random for dual/full cn
+- move "scramble all pieces" and "choose best angle" to the cross scramble settings
+- move the keyboard controls setting into the preferences card, delete the keyboard controls card
+- update generateCopyText to add information about which cross you solved
+- test everything
+- make it all look nicer
+- update eo trainer
+  - refactor so that it works
+  - refactor to include color neutrality support?
+  - refactor the settings to look similar to the cross settings
+- test the migration (on feature branch, before push and after push)
+- update README with the new features

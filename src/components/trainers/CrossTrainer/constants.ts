@@ -1,4 +1,20 @@
 import { Move3x3 } from "src/lib/puzzles/cube3x3";
+import { CrossStep } from "./types";
+
+interface NumOfMovesConfig {
+  // Minimum choice for number of moves scramble
+  min: number;
+  // Maximum choice for number of moves scramble
+  max: number;
+  // The number of iterations allowed when finding an `n`-move scramble before we give up
+  iterationLimit: number;
+}
+
+export const NUM_OF_MOVES_CONFIGS: { [step in CrossStep]: NumOfMovesConfig } = {
+  Cross: { min: 3, max: 7, iterationLimit: 10000 },
+  // TODO: test
+  XCross: { min: 3, max: 9, iterationLimit: 10000 },
+};
 
 /**
  * NOTE: scrambled with white top green front, these are 8-move yellow crosses!

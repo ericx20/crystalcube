@@ -13,9 +13,9 @@ import {
   Icon,
   VStack,
 } from "@chakra-ui/react";
-import type { LevelMode, NumOfMovesConfig } from "../eoStepTypes";
-import range from "lodash/range";
+import type { LevelMode } from "../types";
 import { VscCircleFilled } from "react-icons/vsc";
+import { SelectNumOfMoves } from "../../common/SelectNumOfMoves";
 
 export interface EOStepLevelSelectProps {
   levelMode: LevelMode;
@@ -24,7 +24,8 @@ export interface EOStepLevelSelectProps {
   setNumOfBadEdges: (num: number) => void;
   numOfMoves: number;
   setNumOfMoves: (num: number) => void;
-  numOfMovesConfig: NumOfMovesConfig;
+  minNumOfMoves: number;
+  maxNumOfMoves: number;
 }
 
 export default function EOStepLevelSelect({
@@ -34,7 +35,8 @@ export default function EOStepLevelSelect({
   setNumOfBadEdges,
   numOfMoves,
   setNumOfMoves,
-  numOfMovesConfig,
+  minNumOfMoves,
+  maxNumOfMoves,
 }: EOStepLevelSelectProps) {
   return (
     <VStack align="left">
@@ -61,7 +63,8 @@ export default function EOStepLevelSelect({
         <SelectNumOfMoves
           numOfMoves={numOfMoves}
           setNumOfMoves={setNumOfMoves}
-          numOfMovesConfig={numOfMovesConfig}
+          minNumOfMoves={minNumOfMoves}
+          maxNumOfMoves={maxNumOfMoves}
         />
       )}
     </VStack>
@@ -100,44 +103,6 @@ function SelectNumOfBadEdges({
           </SliderMark>
         ))}
         <SliderTrack bgGradient={sliderGradient}>
-          <SliderFilledTrack bg={useColorModeValue("blue.500", "blue.200")} />
-        </SliderTrack>
-        <SliderThumb boxSize={5}>
-          <Icon as={VscCircleFilled} boxSize={4} color="blue.500" />
-        </SliderThumb>
-      </Slider>
-    </Box>
-  );
-}
-
-interface SelectNumOfMovesProps {
-  numOfMoves: number;
-  setNumOfMoves: (nMove: number) => void;
-  numOfMovesConfig: NumOfMovesConfig;
-}
-
-function SelectNumOfMoves({
-  numOfMoves,
-  setNumOfMoves,
-  numOfMovesConfig: { min, max },
-}: SelectNumOfMovesProps) {
-  return (
-    <Box mb="1rem !important">
-      <Slider
-        value={numOfMoves}
-        onChange={setNumOfMoves}
-        min={min}
-        max={max}
-        step={1}
-      >
-        {range(min, max + 1).map((n) => (
-          <SliderMark key={n} value={n} w={6} ml={-3} mt={2}>
-            <Text align="center" fontSize={["md", "lg"]}>
-              {n}
-            </Text>
-          </SliderMark>
-        ))}
-        <SliderTrack>
           <SliderFilledTrack bg={useColorModeValue("blue.500", "blue.200")} />
         </SliderTrack>
         <SliderThumb boxSize={5}>

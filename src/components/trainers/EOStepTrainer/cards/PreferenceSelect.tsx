@@ -10,7 +10,7 @@ import {
 import OrientationSelect from "../../common/OrientationSelect";
 import { CubeOrientation } from "src/lib/puzzles/cube3x3";
 import HelpButton from "../../common/HelpButton";
-import { EOStep } from "../eoStepTypes";
+import { EOStep } from "../types";
 
 export interface PreferenceSelectProps {
   eoStep: EOStep;

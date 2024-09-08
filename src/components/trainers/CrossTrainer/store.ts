@@ -3,14 +3,18 @@ import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
 import { mergeDeepLeft } from "ramda";
 
-import type { LevelMode } from "./crossTypes";
+import type { ColorNeutrality, CrossStep, LevelMode } from "./types";
 import type { CubeOrientation } from "src/lib/puzzles/cube3x3";
+import { NUM_OF_MOVES_CONFIGS } from "./constants";
 
 // When these options change, scrambles and solutions are regenerated
 export interface CrossOptions {
+  crossStep: CrossStep;
   levelMode: LevelMode;
   numOfMoves: number;
-  solutionOrientation: CubeOrientation;
+  // This option is only shown on the UI, the solver will use crossOptions.solutionOrientations for solving color neutrality
+  colorNeutrality: ColorNeutrality;
+  solutionOrientations: CubeOrientation[];
   shortScrambles: boolean;
 }
 
@@ -21,12 +25,14 @@ export interface UIOptions {
 }
 
 export interface Actions {
+  setCrossStep: (crossStep: CrossStep) => void;
   setLevelMode: (mode: LevelMode) => void;
   setLevelNumOfMoves: (num: number) => void;
-  setSolutionOrientation: (orientation: CubeOrientation) => void;
+  setColorNeutrality: (colorNeutrality: ColorNeutrality) => void;
+  setSolutionOrientations: (orientations: CubeOrientation[]) => void;
   setShortScrambles: (shortScrambles: boolean) => void;
-  setChooseExecutionAngle: (chooseExecutionAngle: boolean) => void;
 
+  setChooseExecutionAngle: (chooseExecutionAngle: boolean) => void;
   setEnableHotkeys: (enable: boolean) => void;
 }
 
@@ -42,14 +48,26 @@ const useStore = create(
       crossOptions: {
         levelMode: "random",
         numOfMoves: 3,
-        solutionOrientation: "YB",
+        colorNeutrality: "fixed",
+        solutionOrientations: ["YB"],
         shortScrambles: true,
+        crossStep: "Cross",
       },
       uiOptions: {
         chooseExecutionAngle: true,
         enableHotkeys: true,
       },
       actions: {
+        setCrossStep: (crossStep) =>
+          set((state) => {
+            const { min, max } = NUM_OF_MOVES_CONFIGS[crossStep];
+            if (state.crossOptions.numOfMoves < min) {
+              state.crossOptions.numOfMoves = min;
+            } else if (state.crossOptions.numOfMoves > max) {
+              state.crossOptions.numOfMoves = max;
+            }
+            state.crossOptions.crossStep = crossStep;
+          }),
         setLevelMode: (levelMode) =>
           set((state) => {
             state.crossOptions.levelMode = levelMode;
@@ -58,19 +76,23 @@ const useStore = create(
           set((state) => {
             state.crossOptions.numOfMoves = numOfMoves;
           }),
-        setSolutionOrientation: (orientation) =>
+        setColorNeutrality: (colorNeutrality) =>
           set((state) => {
-            state.crossOptions.solutionOrientation = orientation;
+            state.crossOptions.colorNeutrality = colorNeutrality;
+          }),
+        setSolutionOrientations: (orientations) =>
+          set((state) => {
+            state.crossOptions.solutionOrientations = orientations;
           }),
         setShortScrambles: (shortScrambles) =>
           set((state) => {
             state.crossOptions.shortScrambles = shortScrambles;
           }),
+
         setChooseExecutionAngle: (chooseExecutionAngle) =>
           set((state) => {
             state.uiOptions.chooseExecutionAngle = chooseExecutionAngle;
           }),
-
         setEnableHotkeys: (enable) =>
           set((state) => {
             state.uiOptions.enableHotkeys = enable;
@@ -79,9 +101,19 @@ const useStore = create(
     })),
     {
       name: "cross",
-      version: 0.1,
+      version: 0.2,
       merge: (persistedState, currentState) =>
         mergeDeepLeft(persistedState ?? {}, currentState),
+      migrate: (persistedState, version) => {
+        if (version === 0.1) {
+          // We changed solutionOrientation from a CubeOrientation to a list of CubeOrientation
+          (persistedState as any).crossOptions.solutionOrientations = [
+            (persistedState as any).crossOptions.solutionOrientation,
+          ];
+          delete (persistedState as any).crossOptions.solutionOrientation;
+        }
+        return persistedState as State;
+      },
     }
   )
 );

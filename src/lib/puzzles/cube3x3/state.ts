@@ -24,6 +24,14 @@ export type FaceletIndex = number; // int from 0 to 53, represents a facelet's l
 //                +----+----+----+
 //                | 51 | 52 | 53 |
 //                +----+----+----+
+// Imagine the cube was unfolded into this net with the following layout:
+//     +---+
+//     | U |
+// +---+---+---+---+
+// | L | F | R | B |
+// +---+---+---+---+
+//     | D |
+//     +---+
 // prettier-ignore
 export const SOLVED_FACELET_CUBE: Readonly<Facelet3x3> = [
                "U", "U", "U",

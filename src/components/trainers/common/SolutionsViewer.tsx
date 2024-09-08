@@ -16,18 +16,33 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import SolutionPlayer from "./SolutionPlayer";
-import { RotationMove, Move3x3, Cube3x3Mask } from "src/lib/puzzles/cube3x3";
-import { getEOSolutionAnnotation } from "../EOStepTrainer/utils";
+import {
+  RotationMove,
+  Move3x3,
+  Cube3x3Mask,
+  MOVECOUNT_METRICS,
+} from "src/lib/puzzles/cube3x3";
 import { CopyIcon } from "@chakra-ui/icons";
+import { MovecountMetric } from "src/lib/types";
 
-export interface SolutionWithPrerotation {
-  solution: Move3x3[];
-  preRotation: RotationMove[];
-}
+// TODO: find better place to put this type?
+export type DisplayedSolution<MoveType, RotationMoveType> = {
+  preRotation: RotationMoveType[];
+  solution: MoveType[];
+  label?: string;
+  annotation?: string[];
+};
 
-interface SolutionsViewerProps {
-  scramble: Move3x3[];
-  solutions: SolutionWithPrerotation[];
+export interface SolutionsViewerProps<
+  MoveType extends string,
+  RotationMoveType extends string
+> {
+  scramble: MoveType[];
+  /** The list of solutions, should be sorted by length starting with shortest */
+  solutions: DisplayedSolution<MoveType, RotationMoveType>[];
+  movecountMetric: MovecountMetric<MoveType>;
+  // TODO: make cubeviewer a prop as well, so the parent will control things like how the puzzle is displayed.
+  // mask and showEO should not be passed in here, but taken care of what the parent passes in as cubeviewer
   mask?: Cube3x3Mask;
   showEO?: boolean;
   isLoading?: boolean;
@@ -37,12 +52,13 @@ interface SolutionsViewerProps {
   children?: React.ReactNode;
 }
 
-export default function SolutionsViewer({
+export default function SolutionsViewer<
+  MoveType extends string,
+  RotationMoveType extends string
+>({
   scramble,
-  /** The list of solutions, should be sorted by length starting with shortest */
   solutions,
-  // make mask and showEO part of a PuzzleDisplayOptions type
-  // then make cubeviewer a prop as well
+  movecountMetric,
   mask,
   showEO,
   isLoading = false,
@@ -52,28 +68,17 @@ export default function SolutionsViewer({
   },
   enableHotkeys = false,
   children,
-}: SolutionsViewerProps) {
+}: SolutionsViewerProps<MoveType, RotationMoveType>) {
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState(0);
   useEffect(() => {
     setSelectedSolutionIndex(0);
-  }, [solutions]);
+  }, [scramble]);
   const selectedSolution = solutions.at(selectedSolutionIndex);
-  // TODO: add functions that calculate metrics, since we shouldn't assume the length of a solution is its HTM metric (slice moves, rotations etc.)
-  // make metrics a prop of the form { name: string, calculateMetric: (moves: MoveType[]) => number }
   const badgeText = solutions.length
-    ? `best: ${solutions[0].solution.length} HTM`
+    ? `best: ${movecountMetric.metric(solutions[0].solution)} ${
+        movecountMetric.name
+      }`
     : "";
-  const eoSolutionAnnotation = useMemo(
-    () =>
-      selectedSolution
-        ? getEOSolutionAnnotation(
-            scramble,
-            selectedSolution.preRotation,
-            selectedSolution.solution
-          )
-        : undefined,
-    [scramble, selectedSolution?.preRotation, selectedSolution?.solution]
-  );
 
   return (
     <VStack align="left">
@@ -95,6 +100,7 @@ export default function SolutionsViewer({
               solutions={solutions}
               selectedSolutionIndex={selectedSolutionIndex}
               onSelectSolution={setSelectedSolutionIndex}
+              movecountMetric={movecountMetric}
             />
           </Box>
         </Spoiler>
@@ -102,9 +108,7 @@ export default function SolutionsViewer({
         <Box w="100%" minW={0}>
           <SolutionPlayer
             scramble={scramble}
-            preRotation={selectedSolution?.preRotation ?? []}
-            solution={selectedSolution?.solution ?? []}
-            solutionAnnotation={showEO ? eoSolutionAnnotation : undefined}
+            solution={selectedSolution ?? { preRotation: [], solution: [] }}
             mask={mask}
             showEO={showEO}
             hideSolution={hideSolutions}
@@ -118,27 +122,29 @@ export default function SolutionsViewer({
   );
 }
 
-interface SelectSolutionProps {
+interface SelectSolutionProps<MoveType, RotationMoveType> {
   /** When `inactive` is true, the buttons receive no keyboard focus and there is no selected solution */
   inactive?: boolean;
-  solutions: SolutionWithPrerotation[];
+  solutions: DisplayedSolution<MoveType, RotationMoveType>[];
   selectedSolutionIndex: number;
   onSelectSolution: (index: number) => void;
+  movecountMetric: MovecountMetric<MoveType>;
 }
 
-function SelectSolution({
+function SelectSolution<MoveType, RotationMoveType>({
   inactive = false,
   solutions,
   selectedSolutionIndex,
   onSelectSolution,
-}: SelectSolutionProps) {
+  movecountMetric,
+}: SelectSolutionProps<MoveType, RotationMoveType>) {
   const badgeColorScheme = useColorModeValue(undefined, "gray");
   const badgeSelectedColorScheme = useColorModeValue("blackAlpha", "blue");
   return (
     <SimpleGrid spacing={2} minChildWidth="17rem">
-      {solutions.map(({ solution, preRotation }, index) => {
+      {solutions.map(({ preRotation, solution, label }, index) => {
         const solutionDisplayString = [...preRotation, ...solution].join(" ");
-        const movecount = solution.length;
+        const movecount = movecountMetric.metric(solution);
         const isSelected = !inactive && selectedSolutionIndex === index;
 
         return (
@@ -151,6 +157,8 @@ function SelectSolution({
               colorScheme={isSelected ? "blue" : undefined}
               tabIndex={inactive ? -1 : undefined}
             >
+              {/* TODO: style to look better */}
+              <p>{label}</p>
               <HStack>
                 <Badge
                   colorScheme={
@@ -158,7 +166,7 @@ function SelectSolution({
                   }
                   variant="solid"
                 >
-                  {movecount} HTM
+                  {movecount} {movecountMetric.name}
                 </Badge>
                 <Text fontWeight={500}>{solutionDisplayString}</Text>
               </HStack>

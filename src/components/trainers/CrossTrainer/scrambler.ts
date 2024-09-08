@@ -14,25 +14,34 @@ import {
   simplifyMoves,
   translateMoves,
 } from "src/lib/puzzles/cube3x3";
-import { CrossOptions } from "./crossOptions";
+import { CrossOptions } from "./store";
 import { genReversePruningTable } from "src/lib/search";
 import { solveCube3x3, solveEntire3x3 } from "src/lib/puzzles/cube3x3/solvers";
 import random3x3Scramble from "src/lib/puzzles/cube3x3/scramble";
-import { eightMoveCrosses } from "./eightMoveCrosses";
+import { eightMoveCrosses, NUM_OF_MOVES_CONFIGS } from "./constants";
+import { CrossStep } from "./types";
 
 export default async function scrambler(
   options: CrossOptions
 ): Promise<Move3x3[] | null> {
+  // color neutral: we only give random scrambles, never shortened
+  if (options.solutionOrientations.length !== 1) {
+    return await random3x3Scramble();
+  }
+
+  const fixedSolutionOrientation = options.solutionOrientations[0];
+
   switch (options.levelMode) {
     case "num-of-moves":
       return await numOfMovesScramble(
         options.numOfMoves,
-        options.solutionOrientation,
+        options.crossStep,
+        fixedSolutionOrientation,
         options.shortScrambles
       );
     case "random":
       return await randomScramble(
-        options.solutionOrientation,
+        fixedSolutionOrientation,
         options.shortScrambles
       );
   }
@@ -43,10 +52,11 @@ export default async function scrambler(
  */
 async function numOfMovesScramble(
   n: number,
+  crossStep: CrossStep,
   solutionOrientation: CubeOrientation,
   shortScramble: boolean = false
 ): Promise<Move3x3[] | null> {
-  const puzzleConfig = PUZZLE_CONFIGS.Cross;
+  const puzzleConfig = PUZZLE_CONFIGS[crossStep];
   const preRotation = cubeOrientationToRotations(solutionOrientation);
 
   // Approach 1: if the difficulty `n` is between 0 and `pruningDepth`, we can get a random-state scramble with respect to edges by sampling a "reverse" pruning table
@@ -70,7 +80,7 @@ async function numOfMovesScramble(
     return shortScramble
       ? makeShortScramble(scramble, preRotation, 4)
       : makeBetterScramble(scramble, preRotation);
-  } else if (n === 8) {
+  } else if (n === 8 && crossStep === "Cross") {
     // 8-move crosses are extremely rare, there are only 102 of them. Best way is to sample a list of all 8 move cross scrambles
     const eightMoveYellowCrossScramble = sample(eightMoveCrosses)!;
     const scramble = translateMoves(
@@ -83,7 +93,7 @@ async function numOfMovesScramble(
   } else {
     // Approach 2: if the difficulty `n` exceeds pruning depth, we have to do a random-move scramble
     // We will need to shorten the scramble, either with respect to only the edges or we need to get proper random state corners as well!
-    const iterationLimit = 10000;
+    const { iterationLimit } = NUM_OF_MOVES_CONFIGS[crossStep];
     /*
       Our goal is to generate a scramble that can be solved optimally in exactly `n` moves.
       Typically we do this with trial and error, generating random-state scrambles until one with the correct difficulty is found.
@@ -98,7 +108,7 @@ async function numOfMovesScramble(
     let success = false;
     for (let i = 0; i < iterationLimit; i++) {
       const optimalSolutionLength = (
-        await solveCube3x3(scramble, "Cross", preRotation, 1)
+        await solveCube3x3(scramble, "XCross", preRotation, 1)
       )[0].length;
       if (optimalSolutionLength === n) {
         success = true;
@@ -180,7 +190,7 @@ async function makeBetterScramble(
     (await randomScrambleForEvent("333")).toString()
   )!;
   const solutionForRandomScramble = (
-    await solveCube3x3(randomScramble, "Cross", preRotation, 1)
+    await solveCube3x3(randomScramble, "XCross", preRotation, 1)
   )[0]!;
   // the setup is `[...randomScramble, ...preRotation, ...solutionForRandomScramble, invertMoves(...preRotation) ...originalScramble]`
   // however we need to translate the setup so it doesn't have any rotations
@@ -201,8 +211,12 @@ async function makeShortScramble(
   const extraMoves = randomMoves(numExtraMoves);
   const newScramble = [...scramble, ...extraMoves];
   const solution = (
-    await solveCube3x3(newScramble, "Cross", preRotation, 1)
+    await solveCube3x3(newScramble, "XCross", preRotation, 1)
   )[0];
+  if (!solution) {
+    console.warn("makeShortScramble(): couldn't find a solution");
+    return scramble;
+  }
   const solutionInverse = translateMoves(
     invertMoves(solution),
     invertMoves(preRotation)

@@ -15,6 +15,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Stack,
   Tooltip,
   useClipboard,
@@ -30,6 +31,7 @@ import {
   layerOfLayerMove,
   MASKS,
   Move3x3,
+  MOVECOUNT_METRICS,
   RotationMove,
   translateMoves,
 } from "src/lib/puzzles/cube3x3";
@@ -38,19 +40,20 @@ import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/lib/puzzles/cube3x3";
 
-import { useCrossOptions, useActions, useUIOptions } from "./crossOptions";
+import { useCrossOptions, useActions, useUIOptions } from "./store";
 
 import scrambler from "./scrambler";
 import solver from "./solver";
 
-import SolutionsViewer, {
-  SolutionWithPrerotation,
-} from "../common/SolutionsViewer";
+import SolutionsViewer, { DisplayedSolution } from "../common/SolutionsViewer";
 import CrossLevelSelect from "./cards/CrossLevelSelect";
 import PreferenceSelect from "./cards/PreferenceSelect";
 import { useHotkeys } from "react-hotkeys-hook";
 import KeyboardControls from "./cards/KeyboardControls";
 import { plausible } from "src/App";
+import { CrossSolution, CrossStep } from "./types";
+import { NUM_OF_MOVES_CONFIGS } from "./constants";
+import ScrambleSettings from "./cards/ScrambleSettings";
 
 export default function CrossTrainer() {
   const [areSolutionsHidden, setSolutionsHidden] = useState(true);
@@ -71,29 +74,26 @@ export default function CrossTrainer() {
     isLoading,
     getNext,
   } = useScrambleAndSolutions(scrambler, solver, crossOptions, hideSolutions);
-  const preRotation = cubeOrientationToRotations(
-    crossOptions.solutionOrientation
-  );
 
-  const mainAction = areSolutionsHidden ? showSolutions : () => {
-    plausible.trackEvent("trainer-generate", { props: { method: "Cross" } });
-    getNext();
-  };
+  const mainAction = areSolutionsHidden
+    ? showSolutions
+    : () => {
+        plausible.trackEvent("trainer-generate", {
+          props: { method: "Cross" },
+        });
+        getNext();
+      };
 
-  const copyText = generateCopyText({
-    scramble,
-    preRotation,
-    solutions,
-  });
+  const copyText = generateCopyText(scramble, solutions);
 
-  const solutionsWithPrerotations = solutions.map((solution) =>
-    uiOptions.chooseExecutionAngle
-      ? optimizePrerotationForCrossSolution(preRotation, solution)
-      : {
-          solution,
-          preRotation,
-        }
-  );
+  const displayedSolutions: DisplayedSolution<Move3x3, RotationMove>[] =
+    solutions.map(({ preRotation, solution, xcrossSlot }) => ({
+      preRotation,
+      solution: uiOptions.chooseExecutionAngle
+        ? optimizeSolutionByYRotation(solution)
+        : solution,
+      label: xcrossSlot,
+    }));
 
   // hotkeys (note, more hotkeys are implemented in children)
   useHotkeys(" ", mainAction, [areSolutionsHidden], {
@@ -102,12 +102,12 @@ export default function CrossTrainer() {
   });
   useHotkeys("Backspace", hideSolutions, { enabled: uiOptions.enableHotkeys });
 
+  const { min: minNumOfMoves, max: maxNumOfMoves } =
+    NUM_OF_MOVES_CONFIGS[crossOptions.crossStep];
+
   return (
     <Container maxW="container.lg">
       <VStack spacing={4} my={4}>
-        <HStack spacing={4}>
-          <Heading size="md">cross trainer</Heading>
-        </HStack>
         <Card p="1.5rem" w="100%">
           <ScrambleEditor
             scrambleFailed={scrambleFailed}
@@ -119,13 +119,14 @@ export default function CrossTrainer() {
         </Card>
         <Card p="1.5rem" w="100%">
           <SolutionsViewer
-            mask={MASKS.Cross}
+            mask={MASKS[crossOptions.crossStep]}
             scramble={scramble}
-            solutions={solutionsWithPrerotations}
+            solutions={displayedSolutions}
             isLoading={isLoading}
             hideSolutions={areSolutionsHidden || isLoading}
             onRevealSolutions={showSolutions}
             enableHotkeys={!areSolutionsHidden && uiOptions.enableHotkeys}
+            movecountMetric={MOVECOUNT_METRICS.HTM}
           >
             <HStack>
               {!areSolutionsHidden && !isLoading && (
@@ -147,6 +148,23 @@ export default function CrossTrainer() {
               setLevelMode={actions.setLevelMode}
               numOfMoves={crossOptions.numOfMoves}
               setNumOfMoves={actions.setLevelNumOfMoves}
+              minNumOfMoves={minNumOfMoves}
+              maxNumOfMoves={maxNumOfMoves}
+            />
+          </Card>
+          <Card p="1.5rem">
+            <ScrambleSettings
+              crossStep={crossOptions.crossStep}
+              setCrossStep={actions.setCrossStep}
+              colorNeutrality={crossOptions.colorNeutrality}
+              setColorNeutrality={actions.setColorNeutrality}
+              solutionOrientations={crossOptions.solutionOrientations}
+              setSolutionOrientations={actions.setSolutionOrientations}
+              // TODO:
+              // shortScrambles={crossOptions.shortScrambles}
+              // setShortScrambles={actions.setShortScrambles}
+              // chooseExecutionAngle={uiOptions.chooseExecutionAngle}
+              // setChooseExecutionAngle={actions.setChooseExecutionAngle}
             />
           </Card>
           <Stack
@@ -155,16 +173,6 @@ export default function CrossTrainer() {
             w="100%"
             maxW="container.lg"
           >
-            <Card p="1.5rem" flex={1}>
-              <PreferenceSelect
-                orientation={crossOptions.solutionOrientation}
-                setOrientation={actions.setSolutionOrientation}
-                shortScrambles={crossOptions.shortScrambles}
-                setShortScrambles={actions.setShortScrambles}
-                chooseExecutionAngle={uiOptions.chooseExecutionAngle}
-                setChooseExecutionAngle={actions.setChooseExecutionAngle}
-              />
-            </Card>
             <Card p="1.5rem" flex={1} display={{ base: "none", sm: "flex" }}>
               <KeyboardControls
                 enableHotkeys={uiOptions.enableHotkeys}
@@ -194,7 +202,6 @@ function ShareButton({ text }: { text: string }) {
   return (
     <>
       <Button onClick={onOpen}>share</Button>
-
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -210,7 +217,6 @@ function ShareButton({ text }: { text: string }) {
               {text}
             </Box>
           </ModalBody>
-
           <ModalFooter>
             <Tooltip label="copied!" isOpen={hasCopied} hasArrow>
               <Button onClick={onCopy} colorScheme="blue" mr={3}>
@@ -227,20 +233,16 @@ function ShareButton({ text }: { text: string }) {
   );
 }
 
-function generateCopyText({
-  scramble,
-  preRotation,
-  solutions,
-}: {
-  scramble: Move3x3[];
-  preRotation: RotationMove[];
-  solutions: Move3x3[][];
-}): string {
+// TODO: update
+function generateCopyText(
+  scramble: Move3x3[],
+  solutions: CrossSolution[]
+): string {
   const scrambleText = `scramble: ${scramble.join(" ")}`;
 
   const solutionText = [
     "cross solutions:",
-    ...solutions.map((solution, index) => {
+    ...solutions.map(({ preRotation, solution }, index) => {
       const prefixText = `${index + 1}.`;
       const movecountText = `(${solution.length} HTM)`;
       const solutionText = [...preRotation, ...solution].join(" ");
@@ -253,22 +255,19 @@ function generateCopyText({
   return [scrambleText, solutionText, linkText].join("\n\n");
 }
 
-function optimizePrerotationForCrossSolution(
-  initialPrerotation: RotationMove[],
-  solution: Move3x3[]
-): SolutionWithPrerotation {
-  const yRotations = [[], ["y"], ["y'"], ["y2"]] as const;
-  const options: SolutionWithPrerotation[] = yRotations.map((rotation) => ({
-    preRotation: [...initialPrerotation, ...rotation],
-    solution: translateMoves(solution, rotation),
-  }));
+function optimizeSolutionByYRotation(solution: Move3x3[]): Move3x3[] {
+  const yRotations: RotationMove[][] = [[], ["y"], ["y'"], ["y2"]];
+  const options: Move3x3[][] = yRotations.map((rotation) => [
+    ...rotation,
+    ...translateMoves(solution, rotation),
+  ]);
 
   // choose y rotations that reduce the number of F or B moves, especially B moves
   // higher score is worse
   let bestOption = options[0];
   let bestScore = Infinity;
   options.forEach((option) => {
-    const score = option.solution.reduce((totalScore, currentMove) => {
+    const score = option.reduce((totalScore, currentMove) => {
       if (isCubeRotation(currentMove)) return totalScore;
       const layerScores: { [layer in Layer]?: number } = {
         F: 1,

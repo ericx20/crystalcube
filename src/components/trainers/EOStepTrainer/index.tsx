@@ -36,8 +36,8 @@ import useScrambleAndSolutions from "../common/useScrambleAndSolutions";
 import ScrambleEditor from "../common/ScrambleEditor";
 import { Cube3x3 } from "src/lib/puzzles/cube3x3";
 
-import { useEOStepOptions, useActions, useUIOptions } from "./eoStepOptions";
-import type { EOStep } from "./eoStepTypes";
+import { useEOStepOptions, useActions, useUIOptions } from "./store";
+import type { EOStep } from "./types";
 
 import scrambler from "./scrambler";
 import solver from "./solver";
@@ -49,6 +49,7 @@ import { getEOSolutionAnnotation } from "./utils";
 import { useHotkeys } from "react-hotkeys-hook";
 import KeyboardControls from "./cards/KeyboardControls";
 import { plausible } from "src/App";
+import { NUM_OF_MOVES_CONFIGS } from "./constants";
 
 export default function EOStepTrainer() {
   const [areSolutionsHidden, setSolutionsHidden] = useState(true);
@@ -73,10 +74,14 @@ export default function EOStepTrainer() {
     eoStepOptions.solutionOrientation
   );
 
-  const mainAction = areSolutionsHidden ? showSolutions : () => {
-    plausible.trackEvent("trainer-generate", { props: { method: eoStepOptions.eoStep } });
-    getNext();
-  };
+  const mainAction = areSolutionsHidden
+    ? showSolutions
+    : () => {
+        plausible.trackEvent("trainer-generate", {
+          props: { method: eoStepOptions.eoStep },
+        });
+        getNext();
+      };
 
   const copyText = generateCopyText({
     solverName: eoStepOptions.eoStep,
@@ -85,17 +90,15 @@ export default function EOStepTrainer() {
     solutions,
   });
 
-  const solutionsWithPrerotations = solutions.map((solution) => ({
-    solution,
-    preRotation,
-  }));
-
   // hotkeys (note, more hotkeys are implemented in children)
   useHotkeys(" ", mainAction, [areSolutionsHidden], {
     enabled: uiOptions.enableHotkeys && !isLoading,
     preventDefault: true,
   });
   useHotkeys("Backspace", hideSolutions, { enabled: uiOptions.enableHotkeys });
+
+  const { min: minNumOfMoves, max: maxNumOfMoves } =
+    NUM_OF_MOVES_CONFIGS[eoStepOptions.eoStep];
 
   return (
     <Container maxW="container.lg">
@@ -120,7 +123,8 @@ export default function EOStepTrainer() {
           <SolutionsViewer
             mask={MASKS[eoStepOptions.eoStep]}
             scramble={scramble}
-            solutions={solutionsWithPrerotations}
+            preRotation={preRotation}
+            solutions={solutions}
             showEO
             isLoading={isLoading}
             hideSolutions={areSolutionsHidden || isLoading}
@@ -149,7 +153,8 @@ export default function EOStepTrainer() {
               setNumOfBadEdges={actions.setLevelNumOfBadEdges}
               numOfMoves={eoStepOptions.numOfMoves}
               setNumOfMoves={actions.setLevelNumOfMoves}
-              numOfMovesConfig={actions.getNumOfMovesConfig()}
+              minNumOfMoves={minNumOfMoves}
+              maxNumOfMoves={maxNumOfMoves}
             />
           </Card>
           <Stack

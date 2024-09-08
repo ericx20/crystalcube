@@ -11,6 +11,7 @@ export const PUZZLE_CONFIG_NAMES = [
   "EOArrowLeft",
   "EO222",
   "Cross",
+  "XCross",
   "FB",
   "SB",
 ] as const;
@@ -19,6 +20,7 @@ export type PuzzleConfigName = (typeof PUZZLE_CONFIG_NAMES)[number];
 
 export interface PuzzleConfig {
   solverConfig: SolverConfig;
+  // TODO: remove isEOStep
   /** @deprecated */
   isEOStep?: boolean;
 }
@@ -91,6 +93,14 @@ export const PUZZLE_CONFIGS = {
       mask: MASKS.Cross,
       pruningDepth: 4,
       depthLimit: 8,
+    },
+  },
+  XCross: {
+    solverConfig: {
+      moveSet: MOVESETS.RUFLDB,
+      mask: MASKS.XCross,
+      pruningDepth: 4,
+      depthLimit: 9, // what is the God's number of XCross? or the maximum depth that we can handle?
     },
   },
   FB: {
