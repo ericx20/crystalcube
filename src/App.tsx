@@ -17,11 +17,12 @@ import OHScramble from "./pages/OHScramble";
 import { ReactNode } from "react";
 import AboutPage from "./pages/About";
 
-import Plausible from 'plausible-tracker'
+import Plausible from "plausible-tracker";
 
 export const plausible = Plausible({
-  domain: 'crystalcuber.com',
-})
+  domain: "crystalcuber.com",
+  apiHost: "/external",
+});
 
 plausible.enableAutoPageviews();
 
